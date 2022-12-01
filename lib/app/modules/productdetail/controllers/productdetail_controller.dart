@@ -1,23 +1,23 @@
 import 'package:get/get.dart';
 
 class ProductdetailController extends GetxController {
-  //TODO: Implement ProductdetailController
-
-  final count = 0.obs;
   @override
+  RxInt quantity = 0.obs;
+
   void onInit() {
-    super.onInit();
+    // TODO: implement onInit
+    RxInt quantity = 0.obs;
   }
 
-  @override
-  void onReady() {
-    super.onReady();
+  void addQuantity() {
+    quantity++;
   }
 
-  @override
-  void onClose() {
-    super.onClose();
+  void removeQuantity() {
+    if (quantity <= 0) {
+      quantity;
+    } else {
+      quantity--;
+    }
   }
-
-  void increment() => count.value++;
 }

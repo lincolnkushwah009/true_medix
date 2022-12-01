@@ -6,6 +6,8 @@ import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
+import '../modules/navigationbar/bindings/navigationbar_binding.dart';
+import '../modules/navigationbar/views/navigationbar_view.dart';
 import '../modules/orderhistory/bindings/orderhistory_binding.dart';
 import '../modules/orderhistory/views/orderhistory_view.dart';
 import '../modules/otpscreen/bindings/otpscreen_binding.dart';
@@ -24,7 +26,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.HOME;
+  static const INITIAL = Routes.NAVIGATIONBAR;
 
   static final routes = [
     GetPage(
@@ -71,6 +73,11 @@ class AppPages {
       name: _Paths.TRACKSTATUS,
       page: () => const TrackstatusView(),
       binding: TrackstatusBinding(),
+    ),
+    GetPage(
+      name: _Paths.NAVIGATIONBAR,
+      page: () => const BottonNavBarView(),
+      binding: NavigationbarBinding(),
     ),
   ];
 }
