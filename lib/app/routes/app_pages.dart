@@ -1,13 +1,13 @@
 import 'package:get/get.dart';
 
+import '../modules/bottomnavbar/bindings/bottomnavbar_binding.dart';
+import '../modules/bottomnavbar/views/bottomnavbar_view.dart';
 import '../modules/cart/bindings/cart_binding.dart';
 import '../modules/cart/views/cart_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
-import '../modules/navigationbar/bindings/navigationbar_binding.dart';
-import '../modules/navigationbar/views/navigationbar_view.dart';
 import '../modules/orderhistory/bindings/orderhistory_binding.dart';
 import '../modules/orderhistory/views/orderhistory_view.dart';
 import '../modules/otpscreen/bindings/otpscreen_binding.dart';
@@ -26,7 +26,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.NAVIGATIONBAR;
+  static const INITIAL = Routes.LOGIN;
 
   static final routes = [
     GetPage(
@@ -75,9 +75,9 @@ class AppPages {
       binding: TrackstatusBinding(),
     ),
     GetPage(
-      name: _Paths.NAVIGATIONBAR,
-      page: () => const BottonNavBarView(),
-      binding: NavigationbarBinding(),
+      name: _Paths.BOTTOMNAVBAR,
+      page: () => const BottomnavbarView(),
+      binding: BottomnavbarBinding(),
     ),
   ];
 }

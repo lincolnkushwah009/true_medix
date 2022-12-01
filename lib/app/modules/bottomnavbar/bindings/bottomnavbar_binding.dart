@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 
-import '../controllers/navigationbar_controller.dart';
+import '../controllers/bottomnavbar_controller.dart';
 
-class NavigationbarBinding extends Bindings {
+class BottomnavbarBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<BottomnavbarController>(

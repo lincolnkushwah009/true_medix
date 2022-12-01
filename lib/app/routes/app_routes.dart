@@ -12,7 +12,7 @@ abstract class Routes {
   static const PRODUCTDETAIL = _Paths.PRODUCTDETAIL;
   static const SEARCH = _Paths.SEARCH;
   static const TRACKSTATUS = _Paths.TRACKSTATUS;
-  static const NAVIGATIONBAR = _Paths.NAVIGATIONBAR;
+  static const BOTTOMNAVBAR = _Paths.BOTTOMNAVBAR;
 }
 
 abstract class _Paths {
@@ -26,5 +26,5 @@ abstract class _Paths {
   static const PRODUCTDETAIL = '/productdetail';
   static const SEARCH = '/search';
   static const TRACKSTATUS = '/trackstatus';
-  static const NAVIGATIONBAR = '/navigationbar';
+  static const BOTTOMNAVBAR = '/bottomnavbar';
 }
