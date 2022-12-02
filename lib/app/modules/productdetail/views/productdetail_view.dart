@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../global/customtext.dart';
+import '../../../routes/app_pages.dart';
 import '../../../utilities/appcolors.dart';
 import '../controllers/productdetail_controller.dart';
 
@@ -35,17 +36,15 @@ class ProductdetailView extends GetView {
               color: kAppBarColor.withOpacity(0.8),
               child: GestureDetector(
                 onTap: () {
-                  if (kDebugMode) {
-                    print("back clicked");
-                  }
+                  Get.back();
                 },
                 child: SizedBox(
-                  height: Get.height * 0.08,
-                  width: Get.height * 0.08,
+                  height: Get.height * 0.03,
+                  width: Get.height * 0.05,
                   child: const Icon(
                     Icons.arrow_back,
                     color: Colors.black,
-                    size: 32,
+                    size: 28,
                   ),
                 ),
               ),
@@ -60,122 +59,122 @@ class ProductdetailView extends GetView {
                 color: kAppBarColor.withOpacity(0.8),
                 child: GestureDetector(
                   onTap: () {
-                    if (kDebugMode) {
-                      print("added to cart ");
-                    }
+                    Get.toNamed(Routes.CART);
                   },
                   child: SizedBox(
-                    height: Get.height * 0.08,
-                    width: Get.height * 0.08,
+                    height: Get.height * 0.03,
+                    width: Get.height * 0.05,
                     child: const Icon(
                       Icons.shopping_cart_outlined,
                       color: Colors.black,
-                      size: 32,
+                      size: 28,
                     ),
                   ),
                 ),
               )
             ],
-            flexibleSpace: Image.asset(
-              "assets/sampleProduct.jpeg",
-              fit: BoxFit.scaleDown,
+            flexibleSpace: Padding(
+              padding: const EdgeInsets.only(top: 35.0),
+              child: Image.asset(
+                "assets/bottal.png",
+                fit: BoxFit.contain,
+              ),
             ),
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24),
-        child: Column(
-            // mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 6.0),
-                child: CustomText(
-                  textName: "Title",
-                  fontColor: Colors.black,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24),
+          child: Column(
+              // mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 6.0),
+                  child: CustomText(
+                    textName: "ALBERTS STAIN REPORT",
+                    fontColor: Colors.black,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              CustomText(
-                textName: "Sub- Title",
-                fontColor: Colors.black.withOpacity(0.8),
-                fontSize: 28,
-                fontWeight: FontWeight.w300,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: Row(
-                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Icon(
-                      Icons.currency_rupee,
-                      size: 42,
-                    ),
-                    const CustomText(
-                      textName: "499",
-                      fontSize: 42,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    SizedBox(
-                      width: Get.width * 0.36,
-                    ),
-                    Expanded(
-                      child: Container(
-                        width: Get.width * 0.24,
-                        height: Get.height * 0.064,
-                        decoration: BoxDecoration(
-                            color: kAppBarColor,
-                            shape: BoxShape.rectangle,
-                            borderRadius: BorderRadius.circular(14)),
-                        child: Obx(() => Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  GestureDetector(
-                                      onTap: () {
-                                        controller.removeQuantity();
-                                      },
-                                      child: const Icon(Icons.remove)),
-                                  CustomText(
-                                    textName:
-                                        controller.quantity.value.toString(),
-                                    fontSize: 26,
-                                  ),
-                                  GestureDetector(
-                                      onTap: () {
-                                        controller.addQuantity();
-                                      },
-                                      child: const Icon(Icons.add)),
-                                ])),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Row(
+                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const CustomText(
+                        textName: "₹ 499",
+                        fontSize: 42,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ),
-                  ],
+                      SizedBox(
+                        width: Get.width * 0.36,
+                      ),
+                      Expanded(
+                        child: Container(
+                          width: Get.width * 0.24,
+                          height: Get.height * 0.064,
+                          decoration: BoxDecoration(
+                              color: kAppBarColor,
+                              shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.circular(14)),
+                          child: Obx(() => Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    GestureDetector(
+                                        onTap: () {
+                                          controller.removeQuantity();
+                                        },
+                                        child: const Icon(
+                                          Icons.remove,
+                                        )),
+                                    CustomText(
+                                      textName:
+                                          controller.quantity.value.toString(),
+                                      fontSize: 26,
+                                    ),
+                                    GestureDetector(
+                                        onTap: () {
+                                          controller.addQuantity();
+                                        },
+                                        child: const Icon(Icons.add)),
+                                  ])),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const Padding(
-                padding: EdgeInsets.only(top: 16.0),
-                child: CustomText(
-                  textName: "About Product",
-                  fontSize: 30,
-                  fontWeight: FontWeight.w300,
+                const Padding(
+                  padding: EdgeInsets.only(top: 16.0),
+                  child: CustomText(
+                    textName: "About Product",
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 6.0),
-                child: CustomText(
-                  textName: "Description",
-                  fontSize: 18,
+                const SizedBox(
+                  height: 30,
                 ),
-              )
-            ]),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 6.0),
+                  child: CustomText(
+                    fontColor: Color(0XFF606060),
+                    textName:
+                        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s,",
+                    fontSize: 15,
+                  ),
+                )
+              ]),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Container(
         margin: const EdgeInsets.fromLTRB(0, 0, 0, 16),
         width: Get.width * 0.8,
-        height: Get.height * 0.09,
+        height: Get.height * 0.07,
         decoration: BoxDecoration(
             color: kAppBarColor,
             shape: BoxShape.rectangle,
@@ -183,7 +182,8 @@ class ProductdetailView extends GetView {
         child: const Center(
             child: CustomText(
           textName: "Add to Cart",
-          fontSize: 24,
+          fontWeight: FontWeight.w500,
+          fontSize: 22,
         )),
       ),
     );

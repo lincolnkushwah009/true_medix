@@ -9,3 +9,4 @@ Color kProductTextColor = const Color(0XFF6E91A9);
 Color kHeading1Color = const Color(0XFF575254);
 Color kHeading2Color = const Color(0XFF4d5556);
 Color kBtnColor = const Color(0XFF69B0CF);
+Color kIconColor = const Color(0XFF78aecd);

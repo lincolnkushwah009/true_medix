@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:true_medix/app/utilities/appcolors.dart';
 
-import '../../../utilities/appcolors.dart';
 import '../../../utilities/appstyles.dart';
-import '../controllers/profile_controller.dart';
+import '../controllers/tests_controller.dart';
 
-class ProfileView extends GetView<ProfileController> {
-  const ProfileView({Key? key}) : super(key: key);
+class TestsView extends GetView<TestsController> {
+  const TestsView({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +15,7 @@ class ProfileView extends GetView<ProfileController> {
         backgroundColor: kPrimaryColor,
         automaticallyImplyLeading: false,
         title: Text(
-          'Profile',
+          'Tests',
           style: iconTextStyle.copyWith(fontSize: 22),
         ),
         shape: const RoundedRectangleBorder(
@@ -28,7 +28,7 @@ class ProfileView extends GetView<ProfileController> {
       ),
       body: const Center(
         child: Text(
-          'ProfileView is working',
+          'TestsView is working',
           style: TextStyle(fontSize: 20),
         ),
       ),

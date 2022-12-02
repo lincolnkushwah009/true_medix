@@ -16,3 +16,22 @@ TextStyle btnStyle = const TextStyle(
   color: Colors.white,
   fontWeight: FontWeight.w500,
 );
+TextStyle iconTextStyle = const TextStyle(
+  fontSize: 10,
+  color: Color(0XFF78aecd),
+);
+TextStyle testTextStyle = const TextStyle(
+  fontSize: 12,
+  color: Color(0XFF6492ac),
+  fontWeight: FontWeight.w700,
+);
+TextStyle testCartTextStyle = const TextStyle(
+  fontSize: 12,
+  color: Color(0XFF919191),
+  fontWeight: FontWeight.w700,
+);
+TextStyle cartCheckoutTextStyle = const TextStyle(
+  fontSize: 15,
+  color: Color(0XFFd5d5d5),
+  fontWeight: FontWeight.w400,
+);

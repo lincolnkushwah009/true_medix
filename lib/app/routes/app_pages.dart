@@ -18,6 +18,8 @@ import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/search/bindings/search_binding.dart';
 import '../modules/search/views/search_view.dart';
+import '../modules/tests/bindings/tests_binding.dart';
+import '../modules/tests/views/tests_view.dart';
 import '../modules/trackstatus/bindings/trackstatus_binding.dart';
 import '../modules/trackstatus/views/trackstatus_view.dart';
 
@@ -78,6 +80,11 @@ class AppPages {
       name: _Paths.BOTTOMNAVBAR,
       page: () => const BottomnavbarView(),
       binding: BottomnavbarBinding(),
+    ),
+    GetPage(
+      name: _Paths.TESTS,
+      page: () => const TestsView(),
+      binding: TestsBinding(),
     ),
   ];
 }

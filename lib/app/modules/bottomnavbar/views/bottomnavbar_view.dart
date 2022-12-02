@@ -4,9 +4,13 @@ import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:true_medix/app/modules/home/views/home_view.dart';
 import 'package:true_medix/app/modules/productdetail/views/productdetail_view.dart';
+import 'package:true_medix/app/modules/profile/views/profile_view.dart';
+import 'package:true_medix/app/modules/tests/views/tests_view.dart';
 
 import '../../../utilities/appstyles.dart';
+import '../../cart/views/cart_view.dart';
 import '../controllers/bottomnavbar_controller.dart';
 
 class BottomnavbarView extends GetView<BottomnavbarController> {
@@ -23,10 +27,10 @@ class BottomnavbarView extends GetView<BottomnavbarController> {
             controller.currentIndex.value = index;
           },
           children: const <Widget>[
-            ProductdetailView(),
-            ProductdetailView(),
-            ProductdetailView(),
-            ProductdetailView(),
+            HomeView(),
+            CartView(),
+            TestsView(),
+            ProfileView(),
           ],
         ),
       ),
@@ -38,41 +42,48 @@ class BottomnavbarView extends GetView<BottomnavbarController> {
             },
             items: <BottomNavyBarItem>[
               BottomNavyBarItem(
-                  title: Text(
-                    'Home',
-                    style: navBarItemsStyle,
-                  ),
-                  icon: const Icon(
-                    Icons.home,
-                    color: Colors.black,
-                  )),
+                title: Text(
+                  'Home',
+                  style: navBarItemsStyle,
+                ),
+                icon: Image.asset(
+                  "assets/home.png",
+                  width: 20,
+                  height: 20,
+                ),
+              ),
               BottomNavyBarItem(
                   title: Text(
-                    'Item Two',
+                    'Cart',
                     style: navBarItemsStyle,
                   ),
-                  icon: const Icon(
-                    Icons.apps,
-                    color: Colors.black,
+                  icon: Image.asset(
+                    "assets/bag.png",
+                    width: 20,
+                    height: 20,
                   )),
               BottomNavyBarItem(
-                  title: Text(
-                    'Item Three',
-                    style: navBarItemsStyle,
-                  ),
-                  icon: const Icon(
-                    Icons.chat_bubble,
-                    color: Colors.black,
-                  )),
+                title: Text(
+                  'Tests',
+                  style: navBarItemsStyle,
+                ),
+                icon: Image.asset(
+                  "assets/list.png",
+                  width: 20,
+                  height: 20,
+                ),
+              ),
               BottomNavyBarItem(
-                  title: Text(
-                    'Item Four',
-                    style: navBarItemsStyle,
-                  ),
-                  icon: const Icon(
-                    Icons.settings,
-                    color: Colors.black,
-                  )),
+                title: Text(
+                  'Profile',
+                  style: navBarItemsStyle,
+                ),
+                icon: Image.asset(
+                  "assets/account.png",
+                  width: 20,
+                  height: 20,
+                ),
+              ),
             ],
           )),
     );
