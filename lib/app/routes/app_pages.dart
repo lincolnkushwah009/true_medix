@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/activeorders/bindings/activeorders_binding.dart';
+import '../modules/activeorders/views/activeorders_view.dart';
 import '../modules/bottomnavbar/bindings/bottomnavbar_binding.dart';
 import '../modules/bottomnavbar/views/bottomnavbar_view.dart';
 import '../modules/cart/bindings/cart_binding.dart';
@@ -12,14 +14,14 @@ import '../modules/orderhistory/bindings/orderhistory_binding.dart';
 import '../modules/orderhistory/views/orderhistory_view.dart';
 import '../modules/otpscreen/bindings/otpscreen_binding.dart';
 import '../modules/otpscreen/views/otpscreen_view.dart';
+import '../modules/pastorders/bindings/pastorders_binding.dart';
+import '../modules/pastorders/views/pastorders_view.dart';
 import '../modules/productdetail/bindings/productdetail_binding.dart';
 import '../modules/productdetail/views/productdetail_view.dart';
 import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/search/bindings/search_binding.dart';
 import '../modules/search/views/search_view.dart';
-import '../modules/tests/bindings/tests_binding.dart';
-import '../modules/tests/views/tests_view.dart';
 import '../modules/trackstatus/bindings/trackstatus_binding.dart';
 import '../modules/trackstatus/views/trackstatus_view.dart';
 
@@ -82,9 +84,14 @@ class AppPages {
       binding: BottomnavbarBinding(),
     ),
     GetPage(
-      name: _Paths.TESTS,
-      page: () => const TestsView(),
-      binding: TestsBinding(),
+      name: _Paths.ACTIVEORDERS,
+      page: () => const ActiveordersView(),
+      binding: ActiveordersBinding(),
+    ),
+    GetPage(
+      name: _Paths.PASTORDERS,
+      page: () => const PastordersView(),
+      binding: PastordersBinding(),
     ),
   ];
 }

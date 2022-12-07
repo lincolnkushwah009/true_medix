@@ -35,3 +35,8 @@ TextStyle cartCheckoutTextStyle = const TextStyle(
   color: Color(0XFFd5d5d5),
   fontWeight: FontWeight.w400,
 );
+TextStyle orderHistoryTextStyle = const TextStyle(
+  fontSize: 15,
+  color: Color(0XFF67b0d0),
+  fontWeight: FontWeight.w400,
+);

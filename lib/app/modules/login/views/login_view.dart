@@ -1,7 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:developer';
+
+import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:true_medix/app/routes/app_pages.dart';
+import 'package:true_medix/app/services/apiResponse/apiresponse.dart';
 import 'package:true_medix/app/utilities/appcolors.dart';
 import 'package:true_medix/app/utilities/appstyles.dart';
 
@@ -85,8 +90,30 @@ class LoginView extends GetView<LoginController> {
                       height: 30,
                     ),
                     InkWell(
-                      onTap: () {
-                        Get.toNamed(Routes.OTPSCREEN);
+                      onTap: () async {
+                        // Get.toNamed(Routes.OTPSCREEN);
+                        ApiResponse responseData = await controller.apiServices
+                            .loginWithOTP(
+                                phone: controller.phoneController.text);
+                        log(responseData.data.toString());
+                        log(responseData.statusCode.toString());
+                        if (responseData.statusCode == 200) {
+                          log(responseData.data['message'].toString());
+                          ElegantNotification.success(
+                            title: const Text("Success"),
+                            description:
+                                Text(responseData.data['message'].toString()),
+                          ).show(context);
+                        } else {
+                          log(responseData.data['message']['email_mobile']
+                              .toString());
+                          ElegantNotification.error(
+                                  title: const Text("Oops"),
+                                  description: Text(responseData.data['message']
+                                          ['email_mobile']
+                                      .toString()))
+                              .show(context);
+                        }
                       },
                       child: Container(
                         height: 60,

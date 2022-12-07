@@ -2,32 +2,31 @@ name: true_medix
 version: 1.0.0+1
 publish_to: none
 description: A new Flutter project.
-environment: 
+environment:
   sdk: '>=2.18.2 <3.0.0'
 
-dependencies: 
+dependencies:
+  bottom_navy_bar: ^6.0.0
   cupertino_icons: ^1.0.2
-  get: 4.6.5
+  flutter:
+    sdk: flutter
   flutter_native_splash: ^2.2.14
   flutter_svg: ^1.1.6
+  elegant_notification: ^1.6.4
+  get: 4.6.5
   google_fonts: ^3.0.1
-  pin_code_fields: ^7.4.0
+  http: ^0.13.5
   logger: ^1.1.0
-  bottom_navy_bar: ^6.0.0
-  flutter: 
-    sdk: flutter
+  pin_code_fields: ^7.4.0
 
-dev_dependencies: 
+dev_dependencies:
   flutter_lints: 2.0.1
-  flutter_test: 
+  flutter_test:
     sdk: flutter
 
-flutter: 
+flutter:
   uses-material-design: true
 
   assets:
-  - assets/
-  - assets/Images/
-
-
-
+    - assets/
+    - assets/Images/

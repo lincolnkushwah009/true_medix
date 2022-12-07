@@ -13,7 +13,8 @@ abstract class Routes {
   static const SEARCH = _Paths.SEARCH;
   static const TRACKSTATUS = _Paths.TRACKSTATUS;
   static const BOTTOMNAVBAR = _Paths.BOTTOMNAVBAR;
-  static const TESTS = _Paths.TESTS;
+  static const ACTIVEORDERS = _Paths.ACTIVEORDERS;
+  static const PASTORDERS = _Paths.PASTORDERS;
 }
 
 abstract class _Paths {
@@ -28,5 +29,6 @@ abstract class _Paths {
   static const SEARCH = '/search';
   static const TRACKSTATUS = '/trackstatus';
   static const BOTTOMNAVBAR = '/bottomnavbar';
-  static const TESTS = '/tests';
+  static const ACTIVEORDERS = '/activeorders';
+  static const PASTORDERS = '/pastorders';
 }

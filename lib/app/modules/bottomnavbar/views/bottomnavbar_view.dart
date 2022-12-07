@@ -5,9 +5,8 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:true_medix/app/modules/home/views/home_view.dart';
-import 'package:true_medix/app/modules/productdetail/views/productdetail_view.dart';
+import 'package:true_medix/app/modules/orderhistory/views/orderhistory_view.dart';
 import 'package:true_medix/app/modules/profile/views/profile_view.dart';
-import 'package:true_medix/app/modules/tests/views/tests_view.dart';
 
 import '../../../utilities/appstyles.dart';
 import '../../cart/views/cart_view.dart';
@@ -29,7 +28,7 @@ class BottomnavbarView extends GetView<BottomnavbarController> {
           children: const <Widget>[
             HomeView(),
             CartView(),
-            TestsView(),
+            OrderhistoryView(),
             ProfileView(),
           ],
         ),
@@ -64,7 +63,7 @@ class BottomnavbarView extends GetView<BottomnavbarController> {
                   )),
               BottomNavyBarItem(
                 title: Text(
-                  'Tests',
+                  'Orders',
                   style: navBarItemsStyle,
                 ),
                 icon: Image.asset(

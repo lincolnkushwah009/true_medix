@@ -16,7 +16,7 @@ class CartView extends GetView<CartController> {
         backgroundColor: kPrimaryColor,
         automaticallyImplyLeading: false,
         title: Text(
-          'Cart',
+          'LOGO',
           style: iconTextStyle.copyWith(fontSize: 22),
         ),
         shape: const RoundedRectangleBorder(
