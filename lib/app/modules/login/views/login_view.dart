@@ -10,6 +10,7 @@ import 'package:true_medix/app/services/apiResponse/apiresponse.dart';
 import 'package:true_medix/app/utilities/appcolors.dart';
 import 'package:true_medix/app/utilities/appstyles.dart';
 
+import '../../../routes/app_pages.dart';
 import '../controllers/login_controller.dart';
 
 class LoginView extends GetView<LoginController> {
@@ -91,29 +92,38 @@ class LoginView extends GetView<LoginController> {
                     ),
                     InkWell(
                       onTap: () async {
-                        // Get.toNamed(Routes.OTPSCREEN);
-                        ApiResponse responseData = await controller.apiServices
+                        controller.apiServices
                             .loginWithOTP(
-                                phone: controller.phoneController.text);
-                        log(responseData.data.toString());
-                        log(responseData.statusCode.toString());
-                        if (responseData.statusCode == 200) {
-                          log(responseData.data['message'].toString());
-                          ElegantNotification.success(
-                            title: const Text("Success"),
-                            description:
-                                Text(responseData.data['message'].toString()),
-                          ).show(context);
-                        } else {
-                          log(responseData.data['message']['email_mobile']
-                              .toString());
+                                phone: controller.phoneController.text)
+                            .then((value) {
+                          log(value.statusCode.toString());
+                          if (value.statusCode == 200 &&
+                              value.data.toString().contains("MsgID")) {
+                            controller.logger.i("Success Entered");
+                            ElegantNotification.success(
+                              title: const Text("Success"),
+                              description: const Text(
+                                  "OTP generated successfully and sent to your registered mobile no"),
+                            ).show(context);
+                            Future.delayed(const Duration(seconds: 3), () {
+                              Get.toNamed(Routes.OTPSCREEN,
+                                  arguments: "121221");
+                            });
+                          } else {
+                            controller.logger.e("Error Entered");
+                            ElegantNotification.error(
+                                    title: const Text("Oops"),
+                                    description: Text(value.data.toString()))
+                                .show(context);
+                          }
+                        }).onError((error, stackTrace) {
+                          controller.logger.e("OnError Entered");
                           ElegantNotification.error(
                                   title: const Text("Oops"),
-                                  description: Text(responseData.data['message']
-                                          ['email_mobile']
-                                      .toString()))
+                                  description: const Text(
+                                      "Something went wrong.\nPlease try again"))
                               .show(context);
-                        }
+                        });
                       },
                       child: Container(
                         height: 60,

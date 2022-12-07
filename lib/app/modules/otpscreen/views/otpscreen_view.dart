@@ -1,3 +1,4 @@
+import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,7 @@ class OtpscreenView extends GetView<OtpscreenController> {
   Widget build(BuildContext context) {
     OtpscreenController controller =
         Get.put<OtpscreenController>(OtpscreenController());
+    var otp = Get.arguments;
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -68,7 +70,7 @@ class OtpscreenView extends GetView<OtpscreenController> {
                         child: PinCodeTextField(
                           showCursor: true,
                           cursorColor: kPrimaryColor,
-                          length: 4,
+                          length: 6,
                           obscureText: true,
                           animationType: AnimationType.scale,
                           pinTheme: PinTheme(
@@ -119,7 +121,21 @@ class OtpscreenView extends GetView<OtpscreenController> {
                     ),
                     InkWell(
                       onTap: () {
-                        Get.toNamed(Routes.BOTTOMNAVBAR);
+                        if (controller.code.value == otp) {
+                          ElegantNotification.success(
+                            title: const Text("Success"),
+                            description:
+                                const Text("OTP verified Successfully"),
+                          ).show(context);
+                          Future.delayed(const Duration(seconds: 3), () {
+                            Get.toNamed(Routes.BOTTOMNAVBAR);
+                          });
+                        } else {
+                          ElegantNotification.success(
+                            title: const Text("Oops"),
+                            description: const Text("Entered OTP is wrong"),
+                          ).show(context);
+                        }
                       },
                       child: Container(
                         height: 60,
