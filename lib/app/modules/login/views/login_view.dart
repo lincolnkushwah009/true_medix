@@ -6,11 +6,10 @@ import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
-import 'package:true_medix/app/services/apiResponse/apiresponse.dart';
 import 'package:true_medix/app/utilities/appcolors.dart';
 import 'package:true_medix/app/utilities/appstyles.dart';
 
-import '../../../routes/app_pages.dart';
+import '../../../services/apiResponse/apiresponse.dart';
 import '../controllers/login_controller.dart';
 
 class LoginView extends GetView<LoginController> {
@@ -75,14 +74,15 @@ class LoginView extends GetView<LoginController> {
                       child: Center(
                         child: TextFormField(
                           controller: controller.phoneController,
-                          keyboardType: TextInputType.phone,
+                          keyboardType: TextInputType.text,
                           decoration: const InputDecoration(
                             border: InputBorder.none,
                             prefixIcon: Icon(
-                              Icons.phone,
+                              Icons.person,
                               color: Colors.black,
                             ),
-                            hintText: 'Phone number',
+                            contentPadding: EdgeInsets.only(top: 14),
+                            hintText: 'Phone / Email',
                           ),
                         ),
                       ),
@@ -92,38 +92,28 @@ class LoginView extends GetView<LoginController> {
                     ),
                     InkWell(
                       onTap: () async {
-                        controller.apiServices
+                        ApiResponse responseData = await controller.apiServices
                             .loginWithOTP(
-                                phone: controller.phoneController.text)
-                            .then((value) {
-                          log(value.statusCode.toString());
-                          if (value.statusCode == 200 &&
-                              value.data.toString().contains("MsgID")) {
-                            controller.logger.i("Success Entered");
-                            ElegantNotification.success(
-                              title: const Text("Success"),
-                              description: const Text(
-                                  "OTP generated successfully and sent to your registered mobile no"),
-                            ).show(context);
-                            Future.delayed(const Duration(seconds: 3), () {
-                              Get.toNamed(Routes.OTPSCREEN,
-                                  arguments: "121221");
-                            });
-                          } else {
-                            controller.logger.e("Error Entered");
-                            ElegantNotification.error(
-                                    title: const Text("Oops"),
-                                    description: Text(value.data.toString()))
-                                .show(context);
-                          }
-                        }).onError((error, stackTrace) {
-                          controller.logger.e("OnError Entered");
+                                phone: controller.phoneController.text);
+                        log(responseData.data.toString());
+                        log(responseData.statusCode.toString());
+                        if (responseData.statusCode == 200) {
+                          log(responseData.data['message'].toString());
+                          ElegantNotification.success(
+                            title: const Text("Success"),
+                            description:
+                                Text(responseData.data['message'].toString()),
+                          ).show(context);
+                        } else {
+                          log(responseData.data['message']['email_mobile']
+                              .toString());
                           ElegantNotification.error(
                                   title: const Text("Oops"),
-                                  description: const Text(
-                                      "Something went wrong.\nPlease try again"))
+                                  description: Text(responseData.data['message']
+                                          ['email_mobile']
+                                      .toString()))
                               .show(context);
-                        });
+                        }
                       },
                       child: Container(
                         height: 60,
