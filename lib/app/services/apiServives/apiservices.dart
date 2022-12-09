@@ -10,12 +10,23 @@ class ApiServices {
       {required String phone}) async {
     log(phone.toString());
     try {
+      var data = {"email_mobile" : phone.toString()};
+
       var response = await http.post(
         Uri.parse(loginWithOtp),
-        body: {"email_mobile": phone},
+        body: json.encode(data),
       );
       log(response.toString());
       log(response.body);
+      print(response.body);
+      print("body>>>>>>>>>>");
+      print(response.request);
+      print(phone.toString());
+
+
+
+
+
       Map<String, dynamic> parsedData =
           jsonDecode(response.body) as Map<String, dynamic>;
       return ApiResponse(data: parsedData, statusCode: response.statusCode);

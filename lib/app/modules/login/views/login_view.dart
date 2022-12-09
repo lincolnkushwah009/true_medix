@@ -94,7 +94,7 @@ class LoginView extends GetView<LoginController> {
                       onTap: () async {
                         ApiResponse responseData = await controller.apiServices
                             .loginWithOTP(
-                                phone: controller.phoneController.text);
+                                phone: controller.phoneController.text.trim());
                         log(responseData.data.toString());
                         log(responseData.statusCode.toString());
                         if (responseData.statusCode == 200) {
