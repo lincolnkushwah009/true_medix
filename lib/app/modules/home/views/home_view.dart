@@ -1,7 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'dart:developer';
-
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -16,6 +16,7 @@ class HomeView extends GetView<HomeController> {
   const HomeView({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    HomeController controller = Get.put<HomeController>(HomeController());
     return Scaffold(
       body: SafeArea(
         child: NestedScrollView(
@@ -247,15 +248,45 @@ class HomeView extends GetView<HomeController> {
                   height: 16,
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 40.0, right: 40),
-                  child: Container(
-                    height: 135,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Image.asset("assets/homeBranding.png"),
-                  ),
+                  padding: const EdgeInsets.only(left: 10.0, right: 10),
+                  child: Obx(() {
+                    return Container(
+                      height: 135,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(0),
+                      ),
+                      child: controller.isBannerLoading.value == true
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : CarouselSlider(
+                              options: CarouselOptions(
+                                height: 400.0,
+                                autoPlay: true,
+                              ),
+                              items: (controller.bannerResponseList!.map((i) {
+                                return Builder(
+                                  builder: (BuildContext context) {
+                                    return Container(
+                                      width: double.infinity,
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 5.0),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(0),
+                                      ),
+                                      child: Center(
+                                        child: Image.network(
+                                          i['image'],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              }).toList()),
+                            ),
+                    );
+                  }),
                 ),
                 const SizedBox(
                   height: 36,
@@ -264,25 +295,47 @@ class HomeView extends GetView<HomeController> {
                   padding: const EdgeInsets.only(left: 10.0, right: 10.0),
                   child: SizedBox(
                     height: 1600,
-                    child: GridView.count(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 20.0,
-                      mainAxisSpacing: 50.0,
-                      children: List.generate(
-                        30,
-                        (index) {
-                          return InkWell(
-                            onTap: () {
-                              Get.toNamed(Routes.PRODUCTDETAIL);
-                            },
-                            child: ProductWidget(
-                              image: "assets/bottal.png",
-                              title: "ALBERTS STAIN REPORT",
-                              price: "300",
+                    child: FutureBuilder(
+                      future: controller.apiServices.getProducts(),
+                      builder: ((context, snapshot) {
+                        if (snapshot.hasError) {
+                          return const AlertDialog(
+                            title: Text('TrueMedix'),
+                            content: Text("hasError"),
+                          );
+                        }
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
                             ),
                           );
-                        },
-                      ),
+                        }
+                        return GridView.count(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 20.0,
+                          mainAxisSpacing: 50.0,
+                          children: List.generate(
+                            (snapshot.data!['records'] as List<dynamic>).length,
+                            (index) {
+                              return InkWell(
+                                onTap: () {
+                                  Get.toNamed(Routes.PRODUCTDETAIL);
+                                },
+                                child: ProductWidget(
+                                  image: snapshot.data!['records'][index]
+                                      ['image'],
+                                  title: snapshot.data!['records'][index]
+                                      ['name'],
+                                  price: snapshot.data!['records'][index]
+                                      ['saleprice'],
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      }),
                     ),
                   ),
                 ),

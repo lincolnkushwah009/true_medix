@@ -20,7 +20,7 @@ class ProductWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 151,
+      width: 140,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: const Color(0XFFedfbff),
@@ -43,7 +43,7 @@ class ProductWidget extends StatelessWidget {
                   ),
                   color: kPrimaryColor,
                 ),
-                child: Image.asset(image),
+                child: Image.network(image),
               ),
             ],
           ),

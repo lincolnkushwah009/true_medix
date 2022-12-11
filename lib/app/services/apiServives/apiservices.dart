@@ -49,21 +49,54 @@ class ApiServices {
   }
 
   //Get Profile Details
-  Future<ApiResponse<Map<String, dynamic>>> getMyProfileDetails(
-      {required String authId}) async {
-    log("Api Inprogress");
+  // Future<ApiResponse<Map<String, dynamic>>> getMyProfileDetails(
+  //     {required String authId}) async {
+  //   log("Api Inprogress");
+  //   try {
+  //     var response = await http.get(
+  //       Uri.parse(
+  //           "https://www.hiyutech.in/truemedex/apis/v1/customers/profile?AuthId=y5ydyqu8ysebujy6um"),
+  //     );
+  //     log(response.body.toString());
+  //     Map<String, dynamic> parsedData =
+  //         jsonDecode(response.body) as Map<String, dynamic>;
+  //     return ApiResponse(data: parsedData, statusCode: response.statusCode);
+  //   } catch (e) {
+  //     log(e.toString());
+  //     throw "getMyProfile Failed...";
+  //   }
+  // }
+
+  //GetBanners API
+  Future<Map<String, dynamic>> getRunningBanners() async {
     try {
       var response = await http.get(
-        Uri.parse(
-            "https://www.hiyutech.in/truemedex/apis/v1/customers/profile?AuthId=y5ydyqu8ysebujy6um"),
+        Uri.parse(runningBanners),
       );
       log(response.body.toString());
       Map<String, dynamic> parsedData =
           jsonDecode(response.body) as Map<String, dynamic>;
-      return ApiResponse(data: parsedData, statusCode: response.statusCode);
+      return parsedData;
     } catch (e) {
       log(e.toString());
-      throw "getMyProfile Failed...";
+      throw "getRunningBanners Failed...";
+    }
+  }
+
+  //GetProducts API
+  Future<Map<String, dynamic>> getProducts() async {
+    log("Api Products Inprogress");
+    try {
+      var response = await http.get(
+        Uri.parse(products),
+      );
+      log(response.body.toString());
+      Map<String, dynamic> parsedData =
+          jsonDecode(response.body) as Map<String, dynamic>;
+      return parsedData;
+    } catch (e) {
+      log(e.toString());
+      throw "getRunningBanners Failed...";
     }
   }
 }

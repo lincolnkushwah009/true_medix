@@ -15,6 +15,7 @@ dependencies:
   flutter_svg: ^1.1.6
   get: 4.6.5
   get_storage: ^2.0.3
+  carousel_slider: ^4.2.0
   google_fonts: ^3.0.1
   http: ^0.13.5
   loader_overlay: ^2.1.0
