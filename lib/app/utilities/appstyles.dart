@@ -40,3 +40,5 @@ TextStyle orderHistoryTextStyle = const TextStyle(
   color: Color(0XFF67b0d0),
   fontWeight: FontWeight.w400,
 );
+TextStyle profileTextStyle = const TextStyle(
+    color: Colors.white, fontWeight: FontWeight.w700, fontSize: 17);

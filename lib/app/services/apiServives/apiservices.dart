@@ -10,7 +10,7 @@ class ApiServices {
       {required String phone}) async {
     log(phone.toString());
     try {
-      var data = {"email_mobile" : phone.toString()};
+      var data = {"email_mobile": phone.toString()};
 
       var response = await http.post(
         Uri.parse(loginWithOtp),
@@ -18,21 +18,52 @@ class ApiServices {
       );
       log(response.toString());
       log(response.body);
-      print(response.body);
-      print("body>>>>>>>>>>");
-      print(response.request);
-      print(phone.toString());
-
-
-
-
-
       Map<String, dynamic> parsedData =
           jsonDecode(response.body) as Map<String, dynamic>;
       return ApiResponse(data: parsedData, statusCode: response.statusCode);
     } catch (e) {
       log(e.toString());
       throw "LoginWithOTP Failed...";
+    }
+  }
+
+  //Verify OTP API
+  Future<ApiResponse<Map<String, dynamic>>> loginOTPVerify(
+      {required String otp, required String phone}) async {
+    log(otp.toString());
+    try {
+      var data = {"email_mobile": phone.toString(), "otp": otp.toString()};
+
+      var response = await http.post(
+        Uri.parse(loginOtpVerify),
+        body: json.encode(data),
+      );
+      log(response.toString());
+      Map<String, dynamic> parsedData =
+          jsonDecode(response.body) as Map<String, dynamic>;
+      return ApiResponse(data: parsedData, statusCode: response.statusCode);
+    } catch (e) {
+      log(e.toString());
+      throw "LoginOTPVerify Failed...";
+    }
+  }
+
+  //Get Profile Details
+  Future<ApiResponse<Map<String, dynamic>>> getMyProfileDetails(
+      {required String authId}) async {
+    log("Api Inprogress");
+    try {
+      var response = await http.get(
+        Uri.parse(
+            "https://www.hiyutech.in/truemedex/apis/v1/customers/profile?AuthId=y5ydyqu8ysebujy6um"),
+      );
+      log(response.body.toString());
+      Map<String, dynamic> parsedData =
+          jsonDecode(response.body) as Map<String, dynamic>;
+      return ApiResponse(data: parsedData, statusCode: response.statusCode);
+    } catch (e) {
+      log(e.toString());
+      throw "getMyProfile Failed...";
     }
   }
 }

@@ -7,6 +7,7 @@ class LoginController extends GetxController {
   Logger logger = Logger();
   TextEditingController phoneController = TextEditingController();
   ApiServices apiServices = ApiServices();
+  RxBool isloading = false.obs;
   @override
   void onInit() {
     logger.i("LoginController Initialised...");
@@ -23,7 +24,6 @@ class LoginController extends GetxController {
   @override
   void onClose() {
     logger.i("LoginController Closed...");
-
     super.onClose();
   }
 }

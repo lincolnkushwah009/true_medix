@@ -1,23 +1,15 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
+import 'package:true_medix/app/services/apiServives/apiservices.dart';
 
 class ProfileController extends GetxController {
-  //TODO: Implement ProfileController
-
-  final count = 0.obs;
+  ApiServices apiServices = ApiServices();
+  RxBool isLoading = true.obs;
+  RxMap profileDetails = {}.obs;
   @override
-  void onInit() {
+  void onInit() async {
+    log("ProfileController init");
     super.onInit();
   }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  void increment() => count.value++;
 }

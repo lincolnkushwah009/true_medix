@@ -15,6 +15,7 @@ abstract class Routes {
   static const BOTTOMNAVBAR = _Paths.BOTTOMNAVBAR;
   static const ACTIVEORDERS = _Paths.ACTIVEORDERS;
   static const PASTORDERS = _Paths.PASTORDERS;
+  static const ORDERDETAILS = _Paths.ORDERDETAILS;
 }
 
 abstract class _Paths {
@@ -31,4 +32,5 @@ abstract class _Paths {
   static const BOTTOMNAVBAR = '/bottomnavbar';
   static const ACTIVEORDERS = '/activeorders';
   static const PASTORDERS = '/pastorders';
+  static const ORDERDETAILS = '/orderdetails';
 }
