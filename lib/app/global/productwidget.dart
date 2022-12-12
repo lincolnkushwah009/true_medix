@@ -20,7 +20,8 @@ class ProductWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 140,
+      width: 150,
+
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         color: const Color(0XFFedfbff),
@@ -34,7 +35,7 @@ class ProductWidget extends StatelessWidget {
               ),
               const Spacer(),
               Container(
-                height: 107,
+                height: 105,
                 width: 102,
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.only(

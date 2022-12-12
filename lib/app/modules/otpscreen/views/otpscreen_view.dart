@@ -1,15 +1,11 @@
 // ignore_for_file: must_be_immutable
-
 import 'dart:developer';
-
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-
 import '../../../routes/app_pages.dart';
 import '../../../utilities/appcolors.dart';
 import '../../../utilities/appstyles.dart';
@@ -108,8 +104,8 @@ class OtpscreenView extends GetView<OtpscreenController> {
                                 errorBorderColor: Colors.red,
                                 shape: PinCodeFieldShape.box,
                                 borderRadius: BorderRadius.circular(10),
-                                fieldHeight: 50,
-                                fieldWidth: 40,
+                                fieldHeight: 60,
+                                fieldWidth: 60,
                                 activeFillColor: Colors.white,
                               ),
                               animationDuration:

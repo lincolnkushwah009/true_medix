@@ -181,35 +181,35 @@ class HomeView extends GetView<HomeController> {
                                     title: "Covid",
                                   ),
                                   const SizedBox(
-                                    width: 20,
+                                    width: 15,
                                   ),
                                   HomeTestWidget(
                                     icon: "assets/Images/Diabetic.svg",
                                     title: "Diabetic",
                                   ),
                                   const SizedBox(
-                                    width: 20,
+                                    width: 15,
                                   ),
                                   HomeTestWidget(
                                     icon: "assets/Images/Diet.svg",
                                     title: "Diet",
                                   ),
                                   const SizedBox(
-                                    width: 20,
+                                    width: 15,
                                   ),
                                   HomeTestWidget(
                                     icon: "assets/Images/EyeCare.svg",
                                     title: "EyeCare",
                                   ),
                                   const SizedBox(
-                                    width: 20,
+                                    width: 15,
                                   ),
                                   HomeTestWidget(
                                     icon: "assets/Images/Immunity.svg",
                                     title: "Immunity",
                                   ),
                                   const SizedBox(
-                                    width: 20,
+                                    width: 15,
                                   ),
                                 ],
                               ),
@@ -223,7 +223,7 @@ class HomeView extends GetView<HomeController> {
                                     title: "Mom&Kids",
                                   ),
                                   const SizedBox(
-                                    width: 20,
+                                    width: 15,
                                   ),
                                   HomeTestWidget(
                                       icon: "assets/Images/SkinCare.svg",
@@ -294,7 +294,7 @@ class HomeView extends GetView<HomeController> {
                 Padding(
                   padding: const EdgeInsets.only(left: 10.0, right: 10.0),
                   child: SizedBox(
-                    height: 1600,
+                    height: MediaQuery.of(context).size.height,
                     child: FutureBuilder(
                       future: controller.apiServices.getProducts(),
                       builder: ((context, snapshot) {
