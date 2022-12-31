@@ -40,7 +40,7 @@ class LoginView extends GetView<LoginController> {
                     padding: const EdgeInsets.only(top: 70.0),
                     child: Image.asset(
                       "assets/authImage.png",
-                      height: 312,
+                      height: 260,
                       width: 300,
                     ),
                   ),
@@ -49,7 +49,7 @@ class LoginView extends GetView<LoginController> {
                   height: 20,
                 ),
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.5,
+                  height: MediaQuery.of(context).size.height * 0.52,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: kPrimaryColor,
@@ -76,7 +76,7 @@ class LoginView extends GetView<LoginController> {
                         height: 30,
                       ),
                       Container(
-                        height: 60,
+                        height: 50,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(25),
@@ -175,6 +175,27 @@ class LoginView extends GetView<LoginController> {
                               style: btnStyle,
                             ),
                           ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Get.offNamed(Routes.LOGINWITHPASSWORD);
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.password),
+                            SizedBox(
+                              width: 6,
+                            ),
+                            Text(
+                              "Login with Password Instead",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ],
                         ),
                       ),
                     ],

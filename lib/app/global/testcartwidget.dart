@@ -10,10 +10,12 @@ class TestCartWidget extends StatelessWidget {
     required this.price,
     required this.subTitle,
     required this.title,
+    required this.onTap,
     Key? key,
   }) : super(key: key);
 
   String image;
+  VoidCallback onTap;
   String title;
   String subTitle;
   String price;
@@ -31,7 +33,7 @@ class TestCartWidget extends StatelessWidget {
           ),
           child: Padding(
             padding: const EdgeInsets.all(12.0),
-            child: Image.asset(image),
+            child: Image.network(image),
           ),
         ),
         const SizedBox(
@@ -51,9 +53,14 @@ class TestCartWidget extends StatelessWidget {
             const SizedBox(
               height: 8,
             ),
-            Text(
-              title,
-              style: testTextStyle,
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.55,
+              child: Text(
+                title,
+                style: testTextStyle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
             const SizedBox(
               height: 8,
@@ -74,7 +81,7 @@ class TestCartWidget extends StatelessWidget {
           child: Card(
             child: Center(
               child: IconButton(
-                  onPressed: () {}, icon: Image.asset("assets/trash.png")),
+                  onPressed: onTap, icon: Image.asset("assets/trash.png")),
             ),
           ),
         ),

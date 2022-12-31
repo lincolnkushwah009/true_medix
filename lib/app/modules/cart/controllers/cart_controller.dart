@@ -1,23 +1,120 @@
+// ignore_for_file: prefer_final_fields
+
+import 'dart:developer';
+
 import 'package:get/get.dart';
+import 'package:location/location.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:true_medix/app/services/apiServives/apiservices.dart';
 
 class CartController extends GetxController {
-  //TODO: Implement CartController
+  ApiServices apiServices = ApiServices();
 
-  final count = 0.obs;
-  @override
-  void onInit() {
-    super.onInit();
+  RxList _cartProducts = [].obs;
+
+  LocationData? locationData;
+
+  RxBool isLocationPermissionGranted = false.obs;
+
+  RxBool isLocationDataActive = false.obs;
+
+  RxBool _cartProductsLoading = false.obs;
+
+  RxBool isCaliculationDone = false.obs;
+
+  //Cart Calculation Variables
+
+  RxDouble subTotal = 0.0.obs;
+  RxDouble taxAndFee = 0.0.obs;
+  RxString delivery = "".obs;
+  RxDouble total = 0.0.obs;
+
+  set cartProductsLoading(RxBool loadingVal) {
+    _cartProductsLoading = loadingVal;
+    update();
+  }
+
+  RxBool get cartProductsLoading => _cartProductsLoading;
+
+  RxList get cartProducts {
+    return _cartProducts;
+  }
+
+  //ApiCall for initGetCartProducts
+  Future<void> initGetCartProducts() async {
+    cartProductsLoading = true.obs;
+    ("Products API in Progress");
+    _cartProducts.value = await apiServices.getCartProducts();
+    ("CARTLOGGER");
+    (_cartProducts.toString());
+    cartProducts;
+    update();
+    (_cartProducts.toString());
+    cartProductsLoading = false.obs;
+  }
+
+  //Get Geo Permission
+  Future<void> getLocationPermission() async {
+    isLocationPermissionGranted.value = await Permission.location.isGranted;
+    if (isLocationPermissionGranted.value) {
+      log(isLocationPermissionGranted.value.toString());
+      getLocationData();
+    } else {
+      Permission.location.request().then((value) {
+        isLocationPermissionGranted.value = value.isGranted;
+        getLocationData();
+      }).onError((error, stackTrace) {
+        isLocationPermissionGranted.value = false;
+      });
+      locationData = await Location.instance.getLocation();
+      log(isLocationPermissionGranted.value.toString());
+    }
+  }
+
+  // Get Location Data
+  Future<void> getLocationData() async {
+    Location.instance.getLocation().then((value) {
+      isLocationDataActive.value = true;
+      locationData = value;
+      log(value.longitude.toString());
+      log(value.latitude.toString());
+      log(isLocationDataActive.value.toString());
+    }).onError((error, stackTrace) {
+      ("Error Occured Location Data");
+      isLocationDataActive.value = false;
+    });
+  }
+
+  //Calculate Total Price of Cart
+  void getTotalPriceOfCart(List<dynamic> cartList) {
+    // ProductModel().p
+    log(cartList.toList().toString());
+    for (var element in cartList) {
+      subTotal.value = subTotal.value + double.parse(element.price.toString());
+      update();
+      log(subTotal.toString());
+    }
+    // taxAndFee.value = taxAndFee.value + (subTotal * (18 / 100));
+    if (subTotal < 500 && subTotal > 0.0) {
+      taxAndFee.value = taxAndFee.value + 150;
+    }
+    delivery.value = "Free";
+    total.value = subTotal.value + taxAndFee.value;
+    isCaliculationDone.value = true;
+    update();
   }
 
   @override
-  void onReady() {
-    super.onReady();
+  void onInit() {
+    super.onInit();
+    ("CartController Init...");
+    initGetCartProducts();
   }
 
   @override
   void onClose() {
+    ("CartController OnClose...");
+    dispose();
     super.onClose();
   }
-
-  void increment() => count.value++;
 }

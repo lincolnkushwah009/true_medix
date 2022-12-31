@@ -1,6 +1,4 @@
-import 'dart:convert';
-
-String baseUrlProd = "https://www.hiyutech.in/truemedex/apis/v1/";
+String baseUrlProd = "https://truemedix.in/testv1/apis/v1/";
 
 //? Login With OTP Endpoint
 //!========================
@@ -10,3 +8,8 @@ String loginOtpVerify = "${baseUrlProd}customers/loginOTPVerify";
 String getMyProfile = "${baseUrlProd}customers/profile?AuthId=";
 String runningBanners = "${baseUrlProd}contents/banners";
 String products = "${baseUrlProd}contents/products";
+String cartProducts = "${baseUrlProd}carts/getCartProducts?AuthId=";
+String addCart = "${baseUrlProd}carts/cartProducts";
+String profile = "${baseUrlProd}customers/profile?AuthId=";
+String account = "${baseUrlProd}customers/register";
+String loginPassword = "${baseUrlProd}customers/login";

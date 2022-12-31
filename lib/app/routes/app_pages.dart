@@ -1,97 +1,88 @@
-import 'package:get/get.dart';
+import 'dart:developer';
 
-import '../modules/activeorders/bindings/activeorders_binding.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+
 import '../modules/activeorders/views/activeorders_view.dart';
-import '../modules/bottomnavbar/bindings/bottomnavbar_binding.dart';
 import '../modules/bottomnavbar/views/bottomnavbar_view.dart';
-import '../modules/cart/bindings/cart_binding.dart';
 import '../modules/cart/views/cart_view.dart';
-import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
-import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
-import '../modules/orderhistory/bindings/orderhistory_binding.dart';
+import '../modules/loginwithpassword/views/loginwithpassword_view.dart';
 import '../modules/orderhistory/views/orderhistory_view.dart';
-import '../modules/otpscreen/bindings/otpscreen_binding.dart';
 import '../modules/otpscreen/views/otpscreen_view.dart';
-import '../modules/pastorders/bindings/pastorders_binding.dart';
 import '../modules/pastorders/views/pastorders_view.dart';
-import '../modules/productdetail/bindings/productdetail_binding.dart';
 import '../modules/productdetail/views/productdetail_view.dart';
-import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
-import '../modules/search/bindings/search_binding.dart';
+import '../modules/register/views/register_view.dart';
 import '../modules/search/views/search_view.dart';
-import '../modules/trackstatus/bindings/trackstatus_binding.dart';
 import '../modules/trackstatus/views/trackstatus_view.dart';
+
+// ignore_for_file: constant_identifier_names, prefer_typing_uninitialized_variables
 
 part 'app_routes.dart';
 
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.HOME;
+  static const INITIAL = Routes.LOGINWITHPASSWORD;
 
   static final routes = [
     GetPage(
       name: _Paths.HOME,
       page: () => const HomeView(),
-      binding: HomeBinding(),
     ),
     GetPage(
       name: _Paths.LOGIN,
       page: () => LoginView(),
-      binding: LoginBinding(),
     ),
     GetPage(
       name: _Paths.OTPSCREEN,
       page: () => OtpscreenView(),
-      binding: OtpscreenBinding(),
     ),
     GetPage(
       name: _Paths.PROFILE,
       page: () => const ProfileView(),
-      binding: ProfileBinding(),
     ),
     GetPage(
       name: _Paths.CART,
       page: () => const CartView(),
-      binding: CartBinding(),
     ),
     GetPage(
       name: _Paths.ORDERHISTORY,
       page: () => const OrderhistoryView(),
-      binding: OrderhistoryBinding(),
     ),
     GetPage(
       name: _Paths.PRODUCTDETAIL,
       page: () => const ProductdetailView(),
-      binding: ProductdetailBinding(),
     ),
     GetPage(
       name: _Paths.SEARCH,
       page: () => const SearchView(),
-      binding: SearchBinding(),
     ),
     GetPage(
       name: _Paths.TRACKSTATUS,
       page: () => const TrackstatusView(),
-      binding: TrackstatusBinding(),
     ),
     GetPage(
       name: _Paths.BOTTOMNAVBAR,
       page: () => const BottomnavbarView(),
-      binding: BottomnavbarBinding(),
     ),
     GetPage(
       name: _Paths.ACTIVEORDERS,
       page: () => const ActiveordersView(),
-      binding: ActiveordersBinding(),
     ),
     GetPage(
       name: _Paths.PASTORDERS,
       page: () => const PastordersView(),
-      binding: PastordersBinding(),
+    ),
+    GetPage(
+      name: _Paths.REGISTER,
+      page: () => RegisterView(),
+    ),
+    GetPage(
+      name: _Paths.LOGINWITHPASSWORD,
+      page: () => LoginwithpasswordView(),
     ),
   ];
 }

@@ -50,9 +50,12 @@ class ProductWidget extends StatelessWidget {
           const SizedBox(
             height: 15,
           ),
-          Text(
-            title,
-            style: testTextStyle,
+          FittedBox(
+            child: Text(
+              title,
+              textAlign: TextAlign.left,
+              style: testTextStyle,
+            ),
           ),
           const SizedBox(
             height: 15,

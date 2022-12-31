@@ -11,6 +11,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../routes/app_pages.dart';
+import '../../../services/localstorage.dart';
 import '../../../utilities/appcolors.dart';
 import '../../../utilities/appstyles.dart';
 import '../controllers/otpscreen_controller.dart';
@@ -23,6 +24,7 @@ class OtpscreenView extends GetView<OtpscreenController> {
   Widget build(BuildContext context) {
     OtpscreenController controller =
         Get.put<OtpscreenController>(OtpscreenController());
+    LocalStorage localStorage = LocalStorage();
     String phone = Get.arguments ?? '';
     return LoaderOverlay(
       useDefaultLoading: true,
@@ -158,8 +160,8 @@ class OtpscreenView extends GetView<OtpscreenController> {
                                     phone: phone)
                                 .then((value) {
                               log(value.data.toString());
-                              controller.storeUserDetails(
-                                  value.data['customer']['auth_id'].toString());
+                              localStorage
+                                  .storeUserDetails(value.data['customer']);
                               log(value.statusCode.toString());
                               if (value.statusCode == 200) {
                                 log(value.data['customer'].toString());

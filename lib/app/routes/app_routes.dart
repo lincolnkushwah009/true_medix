@@ -16,6 +16,8 @@ abstract class Routes {
   static const ACTIVEORDERS = _Paths.ACTIVEORDERS;
   static const PASTORDERS = _Paths.PASTORDERS;
   static const ORDERDETAILS = _Paths.ORDERDETAILS;
+  static const REGISTER = _Paths.REGISTER;
+  static const LOGINWITHPASSWORD = _Paths.LOGINWITHPASSWORD;
 }
 
 abstract class _Paths {
@@ -33,4 +35,6 @@ abstract class _Paths {
   static const ACTIVEORDERS = '/activeorders';
   static const PASTORDERS = '/pastorders';
   static const ORDERDETAILS = '/orderdetails';
+  static const REGISTER = '/register';
+  static const LOGINWITHPASSWORD = '/loginwithpassword';
 }

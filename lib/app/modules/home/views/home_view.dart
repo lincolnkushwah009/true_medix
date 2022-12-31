@@ -1,10 +1,10 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, unrelated_type_equality_checks
 
 import 'dart:developer';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:banner_carousel/banner_carousel.dart';
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:true_medix/app/routes/app_pages.dart';
 import 'package:true_medix/app/utilities/appcolors.dart';
 
@@ -12,11 +12,25 @@ import '../../../global/hometestwidget.dart';
 import '../../../global/productwidget.dart';
 import '../controllers/home_controller.dart';
 
-class HomeView extends GetView<HomeController> {
+class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);
+
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  HomeController? controller;
+  @override
+  void initState() {
+    controller = Get.put<HomeController>(HomeController());
+    controller!.initBannerCall();
+    controller!.initProductsCall();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    HomeController controller = Get.put<HomeController>(HomeController());
     return Scaffold(
       body: SafeArea(
         child: NestedScrollView(
@@ -41,7 +55,6 @@ class HomeView extends GetView<HomeController> {
                           Container(
                             height: 45,
                             decoration: BoxDecoration(
-                              color: Colors.white,
                               borderRadius: BorderRadius.circular(25),
                             ),
                             width: MediaQuery.of(context).size.width * 0.6,
@@ -241,106 +254,128 @@ class HomeView extends GetView<HomeController> {
               ),
             ];
           },
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 16,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10.0, right: 10),
-                  child: Obx(() {
-                    return Container(
-                      height: 135,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(0),
-                      ),
-                      child: controller.isBannerLoading.value == true
-                          ? const Center(
-                              child: CircularProgressIndicator(),
-                            )
-                          : CarouselSlider(
-                              options: CarouselOptions(
-                                height: 400.0,
-                                autoPlay: true,
-                              ),
-                              items: (controller.bannerResponseList!.map((i) {
-                                return Builder(
-                                  builder: (BuildContext context) {
-                                    return Container(
-                                      width: double.infinity,
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 5.0),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(0),
-                                      ),
-                                      child: Center(
-                                        child: Image.network(
-                                          i['image'],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
-                              }).toList()),
+          body: ListView(
+            shrinkWrap: true,
+            physics: const BouncingScrollPhysics(),
+            children: [
+              const SizedBox(
+                height: 16,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0, right: 10),
+                child: Container(
+                    height: 135,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(0),
+                    ),
+                    child: GetBuilder<HomeController>(builder: (controller) {
+                      if (controller.bannerLoading.value) {
+                        return Shimmer.fromColors(
+                          baseColor: Colors.grey.withOpacity(0.25),
+                          highlightColor: Colors.white.withOpacity(0.6),
+                          period: const Duration(seconds: 1),
+                          loop: 10,
+                          child: Container(
+                            height: 260,
+                            width: MediaQuery.of(context).size.width * 0.9,
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                              borderRadius: BorderRadius.circular(30),
                             ),
-                    );
-                  }),
-                ),
-                const SizedBox(
-                  height: 36,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                  child: SizedBox(
-                    height: 1600,
-                    child: FutureBuilder(
-                      future: controller.apiServices.getProducts(),
-                      builder: ((context, snapshot) {
-                        if (snapshot.hasError) {
-                          return const AlertDialog(
-                            title: Text('TrueMedix'),
-                            content: Text("hasError"),
-                          );
-                        }
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                            ),
-                          );
-                        }
-                        return GridView.count(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 20.0,
-                          mainAxisSpacing: 50.0,
-                          children: List.generate(
-                            (snapshot.data!['records'] as List<dynamic>).length,
-                            (index) {
-                              return InkWell(
-                                onTap: () {
-                                  Get.toNamed(Routes.PRODUCTDETAIL);
-                                },
-                                child: ProductWidget(
-                                  image: snapshot.data!['records'][index]
-                                      ['image'],
-                                  title: snapshot.data!['records'][index]
-                                      ['name'],
-                                  price: snapshot.data!['records'][index]
-                                      ['saleprice'],
-                                ),
-                              );
-                            },
                           ),
                         );
-                      }),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+                      } else {
+                        return BannerCarousel(
+                          showIndicator: true,
+                          banners: controller.bannerList.map((e) {
+                            return BannerModel(imagePath: e.image, id: e.id);
+                          }).toList(),
+                          customizedIndicators: const IndicatorModel.animation(
+                              width: 10,
+                              height: 5,
+                              spaceBetween: 5,
+                              widthAnimation: 50),
+                          height: 260,
+                          activeColor: kPrimaryColor,
+                          disableColor: Colors.white,
+                          animation: true,
+                          borderRadius: 10,
+                          width: 250,
+                          indicatorBottom: false,
+                        );
+                      }
+                    })),
+              ),
+              const SizedBox(
+                height: 36,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                child: GetBuilder<HomeController>(builder: (controller) {
+                  if (controller.productsLoading.value) {
+                    return SizedBox(
+                      height: 1900,
+                      child: GridView.count(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 20.0,
+                        mainAxisSpacing: 50.0,
+                        children: List.generate(controller.productsList.length,
+                            (index) {
+                          return InkWell(
+                            onTap: () {
+                              Get.toNamed(Routes.PRODUCTDETAIL,
+                                  arguments: controller.productsList[index]);
+                            },
+                            child: Shimmer.fromColors(
+                              baseColor: Colors.grey.withOpacity(0.25),
+                              highlightColor: Colors.white.withOpacity(0.6),
+                              loop: 10,
+                              period: const Duration(seconds: 2),
+                              direction: ShimmerDirection.ltr,
+                              child: ProductWidget(
+                                image: controller.productsList[index].image
+                                    .toString(),
+                                title: controller.productsList[index].name
+                                    .toString(),
+                                price: controller.productsList[index].price
+                                    .toString(),
+                              ),
+                            ),
+                          );
+                        }),
+                      ),
+                    );
+                  } else {
+                    return SizedBox(
+                      height: 1900,
+                      child: GridView.count(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 20.0,
+                        mainAxisSpacing: 50.0,
+                        children: List.generate(controller.productsList.length,
+                            (index) {
+                          return InkWell(
+                            onTap: () {
+                              Get.toNamed(Routes.PRODUCTDETAIL,
+                                  arguments: controller.productsList[index]);
+                            },
+                            child: ProductWidget(
+                              image: controller.productsList[index].image
+                                  .toString(),
+                              title: controller.productsList[index].name
+                                  .toString(),
+                              price: controller.productsList[index].price
+                                  .toString(),
+                            ),
+                          );
+                        }),
+                      ),
+                    );
+                  }
+                }),
+              ),
+            ],
           ),
         ),
       ),

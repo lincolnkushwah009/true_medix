@@ -1,6 +1,10 @@
+// ignore_for_file: unnecessary_getters_setters, prefer_final_fields
+
 import 'dart:developer';
 
 import 'package:get/get.dart';
+import 'package:true_medix/app/modules/home/models/bannermodel.dart';
+import 'package:true_medix/app/modules/productdetail/models/productmodel.dart';
 import 'package:true_medix/app/services/apiServives/apiservices.dart';
 
 class HomeController extends GetxController {
@@ -8,39 +12,98 @@ class HomeController extends GetxController {
   ApiServices apiServices = ApiServices();
 
   //Reactive Data Variables for Banner
-  RxMap? bannerResponse = {}.obs;
-  RxList? bannerResponseList = [].obs;
+  List<BannerModel> _bannerList = [
+    BannerModel(
+        id: "1",
+        image:
+            "https://cdn.ps.emap.com/wp-content/uploads/sites/3/2020/03/coronavirus-test-1024x683.jpg",
+        title: ""),
+    BannerModel(
+        id: "1",
+        image:
+            "https://cdn.ps.emap.com/wp-content/uploads/sites/3/2020/03/coronavirus-test-1024x683.jpg",
+        title: ""),
+    BannerModel(
+        id: "1",
+        image:
+            "https://cdn.ps.emap.com/wp-content/uploads/sites/3/2020/03/coronavirus-test-1024x683.jpg",
+        title: ""),
+    BannerModel(
+        id: "1",
+        image:
+            "https://cdn.ps.emap.com/wp-content/uploads/sites/3/2020/03/coronavirus-test-1024x683.jpg",
+        title: ""),
+    BannerModel(
+        id: "1",
+        image:
+            "https://cdn.ps.emap.com/wp-content/uploads/sites/3/2020/03/coronavirus-test-1024x683.jpg",
+        title: ""),
+    BannerModel(
+        id: "1",
+        image:
+            "https://cdn.ps.emap.com/wp-content/uploads/sites/3/2020/03/coronavirus-test-1024x683.jpg",
+        title: ""),
+    BannerModel(
+        id: "1",
+        image:
+            "https://cdn.ps.emap.com/wp-content/uploads/sites/3/2020/03/coronavirus-test-1024x683.jpg",
+        title: ""),
+  ];
 
-  //Reactive Data Variables for Banner
-  RxMap? productsResponse = {}.obs;
-  RxList? productsResponseList = [].obs;
+  List<ProductModel> _productsList = [];
 
   //Loading for Banner
-  RxBool isBannerLoading = true.obs;
+  RxBool _bannerLoading = false.obs;
 
   //Loading for Products
-  RxBool isProductsLoading = true.obs;
+  RxBool _productsLoading = false.obs;
+
+  //Setter and Getter for Banners
+  set bannerLoading(RxBool loadingVal) {
+    _bannerLoading.value = loadingVal.value;
+    update();
+  }
+
+  RxBool get bannerLoading => _bannerLoading;
+
+  List<BannerModel> get bannerList => _bannerList;
+
+  //Setters and Getter for ProductList
+
+  set productsLoading(RxBool loadingVal) {
+    _productsLoading.value = loadingVal.value;
+    update();
+  }
+
+  RxBool get productsLoading => _productsLoading;
+
+  List<ProductModel> get productsList => _productsList;
 
   //ApiCall for Banners from HomeController to ApiServices
   Future<void> initBannerCall() async {
+    log("Loading Banner Setter Called 1....");
+    bannerLoading = true.obs;
     log("Banner API in Progress");
-    bannerResponse!.value = await apiServices.getRunningBanners();
-    bannerResponseList!.value = bannerResponse!['data'] as List<dynamic>;
-    isBannerLoading.value = false;
+    await apiServices.getRunningBanners();
+    bannerLoading = false.obs;
+    log("Loading Banner Setter Called 2....");
   }
 
   //ApiCall for Products from HomeController to ApiServices
   Future<void> initProductsCall() async {
+    productsLoading = true.obs;
+    log("Loading Product Setter Called 1....");
     log("Products API in Progress");
-    productsResponse!.value = await apiServices.getProducts();
-    productsResponseList!.value = productsResponse!['records'] as List<dynamic>;
-    isProductsLoading.value = false;
+    _productsList = await apiServices.getProducts();
+    productsLoading = false.obs;
+    log("Loading Product Setter Called 2....");
   }
 
   @override
   void onInit() {
     log("HomeController Init...");
-    initBannerCall();
     super.onInit();
+    initBannerCall();
+    initProductsCall();
   }
 }
