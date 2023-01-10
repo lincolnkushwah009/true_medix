@@ -5,14 +5,18 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:true_medix/app/modules/home/models/bannermodel.dart';
 import 'package:true_medix/app/modules/productdetail/models/productmodel.dart';
+import 'package:true_medix/app/modules/profile/model/addressmodel.dart';
+import 'package:true_medix/app/modules/profile/model/getaddressmodel.dart';
 import 'package:true_medix/app/modules/profile/model/profilemodel.dart';
 import 'package:true_medix/app/modules/register/model/registermodel.dart';
 import 'package:true_medix/app/services/apiResponse/apiresponse.dart';
 import 'package:true_medix/app/services/apis/apis.dart';
+import 'package:true_medix/app/services/localstorage.dart';
 
 class ApiServices {
   GetStorage authIdGetStorage = GetStorage();
   String authIdGetStorageKey = "AUTHID";
+  LocalStorage localStorage = LocalStorage();
 
   Future<ApiResponse<Map<String, dynamic>>> loginWithOTP(
       {required String phone}) async {
@@ -109,9 +113,12 @@ class ApiServices {
       log(response.body.toString());
       Map<String, dynamic> parsedData =
           jsonDecode(response.body) as Map<String, dynamic>;
-      return (parsedData['data'] as List<dynamic>).map((e) {
+      List<ProductModel> tryList = [];
+      tryList = (parsedData['data'] as List<dynamic>).map((e) {
         return ProductModel.fromJson(e);
       }).toList();
+      log("====================$tryList");
+      return tryList;
     } catch (e) {
       log(e.toString());
       throw Error();
@@ -155,7 +162,6 @@ class ApiServices {
     Map<String, dynamic> customerDetails =
         authIdGetStorage.read(authIdGetStorageKey);
     log("===========GETMYPROFILE===============");
-
     log(customerDetails['auth_id']);
     log("$profile" "${customerDetails['auth_id']}");
     log("===========GETMYPROFILE===============");
@@ -242,6 +248,64 @@ class ApiServices {
     } catch (e) {
       log(e.toString());
       throw "CreateAccount Failed...";
+    }
+  }
+
+  //Add Address API
+
+  Future<Map<String, dynamic>> addAddress(AddressModel addressModel) async {
+    log("Add Address API Inprogress");
+    log("===========Add Address API===============");
+    log(addressModel.toJson().toString());
+    log("===========Add Address API===============");
+
+    try {
+      var response = await http.post(
+        Uri.parse(addAddressApi),
+        headers: {
+          "Content-Type": "application/json",
+          "AuthId": localStorage.getCustomer['auth_id']
+        },
+        body: jsonEncode(addressModel),
+      );
+      log(response.body.toString());
+      if (response.statusCode == 200) {
+        Map<String, dynamic> parsedData =
+            jsonDecode(response.body) as Map<String, dynamic>;
+        return parsedData;
+      } else {
+        Map<String, dynamic> parsedData =
+            jsonDecode(response.body) as Map<String, dynamic>;
+        return parsedData;
+      }
+    } catch (e) {
+      log(e.toString());
+      throw "Add Address API Failed...";
+    }
+  }
+
+  //Get Address API
+
+  Future<List<GetAddressModel>> getAddress() async {
+    log("Get Address APIInprogress");
+    try {
+      var response = await http.get(
+        Uri.parse("$getAddressApi${localStorage.getCustomer['auth_id']}"),
+      );
+      if (response.statusCode == 200) {
+        Map<String, dynamic> parsedData =
+            jsonDecode(response.body) as Map<String, dynamic>;
+        List<dynamic> dataItems = parsedData['data'] as List<dynamic>;
+        log(dataItems.toString());
+        return dataItems.map((e) {
+          return GetAddressModel.fromJson(e);
+        }).toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
+      log(e.toString());
+      throw Exception("Get Address API Failed...");
     }
   }
 }

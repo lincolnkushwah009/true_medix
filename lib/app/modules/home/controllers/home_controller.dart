@@ -1,15 +1,45 @@
-// ignore_for_file: unnecessary_getters_setters, prefer_final_fields
+// ignore_for_file: unnecessary_getters_setters, prefer_final_fields, deprecated_member_use
 
 import 'dart:developer';
 
 import 'package:get/get.dart';
+import 'package:true_medix/app/global/hometestwidget.dart';
 import 'package:true_medix/app/modules/home/models/bannermodel.dart';
 import 'package:true_medix/app/modules/productdetail/models/productmodel.dart';
 import 'package:true_medix/app/services/apiServives/apiservices.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeController extends GetxController {
   //ApiService Instance
   ApiServices apiServices = ApiServices();
+
+  List<HomeTestWidget> homeTestList = [
+    HomeTestWidget(
+      icon: "assets/Images/covid.svg",
+      title: "Covid",
+    ),
+    HomeTestWidget(
+      icon: "assets/Images/Diabetic.svg",
+      title: "Diabetic",
+    ),
+    HomeTestWidget(
+      icon: "assets/Images/Diet.svg",
+      title: "Diet",
+    ),
+    HomeTestWidget(
+      icon: "assets/Images/EyeCare.svg",
+      title: "EyeCare",
+    ),
+    HomeTestWidget(
+      icon: "assets/Images/Immunity.svg",
+      title: "Immunity",
+    ),
+    HomeTestWidget(
+      icon: "assets/Images/Mom&Kids.svg",
+      title: "Mom&Kids",
+    ),
+    HomeTestWidget(icon: "assets/Images/SkinCare.svg", title: "SkinCare"),
+  ];
 
   //Reactive Data Variables for Banner
   List<BannerModel> _bannerList = [
@@ -97,6 +127,19 @@ class HomeController extends GetxController {
     _productsList = await apiServices.getProducts();
     productsLoading = false.obs;
     log("Loading Product Setter Called 2....");
+  }
+
+  Future<void> launchCustomerCarePhone() async {
+    log("launchCustomerCarePhone init...");
+    const url = "tel:9055448696";
+    if (await canLaunch(url)) {
+      log("launchCustomerCarePhone canLaunch...");
+      await launch(url);
+    } else {
+      log("launchCustomerCarePhone error...");
+
+      throw 'Could not launch $url';
+    }
   }
 
   @override

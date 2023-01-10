@@ -19,8 +19,8 @@ class HomeTestWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 50,
-      height: 50,
+      width: 57,
+      height: 57,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(4),
@@ -30,7 +30,7 @@ class HomeTestWidget extends StatelessWidget {
         children: [
           SvgPicture.asset(
             icon,
-            color: kIconColor,
+            color: const Color(0XFF75DBEB),
             width: 29,
             height: 21,
           ),
@@ -39,7 +39,9 @@ class HomeTestWidget extends StatelessWidget {
           ),
           Text(
             title,
-            style: iconTextStyle,
+            style: iconTextStyle.copyWith(
+              color: const Color(0XFF75DBEB),
+            ),
           ),
         ],
       ),

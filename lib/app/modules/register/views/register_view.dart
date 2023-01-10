@@ -5,6 +5,7 @@ import 'package:country_picker/country_picker.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 import 'package:get/get.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -52,13 +53,29 @@ class _RegisterViewState extends State<RegisterView> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 11, top: 30),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: InkWell(
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: SizedBox(
+                        width: 22,
+                        height: 18,
+                        child: SvgPicture.asset("assets/back.svg"),
+                      ),
+                    ),
+                  ),
+                ),
                 Center(
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 70.0),
+                    padding: const EdgeInsets.only(top: 0.0, bottom: 27),
                     child: Image.asset(
                       "assets/authImage.png",
                       height: 200,
-                      width: 300,
+                      width: 224,
                     ),
                   ),
                 ),
@@ -66,7 +83,7 @@ class _RegisterViewState extends State<RegisterView> {
                   height: 20,
                 ),
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.8,
+                  height: MediaQuery.of(context).size.height * 0.632,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: kPrimaryColor,
@@ -86,332 +103,323 @@ class _RegisterViewState extends State<RegisterView> {
                         child: Align(
                           alignment: Alignment.topLeft,
                           child: Text(
-                            "Create Account",
+                            "Register",
                             style: heading1Style,
                           ),
                         ),
                       ),
-                      Form(
-                        key: formRegisterKey,
-                        child: Column(
-                          children: [
-                            Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                              width: MediaQuery.of(context).size.width * 0.85,
-                              child: Center(
-                                child: TextFormField(
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      controller!.validationMessage.value =
-                                          "Name can't be Empty";
-                                      return "";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  controller: controller!.nameController,
-                                  keyboardType: TextInputType.text,
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    prefixIcon: Icon(
-                                      Icons.person,
-                                      color: Colors.black,
+                      Padding(
+                        padding: EdgeInsets.only(left: 8, right: 8),
+                        child: Form(
+                          key: formRegisterKey,
+                          child: Column(
+                            children: [
+                              Container(
+                                height: 58,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                width: MediaQuery.of(context).size.width,
+                                child: Center(
+                                  child: TextFormField(
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        controller!.validationMessageName
+                                            .value = "Name can't be Empty";
+                                        return "";
+                                      } else {
+                                        controller!
+                                            .validationMessageName.value = "";
+                                        controller!.update();
+                                        return null;
+                                      }
+                                    },
+                                    controller: controller!.nameController,
+                                    keyboardType: TextInputType.text,
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.only(left: 23),
+                                      hintText: "Name",
+                                      hintStyle: hintStyle,
                                     ),
-                                    contentPadding: EdgeInsets.only(top: 14),
-                                    hintText: "Name",
                                   ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(25),
+                              const SizedBox(
+                                height: 17,
                               ),
-                              width: MediaQuery.of(context).size.width * 0.85,
-                              child: Center(
-                                child: TextFormField(
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Email can't be Empty";
-                                    }
-                                    if (!EmailValidator.validate(value)) {
-                                      controller!.validationMessage.value =
-                                          "Please Enter Valid Email";
-                                      return "";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  controller: controller!.emailController,
-                                  keyboardType: TextInputType.text,
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    prefixIcon: Icon(
-                                      Icons.email,
-                                      color: Colors.black,
+                              Container(
+                                height: 58,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                width: MediaQuery.of(context).size.width,
+                                child: Center(
+                                  child: TextFormField(
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        controller!.validationMessageEmail
+                                            .value = "Email can't be Empty";
+                                        return "";
+                                      }
+                                      if (!EmailValidator.validate(value)) {
+                                        controller!.validationMessageEmail
+                                            .value = "Please Enter Valid Email";
+                                        return "";
+                                      } else {
+                                        controller!
+                                            .validationMessageEmail.value = "";
+                                        controller!.update();
+                                        return null;
+                                      }
+                                    },
+                                    controller: controller!.emailController,
+                                    keyboardType: TextInputType.text,
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.only(left: 23),
+                                      hintText: 'Email',
+                                      hintStyle: hintStyle,
                                     ),
-                                    contentPadding: EdgeInsets.only(top: 14),
-                                    hintText: 'Email',
                                   ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(25),
+                              const SizedBox(
+                                height: 17,
                               ),
-                              width: MediaQuery.of(context).size.width * 0.85,
-                              child: Center(
-                                child: TextFormField(
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      controller!.validationMessage.value =
-                                          "Phone can't be Empty";
-                                      return "";
-                                    }
-                                    if (value.length < 10) {
-                                      controller!.validationMessage.value =
-                                          "Phone can't be less than 10 digits";
-                                      return "";
-                                    }
-                                    if (value.length > 10) {
-                                      controller!.validationMessage.value =
-                                          "Phone can't be greater than 10 digits";
-                                      return "";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  controller: controller!.phoneController,
-                                  keyboardType: TextInputType.text,
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    prefixIcon: IconButton(
-                                      onPressed: () {
-                                        showCountryPicker(
-                                          context: context,
-                                          countryListTheme:
-                                              CountryListThemeData(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                  bottomSheetHeight:
-                                                      MediaQuery.of(context)
-                                                              .size
-                                                              .height *
-                                                          0.6),
-                                          showPhoneCode: true,
-                                          onSelect: (Country country) {
-                                            setState(() {
-                                              log(country.flagEmoji.toString());
-                                              countryCode = country.flagEmoji;
-                                            });
-                                          },
-                                        );
-                                      },
-                                      icon: Text(countryCode),
+                              Container(
+                                height: 58,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                width: MediaQuery.of(context).size.width,
+                                child: Center(
+                                  child: TextFormField(
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        controller!.validationMessagePhone
+                                            .value = "Phone can't be Empty";
+                                        return "";
+                                      }
+                                      if (value.length < 10) {
+                                        controller!
+                                                .validationMessagePhone.value =
+                                            "Phone can't be less than 10 digits";
+                                        return "";
+                                      }
+                                      if (value.length > 10) {
+                                        controller!
+                                                .validationMessagePhone.value =
+                                            "Phone can't be greater than 10 digits";
+                                        return "";
+                                      } else {
+                                        controller!
+                                            .validationMessagePhone.value = "";
+                                        controller!.update();
+                                        return null;
+                                      }
+                                    },
+                                    controller: controller!.phoneController,
+                                    keyboardType: TextInputType.text,
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.only(left: 23),
+                                      hintText: 'Phone',
+                                      hintStyle: hintStyle,
                                     ),
-                                    contentPadding: EdgeInsets.only(top: 14),
-                                    hintText: 'Phone',
                                   ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(25),
+                              const SizedBox(
+                                height: 17,
                               ),
-                              width: MediaQuery.of(context).size.width * 0.85,
-                              child: Center(
-                                child: TextFormField(
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      controller!.validationMessage.value =
-                                          "Password can't be Empty";
-                                      return "";
-                                    }
-                                    if (value.length < 6) {
-                                      controller!.validationMessage.value =
-                                          "Password can't be less than 6 characters";
-                                      return "";
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  controller: controller!.passwordController,
-                                  keyboardType: TextInputType.text,
-                                  obscureText: true,
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    prefixIcon: Icon(
-                                      Icons.password,
-                                      color: Colors.black,
+                              Container(
+                                height: 58,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                width: MediaQuery.of(context).size.width,
+                                child: Center(
+                                  child: TextFormField(
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        controller!.validationMessagePassword
+                                            .value = "Password can't be Empty";
+                                        return "";
+                                      }
+                                      if (value.length < 6) {
+                                        controller!.validationMessagePassword
+                                                .value =
+                                            "Password can't be less than 6 characters";
+                                        return "";
+                                      } else {
+                                        controller!.validationMessagePassword
+                                            .value = "";
+                                        controller!.update();
+                                        return null;
+                                      }
+                                    },
+                                    controller: controller!.passwordController,
+                                    keyboardType: TextInputType.text,
+                                    obscureText: true,
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.only(left: 23),
+                                      hintText: 'Password',
+                                      hintStyle: hintStyle,
                                     ),
-                                    contentPadding: EdgeInsets.only(top: 14),
-                                    hintText: 'Password',
                                   ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(
-                              height: 30,
-                            ),
-                            GetBuilder<RegisterController>(
-                                builder: (controller) {
-                              return InkWell(
-                                onTap: () async {
-                                  controller.accountCreatLoading = true.obs;
-                                  context.loaderOverlay.show();
-                                  if (formRegisterKey.currentState!
-                                      .validate()) {
-                                    log(controller.nameController.value.text
-                                        .toString());
-                                    log(controller.emailController.value.text
-                                        .toString());
-                                    log(controller.phoneController.value.text
-                                        .toString());
-                                    log(controller.passwordController.value.text
-                                        .toString());
-                                    await controller.apiServices
-                                        .registerAccount(
-                                      RegisterModel(
-                                        name: controller
-                                            .nameController.value.text
-                                            .trim()
-                                            .toString(),
-                                        email: controller
-                                            .emailController.value.text
-                                            .trim()
-                                            .toString(),
-                                        mobileNo: controller
-                                            .phoneController.value.text
-                                            .trim()
-                                            .toString(),
-                                        password: controller
-                                            .passwordController.value.text
-                                            .trim()
-                                            .toString(),
-                                      ),
-                                    )
-                                        .then((value) {
-                                      controller.accountResponse.value = value;
-                                      controller.accountCreatLoading =
-                                          false.obs;
-                                      controller.update();
-                                      ElegantNotification.success(
-                                        toastDuration: Duration(seconds: 2),
-                                        title: const Text("Success"),
-                                        description: Text(controller
-                                            .accountResponse['message']),
-                                      ).show(context);
-                                      context.loaderOverlay.hide();
-                                      Future.delayed(Duration(seconds: 1), () {
-                                        Get.to(() => LoginwithpasswordView());
-                                      });
-                                    }).onError((error, stackTrace) {
-                                      log("pppppppppp");
-                                      log(controller.accountResponse['email']
+                              const SizedBox(
+                                height: 35,
+                              ),
+                              GetBuilder<RegisterController>(
+                                  builder: (controller) {
+                                return InkWell(
+                                  onTap: () async {
+                                    controller.accountCreatLoading = true.obs;
+                                    context.loaderOverlay.show();
+                                    if (formRegisterKey.currentState!
+                                        .validate()) {
+                                      log(controller.nameController.value.text
                                           .toString());
-                                      log("QQQQQQQQQQ");
+                                      log(controller.emailController.value.text
+                                          .toString());
+                                      log(controller.phoneController.value.text
+                                          .toString());
                                       log(controller
-                                          .accountResponse['mobile_no']
+                                          .passwordController.value.text
                                           .toString());
+                                      await controller.apiServices
+                                          .registerAccount(
+                                        RegisterModel(
+                                          name: controller
+                                              .nameController.value.text
+                                              .trim()
+                                              .toString(),
+                                          email: controller
+                                              .emailController.value.text
+                                              .trim()
+                                              .toString(),
+                                          mobileNo: controller
+                                              .phoneController.value.text
+                                              .trim()
+                                              .toString(),
+                                          password: controller
+                                              .passwordController.value.text
+                                              .trim()
+                                              .toString(),
+                                        ),
+                                      )
+                                          .then((value) {
+                                        controller.accountResponse.value =
+                                            value;
+                                        controller.accountCreatLoading =
+                                            false.obs;
+                                        controller.update();
+                                        ElegantNotification.success(
+                                          toastDuration: Duration(seconds: 2),
+                                          title: const Text("Success"),
+                                          description: Text(controller
+                                              .accountResponse['message']),
+                                        ).show(context);
+                                        context.loaderOverlay.hide();
+                                        Future.delayed(Duration(seconds: 1),
+                                            () {
+                                          Get.to(() => LoginwithpasswordView());
+                                        });
+                                      }).onError((error, stackTrace) {
+                                        log(controller.accountResponse['email']
+                                            .toString());
+                                        log(controller
+                                            .accountResponse['mobile_no']
+                                            .toString());
+                                        ElegantNotification.error(
+                                          toastDuration: Duration(seconds: 2),
+                                          title: const Text("Error"),
+                                          description: controller
+                                                              .accountResponse[
+                                                          'email'] ==
+                                                      null &&
+                                                  controller.accountResponse[
+                                                          'mobile_no'] ==
+                                                      null
+                                              ? Text(
+                                                  "Email / Phone Already Taken")
+                                              : controller.accountResponse[
+                                                          'mobile_no'] ==
+                                                      null
+                                                  ? Text(
+                                                      "${controller.accountResponse['email']}")
+                                                  : Text(
+                                                      "${controller.accountResponse['mobile_no']}"),
+                                        ).show(context);
+                                        controller.accountCreatLoading =
+                                            false.obs;
+                                        controller.update();
+                                        context.loaderOverlay.hide();
+                                      });
+                                    } else {
+                                      formRegisterKey.currentState!.reset();
                                       ElegantNotification.error(
                                         toastDuration: Duration(seconds: 2),
-                                        title: const Text("Error"),
-                                        description: controller.accountResponse[
-                                                        'email'] ==
-                                                    null &&
-                                                controller.accountResponse[
-                                                        'mobile_no'] ==
-                                                    null
-                                            ? Text(
-                                                "Email / Phone Already Taken")
-                                            : controller.accountResponse[
-                                                        'mobile_no'] ==
-                                                    null
-                                                ? Text(
-                                                    "${controller.accountResponse['email']}")
-                                                : Text(
-                                                    "${controller.accountResponse['mobile_no']}"),
+                                        title: const Text("Validation Error"),
+                                        description: Text(
+                                            "${controller.validationMessageName.value}\n${controller.validationMessageEmail.value}\n${controller.validationMessagePhone.value}\n${controller.validationMessagePassword.value}"),
                                       ).show(context);
-                                      controller.accountCreatLoading =
-                                          false.obs;
-                                      controller.update();
                                       context.loaderOverlay.hide();
-                                    });
-                                  } else {
-                                    formRegisterKey.currentState!.reset();
-                                    ElegantNotification.error(
-                                      toastDuration: Duration(seconds: 2),
-                                      title: const Text("Validation Error"),
-                                      description: Text(
-                                          controller.validationMessage.value),
-                                    ).show(context);
-                                    context.loaderOverlay.hide();
-                                  }
-                                },
-                                child: Container(
-                                  height: 60,
-                                  decoration: BoxDecoration(
-                                    color: kBtnColor,
-                                    borderRadius: BorderRadius.circular(25),
-                                  ),
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.85,
-                                  child: Center(
-                                    child: Text(
-                                      "Create",
-                                      style: btnStyle,
+                                    }
+                                  },
+                                  child: Container(
+                                    height: 60,
+                                    decoration: BoxDecoration(
+                                      color: kBtnColor,
+                                      borderRadius: BorderRadius.circular(25),
+                                    ),
+                                    width: MediaQuery.of(context).size.width *
+                                        0.85,
+                                    child: Center(
+                                      child: Text(
+                                        "Submit",
+                                        style: btnStyle,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              );
-                            }),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text(
-                                  "Already have an Account,",
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                                const SizedBox(
-                                  width: 3,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    Get.offNamed(Routes.LOGINWITHPASSWORD);
-                                  },
-                                  child: const Text(
-                                    "Login Now",
-                                    style: TextStyle(
-                                        decoration: TextDecoration.underline),
+                                );
+                              }),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    "Already  have an account?",
+                                    style: TextStyle(color: Colors.black),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                  const SizedBox(
+                                    width: 18,
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      Get.offNamed(Routes.REGISTER);
+                                    },
+                                    child: Text(
+                                      "Login",
+                                      style: TextStyle(
+                                        color: kBtnColor,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],

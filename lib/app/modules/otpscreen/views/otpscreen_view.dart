@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 import 'package:get/get.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -41,13 +42,29 @@ class OtpscreenView extends GetView<OtpscreenController> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 11, top: 30),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: InkWell(
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: SizedBox(
+                        width: 22,
+                        height: 18,
+                        child: SvgPicture.asset("assets/back.svg"),
+                      ),
+                    ),
+                  ),
+                ),
                 Center(
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 70.0),
+                    padding: const EdgeInsets.only(top: 0.0, bottom: 27),
                     child: Image.asset(
                       "assets/authImage.png",
-                      height: 312,
-                      width: 300,
+                      height: 200,
+                      width: 224,
                     ),
                   ),
                 ),
@@ -55,7 +72,7 @@ class OtpscreenView extends GetView<OtpscreenController> {
                   height: 20,
                 ),
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.5,
+                  height: MediaQuery.of(context).size.height * 0.632,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: kPrimaryColor,
@@ -70,145 +87,182 @@ class OtpscreenView extends GetView<OtpscreenController> {
                         height: 30,
                       ),
                       Text(
-                        "Input OTP",
+                        "Enter OTP",
                         style: heading1Style,
                       ),
                       const SizedBox(
                         height: 30,
                       ),
-                      Text("Enter OTP number to sign in or sign up",
+                      Text("Enter OTP number to Sign In",
                           textAlign: TextAlign.center, style: heading2Style),
                       const SizedBox(
-                        height: 30,
+                        height: 50,
                       ),
-                      Center(
-                        child: Form(
-                          key: formKey,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 10.0, right: 10.0),
-                            child: PinCodeTextField(
-                              showCursor: true,
-                              cursorColor: kPrimaryColor,
-                              length: 6,
-                              obscureText: true,
-                              animationType: AnimationType.scale,
-                              validator: ((value) {
-                                if (value!.isEmpty) {
-                                  return "";
-                                } else {
-                                  return null;
-                                }
-                              }),
-                              pinTheme: PinTheme(
-                                inactiveColor: Colors.transparent,
-                                inactiveFillColor: Colors.white,
-                                selectedFillColor: Colors.white,
-                                selectedColor: Colors.cyan,
-                                activeColor: Colors.cyan,
-                                disabledColor: Colors.cyan,
-                                errorBorderColor: Colors.red,
-                                shape: PinCodeFieldShape.box,
-                                borderRadius: BorderRadius.circular(10),
-                                fieldHeight: 50,
-                                fieldWidth: 40,
-                                activeFillColor: Colors.white,
+                      Form(
+                        key: formKey,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 31.0, right: 31),
+                                child: PinCodeTextField(
+                                  showCursor: true,
+                                  cursorColor: kPrimaryColor,
+                                  length: 6,
+                                  obscureText: true,
+                                  animationType: AnimationType.scale,
+                                  validator: ((value) {
+                                    if (value!.isEmpty) {
+                                      return "";
+                                    } else {
+                                      return null;
+                                    }
+                                  }),
+                                  pinTheme: PinTheme(
+                                    inactiveColor: Colors.transparent,
+                                    inactiveFillColor: Colors.white,
+                                    selectedFillColor: Colors.white,
+                                    selectedColor: Colors.cyan,
+                                    activeColor: Colors.cyan,
+                                    disabledColor: Colors.cyan,
+                                    errorBorderColor: Colors.red,
+                                    shape: PinCodeFieldShape.box,
+                                    borderRadius: BorderRadius.circular(10),
+                                    fieldHeight: 50,
+                                    fieldWidth: 50,
+                                    activeFillColor: Colors.white,
+                                  ),
+                                  // animationDuration:
+                                  //     const Duration(milliseconds: 300),
+                                  backgroundColor: Colors.transparent,
+                                  enableActiveFill: true,
+                                  controller: controller.verifyCodeController,
+                                  onCompleted: (v) {
+                                    if (kDebugMode) {
+                                      print(
+                                          "Verification Code Completed: ${controller.verifyCodeController.text}");
+                                    }
+                                  },
+                                  onChanged: (codeValue) {
+                                    if (kDebugMode) {
+                                      print(
+                                          "Verification Code ---> : ${controller.verifyCodeController.text}");
+                                    }
+                                    controller.code.value = codeValue;
+                                  },
+                                  beforeTextPaste: (text) {
+                                    if (kDebugMode) {
+                                      print("Verification Code paste $text");
+                                    }
+                                    return false;
+                                  },
+                                  appContext: context,
+                                ),
                               ),
-                              animationDuration:
-                                  const Duration(milliseconds: 300),
-                              backgroundColor: Colors.transparent,
-                              enableActiveFill: true,
-                              controller: controller.verifyCodeController,
-                              onCompleted: (v) {
-                                if (kDebugMode) {
-                                  print(
-                                      "Verification Code Completed: ${controller.verifyCodeController.text}");
-                                }
-                              },
-                              onChanged: (codeValue) {
-                                if (kDebugMode) {
-                                  print(
-                                      "Verification Code ---> : ${controller.verifyCodeController.text}");
-                                }
-                                controller.code.value = codeValue;
-                              },
-                              beforeTextPaste: (text) {
-                                if (kDebugMode) {
-                                  print("Verification Code paste $text");
-                                }
-                                /*if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
-                                            but you can show anything you want here, like your pop up saying wrong paste format or etc*/
-                                return false;
-                              },
-                              appContext: context,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      InkWell(
-                        onTap: () async {
-                          if (formKey.currentState!.validate()) {
-                            context.loaderOverlay.show();
-                            log(controller.code.toString());
-                            log(phone);
-                            controller.apiServices
-                                .loginOTPVerify(
-                                    otp: controller.code.toString(),
-                                    phone: phone)
-                                .then((value) {
-                              log(value.data.toString());
-                              localStorage
-                                  .storeUserDetails(value.data['customer']);
-                              log(value.statusCode.toString());
-                              if (value.statusCode == 200) {
-                                log(value.data['customer'].toString());
-                                ElegantNotification.success(
-                                  title: const Text("Success"),
-                                  description: Text(value.data['message']),
-                                ).show(context);
-                                Future.delayed(const Duration(seconds: 3), () {
-                                  context.loaderOverlay.hide();
-                                  Get.toNamed(Routes.BOTTOMNAVBAR);
-                                });
-                              } else {
-                                ElegantNotification.error(
-                                  title: const Text("Oops"),
-                                  description: Text(value.data['message']),
-                                ).show(context);
-                                context.loaderOverlay.hide();
-                              }
-                            }).onError((error, stackTrace) {
-                              ElegantNotification.error(
-                                title: const Text("Oops"),
-                                description: const Text("Something went wrong"),
-                              ).show(context);
-                              context.loaderOverlay.hide();
-                            });
-                          } else {
-                            context.loaderOverlay.show();
-                            ElegantNotification.error(
-                              title: const Text("Oops"),
-                              description:
-                                  const Text("Please check the fields"),
-                            ).show(context);
-                            context.loaderOverlay.hide();
-                          }
-                        },
-                        child: Container(
-                          height: 60,
-                          decoration: BoxDecoration(
-                            color: kBtnColor,
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                          width: MediaQuery.of(context).size.width * 0.85,
-                          child: Center(
-                            child: Text(
-                              "NEXT",
-                              style: btnStyle,
-                            ),
+                              const SizedBox(
+                                height: 30,
+                              ),
+                              InkWell(
+                                onTap: () async {
+                                  if (formKey.currentState!.validate()) {
+                                    context.loaderOverlay.show();
+                                    log(controller.code.toString());
+                                    log(phone);
+                                    controller.apiServices
+                                        .loginOTPVerify(
+                                            otp: controller.code.toString(),
+                                            phone: phone)
+                                        .then((value) {
+                                      log(value.data.toString());
+                                      localStorage.storeUserDetails(
+                                          value.data['customer']);
+                                      log(value.statusCode.toString());
+                                      if (value.statusCode == 200) {
+                                        log(value.data['customer'].toString());
+                                        ElegantNotification.success(
+                                          title: const Text("Success"),
+                                          description:
+                                              Text(value.data['message']),
+                                        ).show(context);
+                                        Future.delayed(
+                                            const Duration(seconds: 3), () {
+                                          context.loaderOverlay.hide();
+                                          Get.toNamed(Routes.BOTTOMNAVBAR);
+                                        });
+                                      } else {
+                                        ElegantNotification.error(
+                                          title: const Text("Oops"),
+                                          description:
+                                              Text(value.data['message']),
+                                        ).show(context);
+                                        context.loaderOverlay.hide();
+                                      }
+                                    }).onError((error, stackTrace) {
+                                      ElegantNotification.error(
+                                        title: const Text("Oops"),
+                                        description:
+                                            const Text("Something went wrong"),
+                                      ).show(context);
+                                      context.loaderOverlay.hide();
+                                    });
+                                  } else {
+                                    context.loaderOverlay.show();
+                                    ElegantNotification.error(
+                                      title: const Text("Oops"),
+                                      description:
+                                          const Text("Please check the fields"),
+                                    ).show(context);
+                                    context.loaderOverlay.hide();
+                                  }
+                                },
+                                child: Container(
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                    color: kBtnColor,
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.85,
+                                  child: Center(
+                                    child: Text(
+                                      "Submit",
+                                      style: btnStyle,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 153,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    "Don’t have an account?",
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                  const SizedBox(
+                                    width: 18,
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      Get.offNamed(Routes.REGISTER);
+                                    },
+                                    child: Text(
+                                      "Create New",
+                                      style: TextStyle(
+                                        color: kBtnColor,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 31,
+                              ),
+                            ],
                           ),
                         ),
                       ),

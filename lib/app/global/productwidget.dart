@@ -1,92 +1,133 @@
 // ignore_for_file: must_be_immutable
 
-import 'package:flutter/material.dart';
+import 'dart:developer';
 
-import '../utilities/appcolors.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:true_medix/app/utilities/appcolors.dart';
 import '../utilities/appstyles.dart';
 
 class ProductWidget extends StatelessWidget {
   ProductWidget({
-    required this.image,
+    required this.onTap,
     required this.price,
     required this.title,
     Key? key,
   }) : super(key: key);
 
-  String image;
+  VoidCallback onTap;
   String title;
   String price;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 140,
+      width: double.infinity,
+      height: 230,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(5),
         color: const Color(0XFFedfbff),
       ),
-      child: Column(
-        children: [
-          Row(
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.only(left: 8.0, top: 13),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(
-                width: 45,
-              ),
-              const Spacer(),
-              Container(
-                height: 107,
-                width: 102,
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                  color: kPrimaryColor,
+              FittedBox(
+                child: Text(
+                  title,
+                  style: testTextStyle,
                 ),
-                child: Image.network(image),
+              ),
+              const SizedBox(
+                height: 05,
+              ),
+              RatingBar.builder(
+                initialRating: 5,
+                minRating: 1,
+                direction: Axis.horizontal,
+                allowHalfRating: true,
+                itemCount: 5,
+                itemBuilder: (context, _) => Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: SvgPicture.asset(
+                    "assets/rating.svg",
+                    width: 20,
+                    height: 20,
+                  ),
+                ),
+                onRatingUpdate: (rating) {
+                  log(rating.toString());
+                },
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              const Text(
+                "1234 Ratings",
+                style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: Color(0XFF242424)),
+              ),
+              const SizedBox(
+                height: 26,
+              ),
+              const Padding(
+                padding: EdgeInsets.only(right: 8.0),
+                child: Divider(
+                  height: 2,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Row(
+                  children: [
+                    Text(
+                      "Rs. " "$price",
+                      style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          color: const Color(0XFF242424)),
+                    ),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: onTap,
+                      child: Container(
+                        width: 117,
+                        height: 33,
+                        decoration: BoxDecoration(
+                          color: kBtnColor,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "ADD",
+                            style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 27,
               ),
             ],
           ),
-          const SizedBox(
-            height: 15,
-          ),
-          FittedBox(
-            child: Text(
-              title,
-              textAlign: TextAlign.left,
-              style: testTextStyle,
-            ),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "₹ $price",
-                  style: testTextStyle,
-                ),
-                Container(
-                  height: 25,
-                  width: 50,
-                  decoration: BoxDecoration(
-                    color: kPrimaryColor,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "Add",
-                      style: btnStyle.copyWith(fontSize: 12),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

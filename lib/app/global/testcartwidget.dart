@@ -1,89 +1,82 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../utilities/appstyles.dart';
 
 class TestCartWidget extends StatelessWidget {
   TestCartWidget({
-    required this.image,
     required this.price,
     required this.subTitle,
     required this.title,
-    required this.onTap,
+    required this.onTapDeleted,
+    required this.onTapDrop,
     Key? key,
   }) : super(key: key);
 
-  String image;
-  VoidCallback onTap;
+  VoidCallback onTapDeleted;
+  VoidCallback onTapDrop;
   String title;
   String subTitle;
   String price;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          height: 68,
-          width: 61,
-          decoration: BoxDecoration(
-            color: const Color(0XFFedfbff),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Image.network(image),
+        Row(
+          children: [
+            FittedBox(
+              child: Text(
+                title,
+                style: testTextStyle.copyWith(fontSize: 16),
+              ),
+            ),
+            const Spacer(),
+            GestureDetector(
+                onTap: onTapDrop, child: SvgPicture.asset("assets/drop.svg")),
+          ],
+        ),
+        const SizedBox(
+          height: 13,
+        ),
+        Text(
+          "Includes 8 Tests",
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w400,
+            fontSize: 14,
+            color: const Color(0XFF242424),
           ),
         ),
         const SizedBox(
-          width: 19,
+          height: 13,
         ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        Row(
           children: [
-            const SizedBox(
-              height: 3,
-            ),
             Text(
-              "₹ $price",
-              style: testCartTextStyle,
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.55,
-              child: Text(
-                title,
-                style: testTextStyle,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+              "Rs. $price",
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w500,
+                fontSize: 14,
+                color: const Color(0XFF242424),
               ),
             ),
-            const SizedBox(
-              height: 8,
-            ),
-            Text(
-              subTitle,
-              style: testTextStyle,
-            ),
-            const SizedBox(
-              height: 3,
+            const Spacer(),
+            SizedBox(
+              width: 30,
+              height: 30,
+              child: Center(
+                child: IconButton(
+                  onPressed: onTapDeleted,
+                  icon: Image.asset("assets/trash.png"),
+                ),
+              ),
             ),
           ],
-        ),
-        const Spacer(),
-        SizedBox(
-          width: 40,
-          height: 40,
-          child: Card(
-            child: Center(
-              child: IconButton(
-                  onPressed: onTap, icon: Image.asset("assets/trash.png")),
-            ),
-          ),
         ),
       ],
     );

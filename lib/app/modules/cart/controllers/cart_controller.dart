@@ -43,13 +43,9 @@ class CartController extends GetxController {
   //ApiCall for initGetCartProducts
   Future<void> initGetCartProducts() async {
     cartProductsLoading = true.obs;
-    ("Products API in Progress");
     _cartProducts.value = await apiServices.getCartProducts();
-    ("CARTLOGGER");
-    (_cartProducts.toString());
     cartProducts;
     update();
-    (_cartProducts.toString());
     cartProductsLoading = false.obs;
   }
 
@@ -87,7 +83,6 @@ class CartController extends GetxController {
 
   //Calculate Total Price of Cart
   void getTotalPriceOfCart(List<dynamic> cartList) {
-    // ProductModel().p
     log(cartList.toList().toString());
     for (var element in cartList) {
       subTotal.value = subTotal.value + double.parse(element.price.toString());

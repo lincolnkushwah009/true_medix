@@ -1,9 +1,9 @@
-import 'dart:developer';
-
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:true_medix/app/modules/booking/views/booking_view.dart';
 
 import '../modules/activeorders/views/activeorders_view.dart';
+import '../modules/addaddress/bindings/addaddress_binding.dart';
+import '../modules/addaddress/views/addaddress_view.dart';
 import '../modules/bottomnavbar/views/bottomnavbar_view.dart';
 import '../modules/cart/views/cart_view.dart';
 import '../modules/home/views/home_view.dart';
@@ -25,7 +25,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.LOGINWITHPASSWORD;
+  static const INITIAL = Routes.BOTTOMNAVBAR;
 
   static final routes = [
     GetPage(
@@ -51,6 +51,10 @@ class AppPages {
     GetPage(
       name: _Paths.ORDERHISTORY,
       page: () => const OrderhistoryView(),
+    ),
+    GetPage(
+      name: _Paths.BOOKING,
+      page: () => const BookingView(),
     ),
     GetPage(
       name: _Paths.PRODUCTDETAIL,
@@ -83,6 +87,11 @@ class AppPages {
     GetPage(
       name: _Paths.LOGINWITHPASSWORD,
       page: () => LoginwithpasswordView(),
+    ),
+    GetPage(
+      name: _Paths.ADDADDRESS,
+      page: () => const AddaddressView(),
+      binding: AddaddressBinding(),
     ),
   ];
 }

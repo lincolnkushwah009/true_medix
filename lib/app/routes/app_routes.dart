@@ -18,6 +18,8 @@ abstract class Routes {
   static const ORDERDETAILS = _Paths.ORDERDETAILS;
   static const REGISTER = _Paths.REGISTER;
   static const LOGINWITHPASSWORD = _Paths.LOGINWITHPASSWORD;
+  static const ADDADDRESS = _Paths.ADDADDRESS;
+  static const BOOKING = _Paths.BOOKING;
 }
 
 abstract class _Paths {
@@ -37,4 +39,6 @@ abstract class _Paths {
   static const ORDERDETAILS = '/orderdetails';
   static const REGISTER = '/register';
   static const LOGINWITHPASSWORD = '/loginwithpassword';
+  static const ADDADDRESS = '/addaddress';
+  static const BOOKING = '/booking';
 }

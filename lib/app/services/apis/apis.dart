@@ -13,3 +13,5 @@ String addCart = "${baseUrlProd}carts/cartProducts";
 String profile = "${baseUrlProd}customers/profile?AuthId=";
 String account = "${baseUrlProd}customers/register";
 String loginPassword = "${baseUrlProd}customers/login";
+String addAddressApi = "${baseUrlProd}customers/addressForm";
+String getAddressApi = "${baseUrlProd}customers/myaddress?AuthId=";

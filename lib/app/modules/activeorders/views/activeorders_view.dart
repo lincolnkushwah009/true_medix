@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 import 'package:get/get.dart';
 
@@ -11,7 +10,7 @@ class ActiveordersView extends GetView<ActiveordersController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0XFFF1F1F1),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: ListView.separated(
             separatorBuilder: (context, index) {
@@ -26,17 +25,23 @@ class ActiveordersView extends GetView<ActiveordersController> {
                   height: 1,
                 );
               }
-              return Container(
-                height: 124,
-                width: MediaQuery.of(context).size.width * 0.8,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                ),
-                child: OrderHistoryWidget(
-                  orderId: "16699577861	",
-                  paymentStatus: "Paid",
-                  scheduledOn: "30-12-2022 06:00 Am",
-                  pending: false,
+              return Card(
+                child: Container(
+                  height: 124,
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: const [
+                      BoxShadow(color: Colors.grey, blurRadius: 2)
+                    ],
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: OrderHistoryWidget(
+                    orderId: "16699577861	",
+                    paymentStatus: "Paid",
+                    scheduledOn: "30-12-2022 06:00 Am",
+                    pending: false,
+                  ),
                 ),
               );
             }),

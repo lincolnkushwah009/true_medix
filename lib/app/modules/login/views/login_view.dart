@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 import 'package:get/get.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -35,21 +36,34 @@ class LoginView extends GetView<LoginController> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 70.0),
-                    child: Image.asset(
-                      "assets/authImage.png",
-                      height: 260,
-                      width: 300,
+                Padding(
+                  padding: const EdgeInsets.only(left: 11, top: 30),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: InkWell(
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: SizedBox(
+                        width: 22,
+                        height: 18,
+                        child: SvgPicture.asset("assets/back.svg"),
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 0.0, bottom: 27),
+                    child: Image.asset(
+                      "assets/authImage.png",
+                      height: 200,
+                      width: 224,
+                    ),
+                  ),
                 ),
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.52,
+                  height: MediaQuery.of(context).size.height * 0.632,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: kPrimaryColor,
@@ -64,47 +78,127 @@ class LoginView extends GetView<LoginController> {
                         height: 30,
                       ),
                       Text(
-                        "Input Phone Number",
+                        "Login with OTP",
                         style: heading1Style,
                       ),
                       const SizedBox(
-                        height: 30,
+                        height: 32,
                       ),
-                      Text("Use phone number to sign in or sign up",
+                      Text("Use  Phone number to sign in or Sign Up",
                           textAlign: TextAlign.center, style: heading2Style),
                       const SizedBox(
-                        height: 30,
+                        height: 32,
                       ),
-                      Container(
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        width: MediaQuery.of(context).size.width * 0.85,
-                        child: Center(
-                          child: Form(
-                            key: formKey,
-                            child: TextFormField(
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "";
-                                } else {
-                                  return null;
-                                }
-                              },
-                              controller: controller.phoneController,
-                              keyboardType: TextInputType.text,
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                prefixIcon: Icon(
-                                  Icons.person,
-                                  color: Colors.black,
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                        child: Form(
+                          key: formKey,
+                          child: Column(
+                            children: [
+                              Container(
+                                height: 58,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(30),
                                 ),
-                                contentPadding: EdgeInsets.only(top: 14),
-                                hintText: 'Phone / Email',
+                                width: MediaQuery.of(context).size.width,
+                                child: Center(
+                                  child: TextFormField(
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return "";
+                                      } else {
+                                        return null;
+                                      }
+                                    },
+                                    controller: controller.phoneController,
+                                    keyboardType: TextInputType.text,
+                                    decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        contentPadding:
+                                            const EdgeInsets.only(left: 23),
+                                        hintText: 'Phone / Email',
+                                        hintStyle: hintStyle),
+                                  ),
+                                ),
                               ),
-                            ),
+                              const SizedBox(
+                                height: 36,
+                              ),
+                              InkWell(
+                                onTap: () async {
+                                  if (formKey.currentState!.validate()) {
+                                    context.loaderOverlay.show();
+                                    controller.apiServices
+                                        .loginWithOTP(
+                                            phone: controller
+                                                .phoneController.text
+                                                .trim())
+                                        .then((value) {
+                                      log(value.data.toString());
+                                      log(value.statusCode.toString());
+                                      if (value.statusCode == 200) {
+                                        log(value.data['message'].toString());
+                                        ElegantNotification.success(
+                                          title: const Text("Success"),
+                                          description: Text(
+                                              value.data['message'].toString()),
+                                        ).show(context);
+                                        Future.delayed(
+                                            const Duration(seconds: 3), () {
+                                          context.loaderOverlay.hide();
+                                          Get.toNamed(Routes.OTPSCREEN,
+                                              arguments: controller
+                                                  .phoneController.text
+                                                  .toString());
+                                        });
+                                      } else {
+                                        log(value.data['message']
+                                                ['email_mobile']
+                                            .toString());
+                                        ElegantNotification.error(
+                                                title: const Text("Oops"),
+                                                description: Text(value
+                                                    .data['message']
+                                                        ['email_mobile']
+                                                    .toString()))
+                                            .show(context);
+                                        context.loaderOverlay.hide();
+                                      }
+                                    }).onError((error, stackTrace) {
+                                      ElegantNotification.error(
+                                        title: const Text("Oops"),
+                                        description:
+                                            const Text("Something went wrong"),
+                                      ).show(context);
+                                      context.loaderOverlay.hide();
+                                    });
+                                  } else {
+                                    formKey.currentState!.reset();
+                                    ElegantNotification.error(
+                                      title: const Text("Oops"),
+                                      description:
+                                          const Text("Please check the fields"),
+                                    ).show(context);
+                                  }
+                                },
+                                child: Container(
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                    color: kBtnColor,
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.85,
+                                  child: Center(
+                                    child: Text(
+                                      "Send OTP",
+                                      style: btnStyle,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -113,90 +207,52 @@ class LoginView extends GetView<LoginController> {
                       ),
                       InkWell(
                         onTap: () async {
-                          if (formKey.currentState!.validate()) {
-                            context.loaderOverlay.show();
-                            controller.apiServices
-                                .loginWithOTP(
-                                    phone:
-                                        controller.phoneController.text.trim())
-                                .then((value) {
-                              log(value.data.toString());
-                              log(value.statusCode.toString());
-                              if (value.statusCode == 200) {
-                                log(value.data['message'].toString());
-                                ElegantNotification.success(
-                                  title: const Text("Success"),
-                                  description:
-                                      Text(value.data['message'].toString()),
-                                ).show(context);
-                                Future.delayed(const Duration(seconds: 3), () {
-                                  context.loaderOverlay.hide();
-                                  Get.toNamed(Routes.OTPSCREEN,
-                                      arguments: controller.phoneController.text
-                                          .toString());
-                                });
-                              } else {
-                                log(value.data['message']['email_mobile']
-                                    .toString());
-                                ElegantNotification.error(
-                                        title: const Text("Oops"),
-                                        description: Text(value.data['message']
-                                                ['email_mobile']
-                                            .toString()))
-                                    .show(context);
-                                context.loaderOverlay.hide();
-                              }
-                            }).onError((error, stackTrace) {
-                              ElegantNotification.error(
-                                title: const Text("Oops"),
-                                description: const Text("Something went wrong"),
-                              ).show(context);
-                              context.loaderOverlay.hide();
-                            });
-                          } else {
-                            formKey.currentState!.reset();
-                            ElegantNotification.error(
-                              title: const Text("Oops"),
-                              description:
-                                  const Text("Please check the fields"),
-                            ).show(context);
-                          }
+                          Get.offNamed(Routes.LOGINWITHPASSWORD);
                         },
                         child: Container(
-                          height: 60,
+                          height: 58,
                           decoration: BoxDecoration(
-                            color: kBtnColor,
-                            borderRadius: BorderRadius.circular(25),
+                            color: Colors.transparent,
+                            border: Border.all(color: kBtnColor, width: 1),
+                            borderRadius: BorderRadius.circular(30),
                           ),
-                          width: MediaQuery.of(context).size.width * 0.85,
+                          width: MediaQuery.of(context).size.width * 0.8,
                           child: Center(
                             child: Text(
-                              "SEND OTP",
-                              style: btnStyle,
+                              "Login with Password",
+                              style: btnStyle.copyWith(color: kBtnColor),
                             ),
                           ),
                         ),
                       ),
                       const SizedBox(
-                        height: 30,
+                        height: 93,
                       ),
-                      InkWell(
-                        onTap: () {
-                          Get.offNamed(Routes.LOGINWITHPASSWORD);
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(Icons.password),
-                            SizedBox(
-                              width: 6,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "Don’t have an account?",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          const SizedBox(
+                            width: 18,
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Get.offNamed(Routes.REGISTER);
+                            },
+                            child: Text(
+                              "Create New",
+                              style: TextStyle(
+                                color: kBtnColor,
+                              ),
                             ),
-                            Text(
-                              "Login with Password Instead",
-                              style: TextStyle(color: Colors.black),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 31,
                       ),
                     ],
                   ),

@@ -4,7 +4,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:true_medix/app/modules/register/model/registermodel.dart';
 import 'package:true_medix/app/services/apiServives/apiservices.dart';
 
 class RegisterController extends GetxController {
@@ -32,19 +31,10 @@ class RegisterController extends GetxController {
   TextEditingController passwordController = TextEditingController();
 
   //Strings for Validation
-  RxString validationMessage = "".obs;
-
-  // //initCreateAccountApi
-  // Future<void> initCreateAccount(RegisterModel registerModel) async {
-  //   accountCreatLoading = true.obs;
-  //   apiServices.registerAccount(registerModel).then((value) {
-  //     accountResponse.value = value;
-  //     accountCreatLoading = false.obs;
-  //   }).onError((error, stackTrace) {
-  //      accountResponse.value = value;
-  //     accountCreatLoading = false.obs;
-  //   });
-  // }
+  RxString validationMessageName = "".obs;
+  RxString validationMessageEmail = "".obs;
+  RxString validationMessagePhone = "".obs;
+  RxString validationMessagePassword = "".obs;
 
   @override
   void onInit() {
