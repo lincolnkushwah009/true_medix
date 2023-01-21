@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:true_medix/app/modules/activeorders/views/activeorders_view.dart';
 import 'package:true_medix/app/modules/pastorders/views/pastorders_view.dart';
 import 'package:true_medix/app/utilities/appcolors.dart';
@@ -25,8 +26,12 @@ class OrderhistoryView extends GetView<OrderhistoryController> {
           backgroundColor: kPrimaryColor,
           automaticallyImplyLeading: false,
           title: Text(
-            'LOGO',
-            style: iconTextStyle.copyWith(fontSize: 22),
+            'My Orders',
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w400,
+              fontSize: 24,
+              color: const Color(0XFF424242),
+            ),
           ),
           bottom: const TabBar(
             indicatorColor: Colors.black,
@@ -42,7 +47,7 @@ class OrderhistoryView extends GetView<OrderhistoryController> {
                 'Active Orders',
                 style: TextStyle(
                     fontSize: 18,
-                    // color: Colors.black,
+                    color: Colors.black,
                     fontWeight: FontWeight.w700),
               )),
               Tab(
@@ -50,7 +55,7 @@ class OrderhistoryView extends GetView<OrderhistoryController> {
                   'Past Orders',
                   style: TextStyle(
                       fontSize: 18,
-                      // color: Colors.black,
+                      color: Colors.black,
                       fontWeight: FontWeight.w700),
                 ),
               ),

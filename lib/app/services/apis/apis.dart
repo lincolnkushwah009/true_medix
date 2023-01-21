@@ -1,4 +1,4 @@
-String baseUrlProd = "https://truemedix.in/testv1/apis/v1/";
+String baseUrlProd = "https://truemedix.in/apis/v1/";
 
 //? Login With OTP Endpoint
 //!========================
@@ -15,3 +15,9 @@ String account = "${baseUrlProd}customers/register";
 String loginPassword = "${baseUrlProd}customers/login";
 String addAddressApi = "${baseUrlProd}customers/addressForm";
 String getAddressApi = "${baseUrlProd}customers/myaddress?AuthId=";
+String placeOrderApi = "${baseUrlProd}orders/placeOrder";
+String orderApi = "${baseUrlProd}orders/myOrders?AuthId=";
+String statusList = "${baseUrlProd}orders/getStatusList?AuthId=";
+String updateProfileApi = "$baseUrlProd/customers/updateProfile";
+String deleteAddressApi = "$baseUrlProd/customers/deleteAddress/";
+String orderDetailsApi = "$baseUrlProd/orders/myOrderDetail?";

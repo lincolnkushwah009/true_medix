@@ -5,7 +5,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:true_medix/app/services/localstorage.dart';
+import 'package:true_medix/app/services/sessionmanager.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 
@@ -13,7 +13,7 @@ import '../../../services/apiServives/apiservices.dart';
 
 class AddaddressController extends GetxController {
   ApiServices apiServices = ApiServices();
-  LocalStorage localStorage = LocalStorage();
+  SessionManager sessionManager = SessionManager();
   RxString validationMessageName = "".obs;
   RxString validationMessageAge = "".obs;
   RxString validationMessageGender = "".obs;

@@ -9,6 +9,7 @@ class OrderHistoryWidget extends StatelessWidget {
   OrderHistoryWidget({
     required this.orderId,
     required this.paymentStatus,
+    required this.bookingStatus,
     required this.pending,
     required this.scheduledOn,
     Key? key,
@@ -17,6 +18,8 @@ class OrderHistoryWidget extends StatelessWidget {
   String orderId;
   String scheduledOn;
   String paymentStatus;
+  String bookingStatus;
+
   bool pending;
 
   @override
@@ -24,7 +27,8 @@ class OrderHistoryWidget extends StatelessWidget {
     return Row(
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 14, bottom: 14, left: 35),
+          padding:
+              const EdgeInsets.only(top: 14, bottom: 14, left: 14, right: 14),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,12 +51,17 @@ class OrderHistoryWidget extends StatelessWidget {
                 "Payment Status",
                 style: orderHistoryTextStyle,
               ),
+              const SizedBox(
+                height: 14,
+              ),
+              Text(
+                "Booking Status",
+                style: orderHistoryTextStyle,
+              ),
             ],
           ),
         ),
-        const SizedBox(
-          width: 64,
-        ),
+        const Spacer(),
         Padding(
           padding: const EdgeInsets.only(top: 14, bottom: 14, right: 35),
           child: Column(
@@ -61,14 +70,16 @@ class OrderHistoryWidget extends StatelessWidget {
             children: [
               Text(
                 "#$orderId",
-                style: orderHistoryTextStyle,
+                style:
+                    orderHistoryTextStyle.copyWith(fontWeight: FontWeight.w400),
               ),
               const SizedBox(
                 height: 14,
               ),
               Text(
                 scheduledOn,
-                style: orderHistoryTextStyle,
+                style:
+                    orderHistoryTextStyle.copyWith(fontWeight: FontWeight.w400),
               ),
               const SizedBox(
                 height: 14,
@@ -83,9 +94,18 @@ class OrderHistoryWidget extends StatelessWidget {
                   ),
                   Text(
                     paymentStatus,
-                    style: orderHistoryTextStyle,
+                    style: orderHistoryTextStyle.copyWith(
+                        fontWeight: FontWeight.w400),
                   ),
                 ],
+              ),
+              const SizedBox(
+                height: 14,
+              ),
+              Text(
+                bookingStatus,
+                style:
+                    orderHistoryTextStyle.copyWith(fontWeight: FontWeight.w400),
               ),
             ],
           ),

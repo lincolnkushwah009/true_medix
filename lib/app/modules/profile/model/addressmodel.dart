@@ -1,4 +1,5 @@
 class AddressModel {
+  String? id;
   String? name;
   String? customerId;
   String? age;
@@ -14,9 +15,11 @@ class AddressModel {
   String? state;
   String? city;
   String? pincode;
+  int? whatsapp;
 
   AddressModel(
-      {this.name,
+      {this.id,
+      this.name,
       this.customerId,
       this.age,
       this.gender,
@@ -30,9 +33,11 @@ class AddressModel {
       this.country,
       this.state,
       this.city,
+      this.whatsapp,
       this.pincode});
 
   AddressModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
     name = json['name'];
     customerId = json['customer_id'];
     age = json['age'];
@@ -48,11 +53,12 @@ class AddressModel {
     state = json['state'];
     city = json['city'];
     pincode = json['pincode'];
+    whatsapp = json['whatsapp'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-
+    data['id'] = id;
     data['name'] = name;
     data['customer_id'] = customerId;
     data['age'] = age;
@@ -68,6 +74,7 @@ class AddressModel {
     data['state'] = state;
     data['city'] = city;
     data['pincode'] = pincode;
+    data['whatsapp'] = whatsapp;
     return data;
   }
 }

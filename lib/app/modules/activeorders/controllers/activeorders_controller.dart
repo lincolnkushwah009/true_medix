@@ -1,23 +1,23 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
+import 'package:true_medix/app/services/apiServives/apiservices.dart';
 
 class ActiveordersController extends GetxController {
-  //TODO: Implement ActiveordersController
+  ApiServices apiServices = ApiServices();
+  RxMap statusListData = {}.obs;
 
-  final count = 0.obs;
+  Future<Map<dynamic, dynamic>> initStatusList() async {
+    statusListData.value = await apiServices.getStatusList();
+    update();
+    log(statusListData.toString());
+    return statusListData;
+  }
+
   @override
   void onInit() {
+    log("ActiveordersController Init...");
+    initStatusList();
     super.onInit();
   }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  void increment() => count.value++;
 }

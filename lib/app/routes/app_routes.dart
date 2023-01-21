@@ -20,6 +20,12 @@ abstract class Routes {
   static const LOGINWITHPASSWORD = _Paths.LOGINWITHPASSWORD;
   static const ADDADDRESS = _Paths.ADDADDRESS;
   static const BOOKING = _Paths.BOOKING;
+  static const PAYNOW = _Paths.PAYNOW;
+  static const DEBITCARD = _Paths.DEBITCARD;
+  static const CREDITCARD = _Paths.CREDITCARD;
+  static const PAMENTCARDS = _Paths.PAMENTCARDS;
+  static const PAMENTMETHOD = _Paths.PAMENTMETHOD;
+  static const PAMENTSUMMARY = _Paths.PAMENTSUMMARY;
 }
 
 abstract class _Paths {
@@ -41,4 +47,10 @@ abstract class _Paths {
   static const LOGINWITHPASSWORD = '/loginwithpassword';
   static const ADDADDRESS = '/addaddress';
   static const BOOKING = '/booking';
+  static const PAYNOW = '/paynow';
+  static const DEBITCARD = '/debitcard';
+  static const CREDITCARD = '/creditcard';
+  static const PAMENTCARDS = '/pamentcards';
+  static const PAMENTMETHOD = '/pamentmethod';
+  static const PAMENTSUMMARY = '/pamentsummary';
 }

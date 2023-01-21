@@ -82,34 +82,42 @@ class CartController extends GetxController {
   }
 
   //Calculate Total Price of Cart
-  void getTotalPriceOfCart(List<dynamic> cartList) {
-    log(cartList.toList().toString());
+  Future<double> getTotalPriceOfCart(List<dynamic> cartList) async {
+    subTotal = 0.0.obs;
+    taxAndFee = 0.0.obs;
+    delivery = "".obs;
+    total = 0.0.obs;
     for (var element in cartList) {
-      subTotal.value = subTotal.value + double.parse(element.price.toString());
-      update();
+      subTotal.value =
+          subTotal.value + double.parse(element.saleprice.toString());
       log(subTotal.toString());
     }
-    // taxAndFee.value = taxAndFee.value + (subTotal * (18 / 100));
     if (subTotal < 500 && subTotal > 0.0) {
       taxAndFee.value = taxAndFee.value + 150;
     }
     delivery.value = "Free";
     total.value = subTotal.value + taxAndFee.value;
     isCaliculationDone.value = true;
-    update();
+    return total.value;
   }
 
   @override
   void onInit() {
     super.onInit();
     ("CartController Init...");
+    subTotal = 0.0.obs;
+    taxAndFee = 0.0.obs;
+    delivery = "".obs;
+    total = 0.0.obs;
+    update();
     initGetCartProducts();
+    getTotalPriceOfCart(cartProducts);
   }
 
-  @override
-  void onClose() {
-    ("CartController OnClose...");
-    dispose();
-    super.onClose();
-  }
+  // @override
+  // void onClose() {
+  //   ("CartController OnClose...");
+  //   dispose();
+  //   super.onClose();
+  // }
 }

@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, prefer_const_constructors
 import 'dart:developer';
 
-import 'package:country_picker/country_picker.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +26,6 @@ class RegisterView extends StatefulWidget {
 class _RegisterViewState extends State<RegisterView> {
   var formRegisterKey = GlobalKey<FormState>();
   RegisterController? controller;
-  String countryCode = "🇮🇳";
 
   @override
   void initState() {
@@ -46,28 +44,15 @@ class _RegisterViewState extends State<RegisterView> {
       closeOnBackButton: false,
       disableBackButton: true,
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 11, top: 30),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: InkWell(
-                      onTap: () {
-                        Get.back();
-                      },
-                      child: SizedBox(
-                        width: 22,
-                        height: 18,
-                        child: SvgPicture.asset("assets/back.svg"),
-                      ),
-                    ),
-                  ),
+                Container(
+                  height: 30,
                 ),
                 Center(
                   child: Padding(
@@ -407,7 +392,7 @@ class _RegisterViewState extends State<RegisterView> {
                                   ),
                                   InkWell(
                                     onTap: () {
-                                      Get.offNamed(Routes.REGISTER);
+                                      Get.offNamed(Routes.LOGINWITHPASSWORD);
                                     },
                                     child: Text(
                                       "Login",

@@ -21,26 +21,26 @@ class GetAddressModel {
   String? addedDate;
 
   GetAddressModel(
-      {this.id,
-      this.customerId,
-      this.name,
-      this.gender,
-      this.dob,
-      this.age,
-      this.mobileNo,
-      this.whatsapp,
-      this.email,
-      this.googleMap,
-      this.googleLat,
-      this.googleLng,
-      this.address,
-      this.country,
-      this.state,
-      this.city,
-      this.pincode,
-      this.countryName,
-      this.stateName,
-      this.addedDate});
+      {this.id = "",
+      this.customerId = "",
+      this.name = "",
+      this.gender = "",
+      this.dob = "",
+      this.age = "",
+      this.mobileNo = "",
+      this.whatsapp = "",
+      this.email = "",
+      this.googleMap = "",
+      this.googleLat = "",
+      this.googleLng = "",
+      this.address = "",
+      this.country = "",
+      this.state = "",
+      this.city = "",
+      this.pincode = "",
+      this.countryName = "",
+      this.stateName = "",
+      this.addedDate = ""});
 
   GetAddressModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];

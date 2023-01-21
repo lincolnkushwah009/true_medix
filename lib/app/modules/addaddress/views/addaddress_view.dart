@@ -1,24 +1,29 @@
+// ignore_for_file: must_be_immutable
+
 import 'dart:developer';
 
-import 'package:country_picker/country_picker.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:geocoding/geocoding.dart';
 
 import 'package:get/get.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:true_medix/app/modules/bottomnavbar/controllers/bottomnavbar_controller.dart';
 import 'package:true_medix/app/modules/profile/controllers/profile_controller.dart';
 import 'package:true_medix/app/modules/profile/model/addressmodel.dart';
-import 'package:true_medix/app/routes/app_pages.dart';
+import 'package:true_medix/app/modules/profile/model/getaddressmodel.dart';
 import 'package:true_medix/app/utilities/appcolors.dart';
 
 import '../../../utilities/appstyles.dart';
+import '../../bottomnavbar/views/bottomnavbar_view.dart';
 import '../controllers/addaddress_controller.dart';
 
 class AddaddressView extends StatefulWidget {
-  const AddaddressView({Key? key}) : super(key: key);
+  AddaddressView({this.getAddressModel, this.isEdit = false, Key? key})
+      : super(key: key);
+  GetAddressModel? getAddressModel;
+  bool isEdit;
 
   @override
   State<AddaddressView> createState() => _AddaddressViewState();
@@ -28,19 +33,21 @@ class _AddaddressViewState extends State<AddaddressView> {
   AddaddressController? controller;
   ProfileController? profileController;
   var formKey = GlobalKey<FormState>();
-  String countryCode = "🇮🇳";
   bool isGoogleDropdownClosed = true;
   String? selCountry;
   String? selState;
   String? selAge;
   String? selGender;
   String? selDOB;
+  bool isWhatsApp = false;
   List<Location> locations = [];
 
   @override
   void initState() {
     controller = Get.put<AddaddressController>(AddaddressController());
     profileController = Get.put<ProfileController>(ProfileController());
+    widget.isEdit == true ? updateAddressForm() : () {};
+
     controller!.goolePlacesController.addListener(() {
       if (controller!.sessionToken.value == "") {
         controller!.sessionToken.value = controller!.uuid.v4();
@@ -49,6 +56,22 @@ class _AddaddressViewState extends State<AddaddressView> {
       }
     });
     super.initState();
+  }
+
+  void updateAddressForm() {
+    controller!.nameController.text = widget.getAddressModel!.name!;
+
+    selAge = widget.getAddressModel!.age!.toString().split(" ")[0].toString();
+    selGender = widget.getAddressModel!.gender!;
+    selDOB = widget.getAddressModel!.dob!;
+    controller!.emailController.text = widget.getAddressModel!.email!;
+    controller!.phoneController.text = widget.getAddressModel!.mobileNo!;
+    controller!.goolePlacesController.text = "";
+    selCountry = widget.getAddressModel!.country!;
+    selState = widget.getAddressModel!.state;
+    controller!.pincodeController.text = widget.getAddressModel!.pincode!;
+    isWhatsApp =
+        widget.getAddressModel!.whatsapp!.toString() == "1" ? true : false;
   }
 
   @override
@@ -67,8 +90,20 @@ class _AddaddressViewState extends State<AddaddressView> {
             backgroundColor: kPrimaryColor,
             automaticallyImplyLeading: false,
             title: Text(
-              'LOGO',
-              style: iconTextStyle.copyWith(fontSize: 22),
+              widget.isEdit ? 'Update Address' : "Add Address",
+              style: iconTextStyle.copyWith(
+                  fontSize: 24,
+                  color: const Color(0XFF242424),
+                  fontWeight: FontWeight.w400),
+            ),
+            leading: GestureDetector(
+              onTap: () {
+                Get.back();
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: SvgPicture.asset("assets/back.svg"),
+              ),
             ),
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
@@ -86,28 +121,15 @@ class _AddaddressViewState extends State<AddaddressView> {
                     const SizedBox(
                       height: 27,
                     ),
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
-                        child: Text(
-                          "Address Book",
-                          style: heading1Style.copyWith(color: Colors.black),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 27,
-                    ),
                     Form(
                       key: formKey,
                       child: Column(
                         children: [
                           Container(
-                            height: 50,
+                            height: 58,
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(25),
+                              borderRadius: BorderRadius.circular(30),
                             ),
                             width: MediaQuery.of(context).size.width * 0.85,
                             child: Center(
@@ -127,14 +149,12 @@ class _AddaddressViewState extends State<AddaddressView> {
                                 },
                                 controller: controller!.nameController,
                                 keyboardType: TextInputType.text,
-                                decoration: const InputDecoration(
+                                decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  prefixIcon: Icon(
-                                    Icons.person,
-                                    color: Colors.black,
-                                  ),
-                                  contentPadding: EdgeInsets.only(top: 14),
+                                  contentPadding:
+                                      const EdgeInsets.only(left: 23),
                                   hintText: "Name",
+                                  hintStyle: hintStyle,
                                 ),
                               ),
                             ),
@@ -145,10 +165,10 @@ class _AddaddressViewState extends State<AddaddressView> {
                           GetBuilder<AddaddressController>(
                               builder: (controller) {
                             return Container(
-                              height: 50,
+                              height: 58,
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(25),
+                                borderRadius: BorderRadius.circular(30),
                               ),
                               width: MediaQuery.of(context).size.width * 0.85,
                               child: Row(
@@ -163,7 +183,6 @@ class _AddaddressViewState extends State<AddaddressView> {
                                         child: DropdownButtonFormField(
                                             isExpanded: true,
                                             borderRadius: BorderRadius.zero,
-                                            hint: const Text("Select Age"),
                                             onChanged: (newValue) {
                                               setState(() {
                                                 selAge = newValue.toString();
@@ -180,10 +199,10 @@ class _AddaddressViewState extends State<AddaddressView> {
                                                 controller.update();
                                               }
                                             }),
-                                            // underline:
-                                            //     DropdownButtonHideUnderline(
-                                            //   child: Container(),
-                                            // ),
+                                            decoration:
+                                                InputDecoration.collapsed(
+                                                    hintText: "Select Age",
+                                                    hintStyle: hintStyle),
                                             value: selAge,
                                             items: List.generate(
                                                     150,
@@ -211,10 +230,10 @@ class _AddaddressViewState extends State<AddaddressView> {
                           GetBuilder<AddaddressController>(
                               builder: (controller) {
                             return Container(
-                              height: 50,
+                              height: 58,
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(25),
+                                borderRadius: BorderRadius.circular(30),
                               ),
                               width: MediaQuery.of(context).size.width * 0.85,
                               child: Row(
@@ -229,7 +248,10 @@ class _AddaddressViewState extends State<AddaddressView> {
                                         child: DropdownButtonFormField(
                                             isExpanded: true,
                                             borderRadius: BorderRadius.zero,
-                                            hint: const Text("Select Gender"),
+                                            decoration:
+                                                InputDecoration.collapsed(
+                                                    hintText: "Select Gender",
+                                                    hintStyle: hintStyle),
                                             onChanged: (newValue) {
                                               setState(() {
                                                 selGender = newValue.toString();
@@ -278,10 +300,10 @@ class _AddaddressViewState extends State<AddaddressView> {
                           GetBuilder<AddaddressController>(
                               builder: (controller) {
                             return Container(
-                              height: 50,
+                              height: 58,
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(25),
+                                borderRadius: BorderRadius.circular(30),
                               ),
                               width: MediaQuery.of(context).size.width * 0.85,
                               child: InkWell(
@@ -304,7 +326,10 @@ class _AddaddressViewState extends State<AddaddressView> {
                                   padding: const EdgeInsets.only(left: 20),
                                   child: Align(
                                     alignment: Alignment.centerLeft,
-                                    child: Text(selDOB ?? "Select DOB"),
+                                    child: Text(
+                                      selDOB ?? "Select DOB",
+                                      style: hintStyle,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -314,10 +339,10 @@ class _AddaddressViewState extends State<AddaddressView> {
                             height: 20,
                           ),
                           Container(
-                            height: 50,
+                            height: 58,
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(25),
+                              borderRadius: BorderRadius.circular(30),
                             ),
                             width: MediaQuery.of(context).size.width * 0.85,
                             child: Center(
@@ -343,15 +368,12 @@ class _AddaddressViewState extends State<AddaddressView> {
                                 },
                                 controller: controller!.emailController,
                                 keyboardType: TextInputType.text,
-                                decoration: const InputDecoration(
-                                  border: InputBorder.none,
-                                  prefixIcon: Icon(
-                                    Icons.email,
-                                    color: Colors.black,
-                                  ),
-                                  contentPadding: EdgeInsets.only(top: 14),
-                                  hintText: 'Email',
-                                ),
+                                decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    contentPadding:
+                                        const EdgeInsets.only(left: 23),
+                                    hintText: 'Email',
+                                    hintStyle: hintStyle),
                               ),
                             ),
                           ),
@@ -359,10 +381,10 @@ class _AddaddressViewState extends State<AddaddressView> {
                             height: 20,
                           ),
                           Container(
-                            height: 50,
+                            height: 58,
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(25),
+                              borderRadius: BorderRadius.circular(30),
                             ),
                             width: MediaQuery.of(context).size.width * 0.85,
                             child: Center(
@@ -395,47 +417,50 @@ class _AddaddressViewState extends State<AddaddressView> {
                                 controller: controller!.phoneController,
                                 keyboardType: TextInputType.text,
                                 decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  prefixIcon: IconButton(
-                                    onPressed: () {
-                                      showCountryPicker(
-                                        context: context,
-                                        countryListTheme: CountryListThemeData(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            bottomSheetHeight:
-                                                MediaQuery.of(context)
-                                                        .size
-                                                        .height *
-                                                    0.6),
-                                        showPhoneCode: true,
-                                        onSelect: (Country country) {
-                                          setState(() {
-                                            log(country.flagEmoji.toString());
-                                            countryCode = country.flagEmoji;
-                                          });
-                                        },
-                                      );
-                                    },
-                                    icon: Text(countryCode),
-                                  ),
-                                  contentPadding:
-                                      const EdgeInsets.only(top: 14),
-                                  hintText: 'Phone',
-                                ),
+                                    border: InputBorder.none,
+                                    contentPadding:
+                                        const EdgeInsets.only(left: 23),
+                                    hintText: 'Phone',
+                                    hintStyle: hintStyle),
                               ),
                             ),
                           ),
+                          Container(
+                            height: 58,
+                            width: MediaQuery.of(context).size.width * 0.85,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Row(
+                              children: [
+                                Checkbox(
+                                    value: isWhatsApp,
+                                    onChanged: (val) {
+                                      setState(() {
+                                        isWhatsApp = val!;
+                                        log(isWhatsApp.toString());
+                                      });
+                                    }),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  "WhatsApp",
+                                  style: hintStyle,
+                                ),
+                              ],
+                            ),
+                          ),
                           const SizedBox(
-                            height: 20,
+                            height: 5,
                           ),
                           GetBuilder<AddaddressController>(
                               builder: (controller) {
                             return Container(
-                              height: !isGoogleDropdownClosed ? 200 : 50,
+                              height: !isGoogleDropdownClosed ? 200 : 58,
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(25),
+                                borderRadius: BorderRadius.circular(30),
                               ),
                               width: MediaQuery.of(context).size.width * 0.85,
                               child: Column(
@@ -469,15 +494,12 @@ class _AddaddressViewState extends State<AddaddressView> {
                                         controller.getPlacesFromGoogleApi();
                                         controller.update();
                                       },
-                                      decoration: const InputDecoration(
+                                      decoration: InputDecoration(
                                         border: InputBorder.none,
-                                        prefixIcon: Icon(
-                                          Icons.location_on,
-                                          color: Colors.black,
-                                        ),
-                                        contentPadding:
-                                            EdgeInsets.only(top: 14),
+                                        contentPadding: const EdgeInsets.only(
+                                            left: 23, top: 10),
                                         hintText: 'Address',
+                                        hintStyle: hintStyle,
                                       ),
                                     ),
                                   ),
@@ -603,10 +625,10 @@ class _AddaddressViewState extends State<AddaddressView> {
                           GetBuilder<AddaddressController>(
                               builder: (controller) {
                             return Container(
-                              height: 50,
+                              height: 58,
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(25),
+                                borderRadius: BorderRadius.circular(30),
                               ),
                               width: MediaQuery.of(context).size.width * 0.85,
                               child: Row(
@@ -618,20 +640,35 @@ class _AddaddressViewState extends State<AddaddressView> {
                                       padding: const EdgeInsets.only(
                                           left: 20, right: 20.0),
                                       child: DropdownButtonHideUnderline(
-                                        child: DropdownButton(
+                                        child: DropdownButtonFormField(
                                             isExpanded: true,
                                             borderRadius: BorderRadius.zero,
-                                            hint: const Text("Select Country"),
+                                            decoration:
+                                                InputDecoration.collapsed(
+                                                    hintText: "Select Country",
+                                                    hintStyle: hintStyle),
                                             onChanged: (newValue) {
                                               setState(() {
                                                 selCountry =
                                                     newValue.toString();
                                               });
                                             },
-                                            underline:
-                                                DropdownButtonHideUnderline(
-                                              child: Container(),
-                                            ),
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                controller
+                                                        .validationMessageCountry
+                                                        .value ==
+                                                    "Select Country";
+                                                controller.update();
+                                                return "";
+                                              } else {
+                                                controller
+                                                    .validationMessageCountry
+                                                    .value = "";
+                                                controller.update();
+                                                return null;
+                                              }
+                                            },
                                             value: selCountry,
                                             items: controller.countries.keys
                                                 .toList()
@@ -655,7 +692,7 @@ class _AddaddressViewState extends State<AddaddressView> {
                             height: 20,
                           ),
                           Container(
-                            height: 50,
+                            height: 58,
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(25),
@@ -664,10 +701,10 @@ class _AddaddressViewState extends State<AddaddressView> {
                             child: GetBuilder<AddaddressController>(
                                 builder: (controller) {
                               return Container(
-                                height: 50,
+                                height: 58,
                                 decoration: BoxDecoration(
                                   color: Colors.white,
-                                  borderRadius: BorderRadius.circular(25),
+                                  borderRadius: BorderRadius.circular(30),
                                 ),
                                 width: MediaQuery.of(context).size.width * 0.85,
                                 child: Row(
@@ -679,20 +716,35 @@ class _AddaddressViewState extends State<AddaddressView> {
                                         padding: const EdgeInsets.only(
                                             left: 20, right: 20.0),
                                         child: DropdownButtonHideUnderline(
-                                          child: DropdownButton(
+                                          child: DropdownButtonFormField(
                                               isExpanded: true,
                                               borderRadius: BorderRadius.zero,
-                                              hint: const Text("Select State"),
                                               onChanged: (newValue) {
                                                 setState(() {
                                                   selState =
                                                       newValue.toString();
                                                 });
                                               },
-                                              underline:
-                                                  DropdownButtonHideUnderline(
-                                                child: Container(),
-                                              ),
+                                              decoration:
+                                                  InputDecoration.collapsed(
+                                                      hintText: "Select State",
+                                                      hintStyle: hintStyle),
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  controller
+                                                          .validationMessageState
+                                                          .value ==
+                                                      "Select State";
+                                                  controller.update();
+                                                  return "";
+                                                } else {
+                                                  controller
+                                                      .validationMessageState
+                                                      .value = "";
+                                                  controller.update();
+                                                  return null;
+                                                }
+                                              },
                                               value: selState,
                                               items: controller.states.keys
                                                   .toList()
@@ -717,10 +769,10 @@ class _AddaddressViewState extends State<AddaddressView> {
                             height: 20,
                           ),
                           Container(
-                            height: 50,
+                            height: 58,
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(25),
+                              borderRadius: BorderRadius.circular(30),
                             ),
                             width: MediaQuery.of(context).size.width * 0.85,
                             child: Center(
@@ -753,15 +805,11 @@ class _AddaddressViewState extends State<AddaddressView> {
                                 controller: controller!.pincodeController,
                                 keyboardType: TextInputType.text,
                                 decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  prefixIcon: Padding(
-                                    padding: const EdgeInsets.all(14.0),
-                                    child: Image.asset("assets/pincode.png"),
-                                  ),
-                                  contentPadding:
-                                      const EdgeInsets.only(top: 14),
-                                  hintText: 'Pincode',
-                                ),
+                                    border: InputBorder.none,
+                                    contentPadding:
+                                        const EdgeInsets.only(left: 23),
+                                    hintText: 'Pincode',
+                                    hintStyle: hintStyle),
                               ),
                             ),
                           ),
@@ -785,6 +833,7 @@ class _AddaddressViewState extends State<AddaddressView> {
                                   log("Latitude : ${locations[0].latitude}");
                                   log("Country : $selCountry");
                                   log("State : $selState");
+                                  log("WhatsApp : $isWhatsApp");
                                   log("Pincode : ${controller.pincodeController.text}");
                                   context.loaderOverlay.show();
                                   controller.apiServices
@@ -814,8 +863,13 @@ class _AddaddressViewState extends State<AddaddressView> {
                                     pincode: controller.pincodeController.text
                                         .toString()
                                         .trim(),
-                                    customerId: controller
-                                        .localStorage.getCustomer['id'],
+                                    whatsapp: isWhatsApp == true ? 1 : 0,
+                                    customerId: (await controller.sessionManager
+                                            .getAuthToken())
+                                        .id,
+                                    id: widget.isEdit == true
+                                        ? widget.getAddressModel!.id!.toString()
+                                        : "",
                                   ))
                                       .then((value) {
                                     ElegantNotification.success(
@@ -824,11 +878,19 @@ class _AddaddressViewState extends State<AddaddressView> {
                                           Text(value['message'].toString()),
                                     ).show(context);
                                     context.loaderOverlay.hide();
+                                    formKey.currentState!.reset();
                                     Future.delayed(const Duration(seconds: 1),
                                         () {
                                       profileController!.onInit();
                                       profileController!.update();
-                                      Get.back();
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              BottomnavbarView(
+                                            incomingIndex: 3,
+                                          ),
+                                        ),
+                                      );
                                     });
                                     // context.loaderOverlay.hide();
                                   }).onError((error, stackTrace) {
@@ -849,15 +911,15 @@ class _AddaddressViewState extends State<AddaddressView> {
                                 }
                               },
                               child: Container(
-                                height: 60,
+                                height: 40,
                                 decoration: BoxDecoration(
                                   color: kBtnColor,
-                                  borderRadius: BorderRadius.circular(25),
+                                  borderRadius: BorderRadius.circular(5),
                                 ),
-                                width: MediaQuery.of(context).size.width * 0.85,
+                                width: 170,
                                 child: Center(
                                   child: Text(
-                                    "Add Address",
+                                    "Save",
                                     style: btnStyle,
                                   ),
                                 ),
@@ -865,7 +927,10 @@ class _AddaddressViewState extends State<AddaddressView> {
                             );
                           }),
                           const SizedBox(
-                            height: 20,
+                            height: 46,
+                          ),
+                          const SizedBox(
+                            height: 100,
                           ),
                         ],
                       ),

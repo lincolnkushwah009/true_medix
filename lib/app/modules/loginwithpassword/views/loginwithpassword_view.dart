@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:true_medix/app/modules/bottomnavbar/views/bottomnavbar_view.dart';
+import 'package:true_medix/app/services/sessionmanager.dart';
 import 'package:true_medix/app/utilities/appcolors.dart';
 import 'package:true_medix/app/utilities/appstyles.dart';
 
@@ -15,6 +17,7 @@ import '../controllers/loginwithpassword_controller.dart';
 class LoginwithpasswordView extends GetView<LoginwithpasswordController> {
   LoginwithpasswordView({Key? key}) : super(key: key);
   var formKey = GlobalKey<FormState>();
+  SessionManager sessionManager = SessionManager();
   @override
   Widget build(BuildContext context) {
     LoginwithpasswordController controller =
@@ -34,25 +37,12 @@ class LoginwithpasswordView extends GetView<LoginwithpasswordController> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 11, top: 30),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: InkWell(
-                      onTap: () {
-                        Get.back();
-                      },
-                      child: SizedBox(
-                        width: 22,
-                        height: 18,
-                        child: SvgPicture.asset("assets/back.svg"),
-                      ),
-                    ),
-                  ),
+                Container(
+                  height: 30,
                 ),
                 Center(
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 0.0, bottom: 27),
+                    padding: const EdgeInsets.only(top: 30.0, bottom: 27),
                     child: Image.asset(
                       "assets/authImage.png",
                       height: 200,
@@ -106,31 +96,32 @@ class LoginwithpasswordView extends GetView<LoginwithpasswordController> {
                                         controller.update();
                                         return "";
                                       }
-                                      if (!EmailValidator.validate(value)) {
-                                        return value.contains("@") &&
-                                                value.contains(".")
-                                            ? controller
-                                                    .validationMessageEmailPhone
-                                                    .value =
-                                                "Please Enter Valid Email"
-                                            : "";
-                                      }
-                                      if (value.length < 10) {
-                                        controller.validationMessageEmailPhone
-                                                .value =
-                                            "Phone can't be less than 10 Digits Valid Email";
-                                        controller.update();
+                                      // if (!EmailValidator.validate(value)) {
+                                      //   return value.contains("@") &&
+                                      //           value.contains(".")
+                                      //       ? controller
+                                      //               .validationMessageEmailPhone
+                                      //               .value =
+                                      //           "Please Enter Valid Email"
+                                      //       : "";
+                                      // }
+                                      // if (value.length < 10) {
+                                      //   controller.validationMessageEmailPhone
+                                      //           .value =
+                                      //       "Phone can't be less than 10 Digits Valid Email";
+                                      //   controller.update();
 
-                                        return "";
-                                      }
-                                      if (value.length > 10) {
-                                        return value.contains("@")
-                                            ? null
-                                            : controller
-                                                    .validationMessageEmailPhone
-                                                    .value =
-                                                "Phone can't be greater than 10 Digits Valid Email";
-                                      } else {
+                                      //   return "";
+                                      // }
+                                      // if (value.length > 10) {
+                                      //   return value.contains("@")
+                                      //       ? null
+                                      //       : controller
+                                      //               .validationMessageEmailPhone
+                                      //               .value =
+                                      //           "Phone can't be greater than 10 Digits Valid Email";
+                                      // }
+                                      else {
                                         controller.validationMessageEmailPhone
                                             .value = "";
                                         controller.update();
@@ -166,21 +157,12 @@ class LoginwithpasswordView extends GetView<LoginwithpasswordController> {
                                         controller.validationMessagePassword
                                             .value = "Password can't be Empty";
                                         controller.update();
-
-                                        return "";
-                                      }
-                                      if (value.length < 6) {
-                                        controller.validationMessagePassword
-                                                .value =
-                                            "Password can't be less than 6 characters";
-                                        controller.update();
-
-                                        return "";
+                                        return controller
+                                            .validationMessagePassword.value;
                                       } else {
                                         controller.validationMessagePassword
                                             .value = "";
                                         controller.update();
-
                                         return null;
                                       }
                                     },
@@ -203,6 +185,10 @@ class LoginwithpasswordView extends GetView<LoginwithpasswordController> {
                                   builder: (controller) {
                                 return InkWell(
                                   onTap: () async {
+                                    log(controller.emailPhoneController.text
+                                        .toString());
+                                    log(controller.passwordController.text
+                                        .toString());
                                     context.loaderOverlay.show();
                                     controller.update();
                                     if (formKey.currentState!.validate()) {
@@ -219,9 +205,12 @@ class LoginwithpasswordView extends GetView<LoginwithpasswordController> {
                                                   .toString())
                                           .then((value) {
                                         log(value.toString());
-                                        controller.localStorage
-                                            .storeUserDetails(
-                                                value['customer']);
+                                        sessionManager
+                                            .setAuthToken(value['customer']);
+                                        log("=======================================");
+                                        log(sessionManager
+                                            .getAuthToken()
+                                            .toString());
                                         log(value['customer'].toString());
                                         ElegantNotification.success(
                                           toastDuration:
@@ -232,7 +221,13 @@ class LoginwithpasswordView extends GetView<LoginwithpasswordController> {
                                         Future.delayed(
                                             const Duration(seconds: 3), () {
                                           context.loaderOverlay.hide();
-                                          Get.toNamed(Routes.BOTTOMNAVBAR);
+                                          Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  BottomnavbarView(
+                                                      incomingIndex: 0),
+                                            ),
+                                          );
                                         });
                                       }).onError((error, stackTrace) {
                                         ElegantNotification.error(

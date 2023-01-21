@@ -1,22 +1,25 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:true_medix/app/global/customermodel.dart';
+import 'package:true_medix/app/modules/activeorders/model/ordermodel.dart';
+import 'package:true_medix/app/modules/booking/model/placeorderresponsemodel.dart';
 import 'package:true_medix/app/modules/home/models/bannermodel.dart';
+import 'package:true_medix/app/modules/pamentsummary/models/orderresponsemodel.dart';
 import 'package:true_medix/app/modules/productdetail/models/productmodel.dart';
 import 'package:true_medix/app/modules/profile/model/addressmodel.dart';
 import 'package:true_medix/app/modules/profile/model/getaddressmodel.dart';
 import 'package:true_medix/app/modules/profile/model/profilemodel.dart';
+import 'package:true_medix/app/modules/profile/model/updateprofilemodel.dart';
 import 'package:true_medix/app/modules/register/model/registermodel.dart';
 import 'package:true_medix/app/services/apiResponse/apiresponse.dart';
 import 'package:true_medix/app/services/apis/apis.dart';
-import 'package:true_medix/app/services/localstorage.dart';
+import 'package:true_medix/app/services/sessionmanager.dart';
 
 class ApiServices {
-  GetStorage authIdGetStorage = GetStorage();
   String authIdGetStorageKey = "AUTHID";
-  LocalStorage localStorage = LocalStorage();
+  SessionManager sessionManager = SessionManager();
 
   Future<ApiResponse<Map<String, dynamic>>> loginWithOTP(
       {required String phone}) async {
@@ -78,11 +81,13 @@ class ApiServices {
   }
 
   //GetProducts API
-  Future<List<ProductModel>> getProducts() async {
+  Future<List<ProductModel>> getProducts(
+      {String page = "1", String? query = "arunodaya"}) async {
     log("Api Products Inprogress");
+    log("$products?page=$page&q=$query");
     try {
       var response = await http.get(
-        Uri.parse(products),
+        Uri.parse("$products?page=$page&q=$query"),
       );
       log(response.body.toString());
       Map<String, dynamic> parsedData =
@@ -99,16 +104,17 @@ class ApiServices {
   //GetProducts API
   Future<List<ProductModel>> getCartProducts() async {
     log("GetCart Products Inprogress");
-    Map<String, dynamic> customerDetails =
-        authIdGetStorage.read(authIdGetStorageKey);
+    CustomerModel customerDetails = (await sessionManager.getAuthToken());
     log("===========GETCARTPRODUCTS===============");
-    log(customerDetails['auth_id']);
-    log("$cartProducts" "${customerDetails['auth_id']}");
+    log(customerDetails.toString());
+    log(customerDetails.authId.toString());
+    log("$cartProducts" "${customerDetails.authId}");
     log("===========GETCARTPRODUCTS===============");
+    log(customerDetails.toString());
 
     try {
       var response = await http.get(
-        Uri.parse("$cartProducts" "${customerDetails['auth_id']}"),
+        Uri.parse("$cartProducts" "${customerDetails.authId}"),
       );
       log(response.body.toString());
       Map<String, dynamic> parsedData =
@@ -120,6 +126,7 @@ class ApiServices {
       log("====================$tryList");
       return tryList;
     } catch (e) {
+      log("ERROR HERE...");
       log(e.toString());
       throw Error();
     }
@@ -129,19 +136,18 @@ class ApiServices {
   Future<Map<String, dynamic>> addToCart(
       Map<String, dynamic> cartPayload) async {
     log("AddToCart Products Inprogress");
-    Map<String, dynamic> customerDetails =
-        authIdGetStorage.read(authIdGetStorageKey);
+    CustomerModel customerDetails = await sessionManager.getAuthToken();
     log("===========ADDTOCART===============");
-    log(customerDetails['auth_id']);
-    log(customerDetails['mobile_no']);
+    log(customerDetails.authId.toString());
+    log(customerDetails.mobileNo.toString());
     log("===========ADDTOCART===============");
-    cartPayload['mobile_no'] = customerDetails['mobile_no'];
+    cartPayload['mobile_no'] = customerDetails.mobileNo.toString();
     try {
       var response = await http.post(
         Uri.parse(
           addCart.toString(),
         ),
-        headers: {"AuthId": customerDetails['auth_id']},
+        headers: {"AuthId": customerDetails.authId.toString()},
         body: jsonEncode(cartPayload),
       );
 
@@ -159,16 +165,16 @@ class ApiServices {
 
   Future<ProfileModel> getMyProfileDetails() async {
     log("Profile Api Inprogress");
-    Map<String, dynamic> customerDetails =
-        authIdGetStorage.read(authIdGetStorageKey);
+    CustomerModel customerDetails = await sessionManager.getAuthToken();
+
     log("===========GETMYPROFILE===============");
-    log(customerDetails['auth_id']);
-    log("$profile" "${customerDetails['auth_id']}");
+    log(customerDetails.authId.toString());
+    log("$profile" "${customerDetails.authId}");
     log("===========GETMYPROFILE===============");
 
     try {
       var response = await http.get(
-        Uri.parse("$profile" "${customerDetails['auth_id']}"),
+        Uri.parse("$profile" "${customerDetails.authId}"),
       );
       log(response.body.toString());
       Map<String, dynamic> parsedData =
@@ -254,9 +260,9 @@ class ApiServices {
   //Add Address API
 
   Future<Map<String, dynamic>> addAddress(AddressModel addressModel) async {
-    log("Add Address API Inprogress");
+    CustomerModel customerDetails = await sessionManager.getAuthToken();
     log("===========Add Address API===============");
-    log(addressModel.toJson().toString());
+    log(addressModel.id.toString());
     log("===========Add Address API===============");
 
     try {
@@ -264,7 +270,7 @@ class ApiServices {
         Uri.parse(addAddressApi),
         headers: {
           "Content-Type": "application/json",
-          "AuthId": localStorage.getCustomer['auth_id']
+          "AuthId": customerDetails.authId.toString()
         },
         body: jsonEncode(addressModel),
       );
@@ -287,10 +293,11 @@ class ApiServices {
   //Get Address API
 
   Future<List<GetAddressModel>> getAddress() async {
+    CustomerModel customerDetails = await sessionManager.getAuthToken();
     log("Get Address APIInprogress");
     try {
       var response = await http.get(
-        Uri.parse("$getAddressApi${localStorage.getCustomer['auth_id']}"),
+        Uri.parse("$getAddressApi${customerDetails.authId}"),
       );
       if (response.statusCode == 200) {
         Map<String, dynamic> parsedData =
@@ -306,6 +313,228 @@ class ApiServices {
     } catch (e) {
       log(e.toString());
       throw Exception("Get Address API Failed...");
+    }
+  }
+
+  //Place Order API
+
+  Future<PlaceOrderResponseModel> placeOrderService(
+      Map<String, dynamic> payLoad) async {
+    CustomerModel customerDetails = await sessionManager.getAuthToken();
+    log("Place Order API In Progress");
+    log(payLoad.toString());
+    try {
+      var response = await http.post(
+        Uri.parse(placeOrderApi),
+        headers: {
+          "Content-Type": "application/json",
+          "AuthId": customerDetails.authId.toString()
+        },
+        body: jsonEncode(payLoad),
+      );
+      if (response.statusCode == 200) {
+        log("88888888888");
+        log(response.body);
+        Map<String, dynamic> parsedData =
+            jsonDecode(response.body) as Map<String, dynamic>;
+        PlaceOrderResponseModel responseData =
+            PlaceOrderResponseModel.fromJson(parsedData);
+        log(responseData.toString());
+        return responseData;
+      } else {
+        log(response.body);
+        log("FAILED PLACEORDER API");
+        return PlaceOrderResponseModel(message: "", orderId: "");
+      }
+    } catch (e) {
+      log(e.toString());
+      throw Exception("PlaceOrder API Failed...");
+    }
+  }
+
+  //Order API
+
+  Future<List<OrderModel>> orderService() async {
+    CustomerModel customerDetails = await sessionManager.getAuthToken();
+
+    log("Order API In Progress");
+    log(orderApi + customerDetails.authId.toString());
+    try {
+      var response = await http.get(
+        Uri.parse(orderApi + customerDetails.authId.toString()),
+      );
+      if (response.statusCode == 200) {
+        Map<String, dynamic> parsedData =
+            jsonDecode(response.body) as Map<String, dynamic>;
+        List<OrderModel> activeOrderData = [];
+        (parsedData['data'] as List<dynamic>).map((e) {
+          activeOrderData.add(OrderModel.fromJson(e));
+        }).toList();
+        log("========================");
+        log(activeOrderData.toList().toString());
+        List<OrderModel> tempActiveOrderData = List.from(activeOrderData);
+        tempActiveOrderData.removeWhere((element) {
+          return element.status == "7" &&
+              element.status == "13" &&
+              element.status == "14" &&
+              element.status == "20";
+        });
+        log(">>>>>>>>>>>>>>>>>>>>>>>>>");
+        log(tempActiveOrderData.toString());
+        return tempActiveOrderData;
+      } else {
+        log(response.body);
+        log("FAILED PASTORDER API");
+        return [];
+      }
+    } catch (e) {
+      log(e.toString());
+      throw Exception("ORDER API Failed...");
+    }
+  }
+
+  //Past Orders API
+
+  Future<List<OrderModel>> pastrderService() async {
+    CustomerModel customerDetails = await sessionManager.getAuthToken();
+
+    log("Past Order API In Progress");
+    try {
+      var response = await http.get(
+        Uri.parse(orderApi + customerDetails.authId.toString()),
+      );
+      if (response.statusCode == 200) {
+        Map<String, dynamic> parsedData =
+            jsonDecode(response.body) as Map<String, dynamic>;
+        List<OrderModel> data = [];
+        List<OrderModel> postOrderData = [];
+        (parsedData['data'] as List<dynamic>).map((e) {
+          data.add(OrderModel.fromJson(e));
+        }).toList();
+        data.map((e) {
+          if (e.status == "7" ||
+              e.status == "13" ||
+              e.status == "14" ||
+              e.status == "20") {
+            log(e.toString());
+            return postOrderData.add(e);
+          }
+        }).toList();
+        log(postOrderData.toString());
+        return postOrderData;
+      } else {
+        log(response.body);
+        log("FAILED PASTORDER API");
+        return [];
+      }
+    } catch (e) {
+      log(e.toString());
+      throw Exception("PASTORDER API Failed...");
+    }
+  }
+
+  //getStatusList API
+
+  Future<Map<String, dynamic>> getStatusList() async {
+    CustomerModel customerDetails = await sessionManager.getAuthToken();
+
+    log("GetStatus List API In Progress");
+    try {
+      var response = await http.get(
+        Uri.parse(statusList + customerDetails.authId.toString()),
+      );
+      if (response.statusCode == 200) {
+        Map<String, dynamic> parsedData =
+            jsonDecode(response.body) as Map<String, dynamic>;
+        Map<String, dynamic> data = parsedData['data'];
+        return data;
+      } else {
+        log("FAILED STATUSLIST API");
+        return {};
+      }
+    } catch (e) {
+      log(e.toString());
+      throw Exception("STATUSLIST API Failed...");
+    }
+  }
+
+  // Update Profile API
+
+  Future<void> updateProfile(UpdateProfileModel updateProfileModel) async {
+    CustomerModel customerDetails = await sessionManager.getAuthToken();
+    log("Update Profile API In Progress");
+    log(updateProfileModel.toString());
+    try {
+      var response = await http.post(
+        Uri.parse(updateProfileApi),
+        headers: {
+          "Content-Type": "application/json",
+          "AuthId": customerDetails.authId.toString()
+        },
+        body: jsonEncode(updateProfileModel),
+      );
+      if (response.statusCode == 200) {
+        log(response.body);
+      } else {}
+    } catch (e) {
+      log(e.toString());
+      throw Exception("UpdateProfile API Failed...");
+    }
+  }
+
+  //Delete Customer Address API
+
+  Future<int> deleteCustomerAddress(String id) async {
+    CustomerModel customerDetails = await sessionManager.getAuthToken();
+
+    log("Delete Address Api API In Progress");
+    log("$deleteAddressApi$id?AuthId=${customerDetails.authId}");
+    try {
+      var response = await http.delete(
+        Uri.parse("$deleteAddressApi$id?AuthId=${customerDetails.authId}"),
+      );
+      if (response.statusCode == 200) {
+        int parsedData = jsonDecode(response.body) as int;
+        return parsedData;
+      } else {
+        log("FAILED Delete Customer API");
+        return 0;
+      }
+    } catch (e) {
+      log(e.toString());
+      throw Exception("Delete Customer API Failed...");
+    }
+  }
+
+  //Order Details API
+
+  Future<OrderResponseModel?> orderDetailsService(String orderId) async {
+    CustomerModel customerDetails = await sessionManager.getAuthToken();
+    log("Order Details List API In Progress");
+    log("${orderDetailsApi}AuthId=${customerDetails.authId}&Oid=$orderId");
+    try {
+      var response = await http.get(
+        Uri.parse(
+            "${orderDetailsApi}AuthId=${customerDetails.authId}&Oid=$orderId"),
+      );
+
+      log("=====================================");
+      log(response.body.toString());
+      log("=====================================");
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> parsedData =
+            jsonDecode(response.body) as Map<String, dynamic>;
+        OrderResponseModel orderResponseModel =
+            OrderResponseModel.fromJson(parsedData);
+        return orderResponseModel;
+      } else {
+        log("Order Details API");
+        return null;
+      }
+    } catch (e) {
+      log(e.toString());
+      throw Exception("Order Details Failed...");
     }
   }
 }

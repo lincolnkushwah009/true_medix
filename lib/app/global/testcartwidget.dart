@@ -30,9 +30,12 @@ class TestCartWidget extends StatelessWidget {
       children: [
         Row(
           children: [
-            FittedBox(
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.8,
               child: Text(
                 title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: testTextStyle.copyWith(fontSize: 16),
               ),
             ),

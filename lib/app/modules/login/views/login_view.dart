@@ -36,21 +36,8 @@ class LoginView extends GetView<LoginController> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 11, top: 30),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: InkWell(
-                      onTap: () {
-                        Get.back();
-                      },
-                      child: SizedBox(
-                        width: 22,
-                        height: 18,
-                        child: SvgPicture.asset("assets/back.svg"),
-                      ),
-                    ),
-                  ),
+                Container(
+                  height: 50,
                 ),
                 Center(
                   child: Padding(

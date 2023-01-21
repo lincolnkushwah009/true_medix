@@ -1,23 +1,23 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
 
-class PastordersController extends GetxController {
-  //TODO: Implement PastordersController
+import '../../../services/apiServives/apiservices.dart';
 
-  final count = 0.obs;
+class PastordersController extends GetxController {
+  ApiServices apiServices = ApiServices();
+  RxMap statusListData = {}.obs;
+  RxList pastOrdersData = [].obs;
+
+  initStatusList() async {
+    statusListData.value = await apiServices.getStatusList();
+    log(statusListData.toString());
+  }
+
   @override
   void onInit() {
+    log("ActiveordersController Init...");
+    initStatusList();
     super.onInit();
   }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  void increment() => count.value++;
 }

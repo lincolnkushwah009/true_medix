@@ -120,18 +120,19 @@ class HomeController extends GetxController {
   }
 
   //ApiCall for Products from HomeController to ApiServices
-  Future<void> initProductsCall() async {
+  Future<void> initProductsCall(
+      {String page = "1", String query = "arunodaya"}) async {
     productsLoading = true.obs;
     log("Loading Product Setter Called 1....");
     log("Products API in Progress");
-    _productsList = await apiServices.getProducts();
+    _productsList = await apiServices.getProducts(page: page, query: query);
     productsLoading = false.obs;
     log("Loading Product Setter Called 2....");
   }
 
   Future<void> launchCustomerCarePhone() async {
     log("launchCustomerCarePhone init...");
-    const url = "tel:9055448696";
+    const url = "tel:+91 8055554468";
     if (await canLaunch(url)) {
       log("launchCustomerCarePhone canLaunch...");
       await launch(url);

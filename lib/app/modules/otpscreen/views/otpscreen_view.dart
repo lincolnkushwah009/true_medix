@@ -5,16 +5,16 @@ import 'dart:developer';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 import 'package:get/get.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:true_medix/app/services/sessionmanager.dart';
 
 import '../../../routes/app_pages.dart';
-import '../../../services/localstorage.dart';
 import '../../../utilities/appcolors.dart';
 import '../../../utilities/appstyles.dart';
+import '../../bottomnavbar/views/bottomnavbar_view.dart';
 import '../controllers/otpscreen_controller.dart';
 
 class OtpscreenView extends GetView<OtpscreenController> {
@@ -25,7 +25,7 @@ class OtpscreenView extends GetView<OtpscreenController> {
   Widget build(BuildContext context) {
     OtpscreenController controller =
         Get.put<OtpscreenController>(OtpscreenController());
-    LocalStorage localStorage = LocalStorage();
+    SessionManager sessionManager = SessionManager();
     String phone = Get.arguments ?? '';
     return LoaderOverlay(
       useDefaultLoading: true,
@@ -42,21 +42,8 @@ class OtpscreenView extends GetView<OtpscreenController> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 11, top: 30),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: InkWell(
-                      onTap: () {
-                        Get.back();
-                      },
-                      child: SizedBox(
-                        width: 22,
-                        height: 18,
-                        child: SvgPicture.asset("assets/back.svg"),
-                      ),
-                    ),
-                  ),
+                Container(
+                  height: 30,
                 ),
                 Center(
                   child: Padding(
@@ -176,8 +163,8 @@ class OtpscreenView extends GetView<OtpscreenController> {
                                             phone: phone)
                                         .then((value) {
                                       log(value.data.toString());
-                                      localStorage.storeUserDetails(
-                                          value.data['customer']);
+                                      sessionManager
+                                          .setAuthToken(value.data['customer']);
                                       log(value.statusCode.toString());
                                       if (value.statusCode == 200) {
                                         log(value.data['customer'].toString());
@@ -189,7 +176,14 @@ class OtpscreenView extends GetView<OtpscreenController> {
                                         Future.delayed(
                                             const Duration(seconds: 3), () {
                                           context.loaderOverlay.hide();
-                                          Get.toNamed(Routes.BOTTOMNAVBAR);
+                                          Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  BottomnavbarView(
+                                                incomingIndex: 0,
+                                              ),
+                                            ),
+                                          );
                                         });
                                       } else {
                                         ElegantNotification.error(
