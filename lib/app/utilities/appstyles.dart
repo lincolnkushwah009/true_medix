@@ -28,9 +28,9 @@ TextStyle outlineBtnStyle = GoogleFonts.poppins(
   color: Colors.white,
   fontWeight: FontWeight.w600,
 );
-TextStyle iconTextStyle = const TextStyle(
+TextStyle iconTextStyle = GoogleFonts.poppins(
   fontSize: 10,
-  color: Color(0XFF78aecd),
+  color: const Color(0XFF78aecd),
 );
 TextStyle testTextStyle = GoogleFonts.poppins(
   fontSize: 18,

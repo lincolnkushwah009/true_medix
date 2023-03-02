@@ -39,15 +39,10 @@ class OtpscreenView extends GetView<OtpscreenController> {
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  height: 30,
-                ),
                 Center(
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 0.0, bottom: 27),
+                    padding: const EdgeInsets.only(top: 30.0, bottom: 47),
                     child: Image.asset(
                       "assets/authImage.png",
                       height: 200,
@@ -55,11 +50,7 @@ class OtpscreenView extends GetView<OtpscreenController> {
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.632,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: kPrimaryColor,
@@ -152,6 +143,8 @@ class OtpscreenView extends GetView<OtpscreenController> {
                                 height: 30,
                               ),
                               InkWell(
+                                splashColor: Colors.black,
+                                highlightColor: Colors.green,
                                 onTap: () async {
                                   if (formKey.currentState!.validate()) {
                                     context.loaderOverlay.show();
@@ -241,6 +234,8 @@ class OtpscreenView extends GetView<OtpscreenController> {
                                     width: 18,
                                   ),
                                   InkWell(
+                                    splashColor: Colors.black,
+                                    highlightColor: Colors.green,
                                     onTap: () {
                                       Get.offNamed(Routes.REGISTER);
                                     },
@@ -262,6 +257,10 @@ class OtpscreenView extends GetView<OtpscreenController> {
                       ),
                     ],
                   ),
+                ),
+                Container(
+                  height: 115,
+                  color: kPrimaryColor,
                 ),
               ],
             ),

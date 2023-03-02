@@ -21,3 +21,5 @@ String statusList = "${baseUrlProd}orders/getStatusList?AuthId=";
 String updateProfileApi = "$baseUrlProd/customers/updateProfile";
 String deleteAddressApi = "$baseUrlProd/customers/deleteAddress/";
 String orderDetailsApi = "$baseUrlProd/orders/myOrderDetail?";
+String pheloboApi = "$baseUrlProd/contents/phlebo_ratings?pid=";
+String uploadPrescriptionApi = "$baseUrlProd/customers/uploadprescription";

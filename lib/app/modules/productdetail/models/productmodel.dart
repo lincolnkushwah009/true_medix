@@ -1,156 +1,306 @@
-// To parse this JSON data, do
-//
-//     final productModel = productModelFromJson(jsonString);
+// // To parse this JSON data, do
+// //
+// //     final productModel = productModelFromJson(jsonString);
 
-import 'dart:convert';
+// import 'dart:convert';
 
-ProductModel? productModelFromJson(String str) =>
-    ProductModel.fromJson(json.decode(str));
+// ProductModel? productModelFromJson(String str) =>
+//     ProductModel.fromJson(json.decode(str));
 
-String productModelToJson(ProductModel? data) => json.encode(data!.toJson());
+// String productModelToJson(ProductModel? data) => json.encode(data!.toJson());
 
+// class ProductModel {
+//   ProductModel({
+//     this.id,
+//     this.name,
+//     this.description,
+//     this.price,
+//     this.saleprice,
+//     this.image,
+//     this.apiTestId,
+//     this.apiTestCategory,
+//     this.apiTestCode,
+//     this.apiDictionaryId,
+//     this.apiDepartmentName,
+//     this.apiTestDescription,
+//     this.relatedBundleIds,
+//     this.relatedBundleItems,
+//     this.ratings,
+//   });
+
+//   String? id;
+//   String? name;
+//   String? description;
+//   String? price;
+//   String? saleprice;
+//   String? image;
+//   String? apiTestId;
+//   String? apiTestCategory;
+//   String? apiTestCode;
+//   String? apiDictionaryId;
+//   String? apiDepartmentName;
+//   String? apiTestDescription;
+//   String? relatedBundleIds;
+//   List<RelatedBundleItem?>? relatedBundleItems;
+//   Ratings? ratings;
+
+//   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
+//         id: json["id"],
+//         name: json["name"],
+//         description: json["description"],
+//         price: json["price"],
+//         saleprice: json["saleprice"],
+//         image: json["image"],
+//         apiTestId: json["api_testID"],
+//         apiTestCategory: json["api_testCategory"],
+//         apiTestCode: json["api_testCode"],
+//         apiDictionaryId: json["api_dictionaryId"],
+//         apiDepartmentName: json["api_departmentName"],
+//         apiTestDescription: json["api_testDescription"],
+//         relatedBundleIds: json["related_bundle_ids"],
+//         relatedBundleItems: json["related_bundle_items"] == null
+//             ? []
+//             : List<RelatedBundleItem?>.from(json["related_bundle_items"]!
+//                 .map((x) => RelatedBundleItem.fromJson(x))),
+//         ratings: Ratings.fromJson(json["ratings"] ?? {}),
+//       );
+
+//   Map<String, dynamic> toJson() => {
+//         "id": id,
+//         "name": name,
+//         "description": description,
+//         "price": price,
+//         "saleprice": saleprice,
+//         "image": image,
+//         "api_testID": apiTestId,
+//         "api_testCategory": apiTestCategory,
+//         "api_testCode": apiTestCode,
+//         "api_dictionaryId": apiDictionaryId,
+//         "api_departmentName": apiDepartmentName,
+//         "api_testDescription": apiTestDescription,
+//         "related_bundle_ids": relatedBundleIds,
+//         "related_bundle_items": relatedBundleItems == null
+//             ? []
+//             : List<dynamic>.from(relatedBundleItems!.map((x) => x!.toJson())),
+//         "ratings": ratings!.toJson(),
+//       };
+// }
+
+// class Ratings {
+//   Ratings({
+//     this.total,
+//     this.roundRating,
+//     this.avgRating,
+//   });
+
+//   String? total;
+//   int? roundRating;
+//   int? avgRating;
+
+//   factory Ratings.fromJson(Map<String, dynamic> json) => Ratings(
+//         total: json["total"],
+//         roundRating: json["round_rating"],
+//         avgRating: json["avg_rating"],
+//       );
+
+//   Map<String, dynamic> toJson() => {
+//         "total": total,
+//         "round_rating": roundRating,
+//         "avg_rating": avgRating,
+//       };
+// }
+
+// class RelatedBundleItem {
+//   RelatedBundleItem({
+//     this.id,
+//     this.name,
+//     this.price,
+//     this.saleprice,
+//     this.apiTestId,
+//     this.apiTestCategory,
+//     this.apiTestCode,
+//     this.apiTestDescription,
+//   });
+
+//   String? id;
+//   String? name;
+//   String? price;
+//   String? saleprice;
+//   String? apiTestId;
+//   String? apiTestCategory;
+//   String? apiTestCode;
+//   String? apiTestDescription;
+
+//   factory RelatedBundleItem.fromJson(Map<String, dynamic> json) =>
+//       RelatedBundleItem(
+//         id: json["id"],
+//         name: json["name"],
+//         price: json["price"],
+//         saleprice: json["saleprice"],
+//         apiTestId: json["api_testID"],
+//         apiTestCategory: json["api_testCategory"],
+//         apiTestCode: json["api_testCode"],
+//         apiTestDescription: json["api_testDescription"],
+//       );
+
+//   Map<String, dynamic> toJson() => {
+//         "id": id,
+//         "name": name,
+//         "price": price,
+//         "saleprice": saleprice,
+//         "api_testID": apiTestId,
+//         "api_testCategory": apiTestCategory,
+//         "api_testCode": apiTestCode,
+//         "api_testDescription": apiTestDescription,
+//       };
+// }
 class ProductModel {
-  ProductModel({
-    this.id,
-    this.name,
-    this.description,
-    this.price,
-    this.saleprice,
-    this.image,
-    this.apiTestId,
-    this.apiTestCategory,
-    this.apiTestCode,
-    this.apiDictionaryId,
-    this.apiDepartmentName,
-    this.apiTestDescription,
-    this.relatedBundleIds,
-    this.relatedBundleItems,
-    this.ratings,
-  });
-
   String? id;
   String? name;
   String? description;
   String? price;
   String? saleprice;
   String? image;
-  String? apiTestId;
+  String? apiTestID;
   String? apiTestCategory;
   String? apiTestCode;
   String? apiDictionaryId;
   String? apiDepartmentName;
   String? apiTestDescription;
   String? relatedBundleIds;
-  List<RelatedBundleItem?>? relatedBundleItems;
+  List<RelatedBundleItems>? relatedBundleItems;
   Ratings? ratings;
 
-  factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
-        id: json["id"],
-        name: json["name"],
-        description: json["description"],
-        price: json["price"],
-        saleprice: json["saleprice"],
-        image: json["image"],
-        apiTestId: json["api_testID"],
-        apiTestCategory: json["api_testCategory"],
-        apiTestCode: json["api_testCode"],
-        apiDictionaryId: json["api_dictionaryId"],
-        apiDepartmentName: json["api_departmentName"],
-        apiTestDescription: json["api_testDescription"],
-        relatedBundleIds: json["related_bundle_ids"],
-        relatedBundleItems: json["related_bundle_items"] == null
-            ? []
-            : List<RelatedBundleItem?>.from(json["related_bundle_items"]!
-                .map((x) => RelatedBundleItem.fromJson(x))),
-        ratings: Ratings.fromJson(json["ratings"] ?? {}),
-      );
+  ProductModel(
+      {this.id,
+      this.name,
+      this.description,
+      this.price,
+      this.saleprice,
+      this.image,
+      this.apiTestID,
+      this.apiTestCategory,
+      this.apiTestCode,
+      this.apiDictionaryId,
+      this.apiDepartmentName,
+      this.apiTestDescription,
+      this.relatedBundleIds,
+      this.relatedBundleItems,
+      this.ratings});
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "description": description,
-        "price": price,
-        "saleprice": saleprice,
-        "image": image,
-        "api_testID": apiTestId,
-        "api_testCategory": apiTestCategory,
-        "api_testCode": apiTestCode,
-        "api_dictionaryId": apiDictionaryId,
-        "api_departmentName": apiDepartmentName,
-        "api_testDescription": apiTestDescription,
-        "related_bundle_ids": relatedBundleIds,
-        "related_bundle_items": relatedBundleItems == null
-            ? []
-            : List<dynamic>.from(relatedBundleItems!.map((x) => x!.toJson())),
-        "ratings": ratings!.toJson(),
-      };
+  ProductModel.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    description = json['description'];
+    price = json['price'];
+    saleprice = json['saleprice'];
+    image = json['image'];
+    apiTestID = json['api_testID'];
+    apiTestCategory = json['api_testCategory'];
+    apiTestCode = json['api_testCode'];
+    apiDictionaryId = json['api_dictionaryId'];
+    apiDepartmentName = json['api_departmentName'];
+    apiTestDescription = json['api_testDescription'];
+    relatedBundleIds = json['related_bundle_ids'];
+    if (json['related_bundle_items'] != null) {
+      relatedBundleItems = <RelatedBundleItems>[];
+      json['related_bundle_items'].forEach((v) {
+        relatedBundleItems!.add(RelatedBundleItems.fromJson(v));
+      });
+    }
+    ratings =
+        json['ratings'] != null ? Ratings.fromJson(json['ratings']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['description'] = description;
+    data['price'] = price;
+    data['saleprice'] = saleprice;
+    data['image'] = image;
+    data['api_testID'] = apiTestID;
+    data['api_testCategory'] = apiTestCategory;
+    data['api_testCode'] = apiTestCode;
+    data['api_dictionaryId'] = apiDictionaryId;
+    data['api_departmentName'] = apiDepartmentName;
+    data['api_testDescription'] = apiTestDescription;
+    data['related_bundle_ids'] = relatedBundleIds;
+    if (relatedBundleItems != null) {
+      data['related_bundle_items'] =
+          relatedBundleItems!.map((v) => v.toJson()).toList();
+    }
+    if (ratings != null) {
+      data['ratings'] = ratings!.toJson();
+    }
+    return data;
+  }
 }
 
-class Ratings {
-  Ratings({
-    this.total,
-    this.roundRating,
-    this.avgRating,
-  });
-
-  String? total;
-  int? roundRating;
-  int? avgRating;
-
-  factory Ratings.fromJson(Map<String, dynamic> json) => Ratings(
-        total: json["total"],
-        roundRating: json["round_rating"],
-        avgRating: json["avg_rating"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "total": total,
-        "round_rating": roundRating,
-        "avg_rating": avgRating,
-      };
-}
-
-class RelatedBundleItem {
-  RelatedBundleItem({
-    this.id,
-    this.name,
-    this.price,
-    this.saleprice,
-    this.apiTestId,
-    this.apiTestCategory,
-    this.apiTestCode,
-    this.apiTestDescription,
-  });
-
+class RelatedBundleItems {
   String? id;
   String? name;
   String? price;
   String? saleprice;
-  String? apiTestId;
+  String? apiTestID;
   String? apiTestCategory;
   String? apiTestCode;
   String? apiTestDescription;
 
-  factory RelatedBundleItem.fromJson(Map<String, dynamic> json) =>
-      RelatedBundleItem(
-        id: json["id"],
-        name: json["name"],
-        price: json["price"],
-        saleprice: json["saleprice"],
-        apiTestId: json["api_testID"],
-        apiTestCategory: json["api_testCategory"],
-        apiTestCode: json["api_testCode"],
-        apiTestDescription: json["api_testDescription"],
-      );
+  RelatedBundleItems(
+      {this.id,
+      this.name,
+      this.price,
+      this.saleprice,
+      this.apiTestID,
+      this.apiTestCategory,
+      this.apiTestCode,
+      this.apiTestDescription});
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "name": name,
-        "price": price,
-        "saleprice": saleprice,
-        "api_testID": apiTestId,
-        "api_testCategory": apiTestCategory,
-        "api_testCode": apiTestCode,
-        "api_testDescription": apiTestDescription,
-      };
+  RelatedBundleItems.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    price = json['price'];
+    saleprice = json['saleprice'];
+    apiTestID = json['api_testID'];
+    apiTestCategory = json['api_testCategory'];
+    apiTestCode = json['api_testCode'];
+    apiTestDescription = json['api_testDescription'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['price'] = price;
+    data['saleprice'] = saleprice;
+    data['api_testID'] = apiTestID;
+    data['api_testCategory'] = apiTestCategory;
+    data['api_testCode'] = apiTestCode;
+    data['api_testDescription'] = apiTestDescription;
+    return data;
+  }
+}
+
+class Ratings {
+  String? total;
+  int? roundRating;
+  int? avgRating;
+
+  Ratings({this.total, this.roundRating, this.avgRating});
+
+  Ratings.fromJson(Map<String, dynamic> json) {
+    total = json['total'];
+    roundRating = json['round_rating'];
+    avgRating = json['avg_rating'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['total'] = total;
+    data['round_rating'] = roundRating;
+    data['avg_rating'] = avgRating;
+    return data;
+  }
 }

@@ -11,6 +11,7 @@ import 'package:true_medix/app/modules/cart/controllers/cart_controller.dart';
 import 'package:true_medix/app/modules/home/views/home_view.dart';
 import 'package:true_medix/app/modules/orderhistory/views/orderhistory_view.dart';
 import 'package:true_medix/app/modules/profile/views/profile_view.dart';
+import 'package:true_medix/app/utilities/appcolors.dart';
 
 import '../../../utilities/appstyles.dart';
 import '../../cart/views/cart_view.dart';
@@ -50,6 +51,8 @@ class _BottomnavbarViewState extends State<BottomnavbarView> {
     return Scaffold(
       body: pages[widget.incomingIndex],
       bottomNavigationBar: BottomNavyBar(
+        showElevation: true,
+        backgroundColor: Colors.white60,
         selectedIndex: widget.incomingIndex,
         onItemSelected: (index) {
           widget.incomingIndex = index;

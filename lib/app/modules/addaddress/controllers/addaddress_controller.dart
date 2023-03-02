@@ -35,6 +35,7 @@ class AddaddressController extends GetxController {
   TextEditingController stateController = TextEditingController();
   TextEditingController cityController = TextEditingController();
   TextEditingController pincodeController = TextEditingController();
+  TextEditingController dobController = TextEditingController();
 
   //Dropdowns and Target Variables
   RxInt selectedAge = 0.obs;

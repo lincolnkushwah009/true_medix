@@ -59,7 +59,7 @@ class _PastordersViewState extends State<PastordersView> {
                           return Padding(
                             padding: const EdgeInsets.only(
                                 left: 8.0, right: 8.0, top: 10),
-                            child: GestureDetector(
+                            child: InkWell(
                               onTap: () {},
                               child: Card(
                                 child: Container(
@@ -115,18 +115,21 @@ class _PastordersViewState extends State<PastordersView> {
                       return Padding(
                         padding: const EdgeInsets.only(
                             left: 8.0, right: 8.0, top: 10),
-                        child: GestureDetector(
+                        child: InkWell(
+                          splashColor: Colors.black,
+                          highlightColor: Colors.green,
                           onTap: () {
                             Get.to(
                               () => PamentsummaryView(
-                                  orderId: reversedList[index]
-                                      .orderNumber
-                                      .toString()),
+                                orderId:
+                                    reversedList[index].orderNumber.toString(),
+                                pheleboId: reversedList[index].id.toString(),
+                              ),
                             );
                           },
                           child: Card(
                             child: Container(
-                              height: 160,
+                              height: 190,
                               width: MediaQuery.of(context).size.width * 0.8,
                               decoration: BoxDecoration(
                                 color: Colors.white,
@@ -139,23 +142,33 @@ class _PastordersViewState extends State<PastordersView> {
                                   orderId: reversedList[index]
                                       .orderNumber
                                       .toString(),
-                                  paymentStatus: double.parse(
-                                              reversedList[index].total!) ==
-                                          double.parse(
-                                              reversedList[index].paidAmount!)
+                                  paymentStatus: double.parse(reversedList[index].total!.toString()) ==
+                                          double.parse(reversedList[index]
+                                              .paidAmount!
+                                              .toString())
                                       ? "Paid"
-                                      : ((double.parse(
-                                                  reversedList[index].total!) ==
-                                              double.parse(snapshot
-                                                  .data![index].dueAmount!))
+                                      : (double.parse(reversedList[index].total!.toString()) ==
+                                              double.parse(reversedList[index]
+                                                  .dueAmount!
+                                                  .toString()))
                                           ? "Not Paid"
-                                          : "Partially Paid"),
+                                          : (double.parse(reversedList[index].dueAmount!) <
+                                                      double.parse(
+                                                          reversedList[index]
+                                                              .total!) &&
+                                                  double.parse(reversedList[index].paidAmount!) >
+                                                      0)
+                                              ? "Partially Paid"
+                                              : "Not Updated Yet",
                                   scheduledOn: reversedList[index]
                                       .scheduledOn
                                       .toString(),
-                                  pending: false,
-                                  bookingStatus: controller
-                                      .statusListData[reversedList[index].status]),
+                                  pending: double.parse(
+                                              reversedList[index].total!.toString()) ==
+                                          double.parse(reversedList[index].paidAmount!.toString())
+                                      ? false
+                                      : true,
+                                  bookingStatus: controller.statusListData[reversedList[index].status] ?? ""),
                             ),
                           ),
                         ),

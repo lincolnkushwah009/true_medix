@@ -1,10 +1,7 @@
 // ignore_for_file: prefer_final_fields
 
 import 'dart:developer';
-
 import 'package:get/get.dart';
-import 'package:location/location.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:true_medix/app/services/apiServives/apiservices.dart';
 
 class CartController extends GetxController {
@@ -12,11 +9,11 @@ class CartController extends GetxController {
 
   RxList _cartProducts = [].obs;
 
-  LocationData? locationData;
+  // LocationData? locationData;
 
-  RxBool isLocationPermissionGranted = false.obs;
+  // RxBool isLocationPermissionGranted = false.obs;
 
-  RxBool isLocationDataActive = false.obs;
+  // RxBool isLocationDataActive = false.obs;
 
   RxBool _cartProductsLoading = false.obs;
 
@@ -49,40 +46,40 @@ class CartController extends GetxController {
     cartProductsLoading = false.obs;
   }
 
-  //Get Geo Permission
-  Future<void> getLocationPermission() async {
-    isLocationPermissionGranted.value = await Permission.location.isGranted;
-    if (isLocationPermissionGranted.value) {
-      log(isLocationPermissionGranted.value.toString());
-      getLocationData();
-    } else {
-      Permission.location.request().then((value) {
-        isLocationPermissionGranted.value = value.isGranted;
-        getLocationData();
-      }).onError((error, stackTrace) {
-        isLocationPermissionGranted.value = false;
-      });
-      locationData = await Location.instance.getLocation();
-      log(isLocationPermissionGranted.value.toString());
-    }
-  }
+  // //Get Geo Permission
+  // Future<void> getLocationPermission() async {
+  //   isLocationPermissionGranted.value = await Permission.location.isGranted;
+  //   if (isLocationPermissionGranted.value) {
+  //     log(isLocationPermissionGranted.value.toString());
+  //     getLocationData();
+  //   } else {
+  //     Permission.location.request().then((value) {
+  //       isLocationPermissionGranted.value = value.isGranted;
+  //       getLocationData();
+  //     }).onError((error, stackTrace) {
+  //       isLocationPermissionGranted.value = false;
+  //     });
+  //     locationData = await Location.instance.getLocation();
+  //     log(isLocationPermissionGranted.value.toString());
+  //   }
+  // }
 
-  // Get Location Data
-  Future<void> getLocationData() async {
-    Location.instance.getLocation().then((value) {
-      isLocationDataActive.value = true;
-      locationData = value;
-      log(value.longitude.toString());
-      log(value.latitude.toString());
-      log(isLocationDataActive.value.toString());
-    }).onError((error, stackTrace) {
-      ("Error Occured Location Data");
-      isLocationDataActive.value = false;
-    });
-  }
+  // // Get Location Data
+  // Future<void> getLocationData() async {
+  //   Location.instance.getLocation().then((value) {
+  //     isLocationDataActive.value = true;
+  //     locationData = value;
+  //     log(value.longitude.toString());
+  //     log(value.latitude.toString());
+  //     log(isLocationDataActive.value.toString());
+  //   }).onError((error, stackTrace) {
+  //     ("Error Occured Location Data");
+  //     isLocationDataActive.value = false;
+  //   });
+  // }
 
   //Calculate Total Price of Cart
-  Future<double> getTotalPriceOfCart(List<dynamic> cartList) async {
+  Future<List> getTotalPriceOfCart(List<dynamic> cartList) async {
     subTotal = 0.0.obs;
     taxAndFee = 0.0.obs;
     delivery = "".obs;
@@ -92,13 +89,13 @@ class CartController extends GetxController {
           subTotal.value + double.parse(element.saleprice.toString());
       log(subTotal.toString());
     }
-    if (subTotal < 500 && subTotal > 0.0) {
+    if (subTotal < 500.0 && subTotal > 0.0) {
       taxAndFee.value = taxAndFee.value + 150;
     }
     delivery.value = "Free";
     total.value = subTotal.value + taxAndFee.value;
     isCaliculationDone.value = true;
-    return total.value;
+    return [total.value, taxAndFee];
   }
 
   @override

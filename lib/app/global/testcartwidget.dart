@@ -8,6 +8,7 @@ import '../utilities/appstyles.dart';
 
 class TestCartWidget extends StatelessWidget {
   TestCartWidget({
+    required this.relatedBundle,
     required this.price,
     required this.subTitle,
     required this.title,
@@ -17,6 +18,7 @@ class TestCartWidget extends StatelessWidget {
   }) : super(key: key);
 
   VoidCallback onTapDeleted;
+  String relatedBundle;
   VoidCallback onTapDrop;
   String title;
   String subTitle;
@@ -40,15 +42,18 @@ class TestCartWidget extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            GestureDetector(
-                onTap: onTapDrop, child: SvgPicture.asset("assets/drop.svg")),
+            InkWell(
+                splashColor: Colors.black,
+                highlightColor: Colors.green,
+                onTap: onTapDrop,
+                child: Ink(child: SvgPicture.asset("assets/drop.svg"))),
           ],
         ),
         const SizedBox(
           height: 13,
         ),
         Text(
-          "Includes 8 Tests",
+          "Includes ${relatedBundle.toString()} Tests",
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w400,
             fontSize: 14,

@@ -63,7 +63,7 @@
 //       'timeout': 60 * 5,
 //       'prefill': {
 //         'contact': '9541599562',
-//         'email': 'developer.zaidbashir@gmail.com',
+//         'email': 'developer.InkWellbashir@gmail.com',
 //       }
 //     };
 //     razorpay.open(options);
@@ -207,7 +207,7 @@
 //               color: const Color(0XFF242424),
 //               fontWeight: FontWeight.w400),
 //         ),
-//         leading: GestureDetector(
+//         leading: InkWell(
 //           onTap: () {
 //             Navigator.of(context).pop();
 //           },
@@ -292,7 +292,7 @@
 //               const SizedBox(
 //                 height: 13,
 //               ),
-//               GestureDetector(
+//               InkWell(
 //                 onTap: () async {
 //                   try {
 //                     createOrder();
@@ -328,7 +328,7 @@
 //               const SizedBox(
 //                 height: 13,
 //               ),
-//               GestureDetector(
+//               InkWell(
 //                 onTap: () {
 //                   try {
 //                     createOrder();

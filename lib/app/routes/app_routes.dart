@@ -26,6 +26,7 @@ abstract class Routes {
   static const PAMENTCARDS = _Paths.PAMENTCARDS;
   static const PAMENTMETHOD = _Paths.PAMENTMETHOD;
   static const PAMENTSUMMARY = _Paths.PAMENTSUMMARY;
+  static const UPLOADPRESCRIPTION = _Paths.UPLOADPRESCRIPTION;
 }
 
 abstract class _Paths {
@@ -53,4 +54,5 @@ abstract class _Paths {
   static const PAMENTCARDS = '/pamentcards';
   static const PAMENTMETHOD = '/pamentmethod';
   static const PAMENTSUMMARY = '/pamentsummary';
+  static const UPLOADPRESCRIPTION = '/uploadprescription';
 }

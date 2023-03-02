@@ -4,7 +4,7 @@ import 'dart:developer';
 
 import 'package:get/get.dart';
 import 'package:true_medix/app/global/hometestwidget.dart';
-import 'package:true_medix/app/modules/home/models/bannermodel.dart';
+import 'package:true_medix/app/modules/home/models/homeproductmodel.dart';
 import 'package:true_medix/app/modules/productdetail/models/productmodel.dart';
 import 'package:true_medix/app/services/apiServives/apiservices.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,91 +15,48 @@ class HomeController extends GetxController {
 
   List<HomeTestWidget> homeTestList = [
     HomeTestWidget(
-      icon: "assets/Images/covid.svg",
+      icon: "assets/Images/popular.svg",
+      title: "Popular Package",
+      isActive: false,
+    ),
+    HomeTestWidget(
+      icon: "assets/Images/covidnew.svg",
       title: "Covid",
+      isActive: false,
     ),
     HomeTestWidget(
-      icon: "assets/Images/Diabetic.svg",
-      title: "Diabetic",
+      icon: "assets/Images/fewernew.svg",
+      isActive: false,
+      title: "Fever",
     ),
     HomeTestWidget(
-      icon: "assets/Images/Diet.svg",
-      title: "Diet",
+      icon: "assets/Images/bloodnew.svg",
+      isActive: false,
+      title: "Blood",
     ),
     HomeTestWidget(
-      icon: "assets/Images/EyeCare.svg",
-      title: "EyeCare",
+      icon: "assets/Images/urinenew.svg",
+      isActive: false,
+      title: "Urine Test",
     ),
     HomeTestWidget(
-      icon: "assets/Images/Immunity.svg",
-      title: "Immunity",
+      icon: "assets/Images/kidneynew.svg",
+      isActive: false,
+      title: "Kidney",
     ),
     HomeTestWidget(
-      icon: "assets/Images/Mom&Kids.svg",
-      title: "Mom&Kids",
+      icon: "assets/Images/allergy.svg",
+      title: "Allergy",
+      isActive: false,
     ),
-    HomeTestWidget(icon: "assets/Images/SkinCare.svg", title: "SkinCare"),
   ];
 
-  //Reactive Data Variables for Banner
-  List<BannerModel> _bannerList = [
-    BannerModel(
-        id: "1",
-        image:
-            "https://cdn.ps.emap.com/wp-content/uploads/sites/3/2020/03/coronavirus-test-1024x683.jpg",
-        title: ""),
-    BannerModel(
-        id: "1",
-        image:
-            "https://cdn.ps.emap.com/wp-content/uploads/sites/3/2020/03/coronavirus-test-1024x683.jpg",
-        title: ""),
-    BannerModel(
-        id: "1",
-        image:
-            "https://cdn.ps.emap.com/wp-content/uploads/sites/3/2020/03/coronavirus-test-1024x683.jpg",
-        title: ""),
-    BannerModel(
-        id: "1",
-        image:
-            "https://cdn.ps.emap.com/wp-content/uploads/sites/3/2020/03/coronavirus-test-1024x683.jpg",
-        title: ""),
-    BannerModel(
-        id: "1",
-        image:
-            "https://cdn.ps.emap.com/wp-content/uploads/sites/3/2020/03/coronavirus-test-1024x683.jpg",
-        title: ""),
-    BannerModel(
-        id: "1",
-        image:
-            "https://cdn.ps.emap.com/wp-content/uploads/sites/3/2020/03/coronavirus-test-1024x683.jpg",
-        title: ""),
-    BannerModel(
-        id: "1",
-        image:
-            "https://cdn.ps.emap.com/wp-content/uploads/sites/3/2020/03/coronavirus-test-1024x683.jpg",
-        title: ""),
-  ];
-
-  List<ProductModel> _productsList = [];
-
-  //Loading for Banner
-  RxBool _bannerLoading = false.obs;
+  HomeProductModel? _productsList;
 
   //Loading for Products
   RxBool _productsLoading = false.obs;
 
-  //Setter and Getter for Banners
-  set bannerLoading(RxBool loadingVal) {
-    _bannerLoading.value = loadingVal.value;
-    update();
-  }
-
-  RxBool get bannerLoading => _bannerLoading;
-
-  List<BannerModel> get bannerList => _bannerList;
-
   //Setters and Getter for ProductList
-
   set productsLoading(RxBool loadingVal) {
     _productsLoading.value = loadingVal.value;
     update();
@@ -107,45 +64,34 @@ class HomeController extends GetxController {
 
   RxBool get productsLoading => _productsLoading;
 
-  List<ProductModel> get productsList => _productsList;
+  HomeProductModel get productsList => _productsList!;
 
   //ApiCall for Banners from HomeController to ApiServices
   Future<void> initBannerCall() async {
-    log("Loading Banner Setter Called 1....");
-    bannerLoading = true.obs;
-    log("Banner API in Progress");
-    await apiServices.getRunningBanners();
-    bannerLoading = false.obs;
-    log("Loading Banner Setter Called 2....");
+    var data = await apiServices.getRunningBanners();
+    log(data.toString());
   }
 
   //ApiCall for Products from HomeController to ApiServices
-  Future<void> initProductsCall(
+  Future<HomeProductModel> initProductsCall(
       {String page = "1", String query = "arunodaya"}) async {
     productsLoading = true.obs;
-    log("Loading Product Setter Called 1....");
-    log("Products API in Progress");
     _productsList = await apiServices.getProducts(page: page, query: query);
     productsLoading = false.obs;
-    log("Loading Product Setter Called 2....");
+    return _productsList!;
   }
 
-  Future<void> launchCustomerCarePhone() async {
-    log("launchCustomerCarePhone init...");
-    const url = "tel:+91 8055554468";
-    if (await canLaunch(url)) {
-      log("launchCustomerCarePhone canLaunch...");
-      await launch(url);
+  Future<void> launchCustomerCarePhone(String payload) async {
+    if (await canLaunch(payload)) {
+      Future.delayed(const Duration(seconds: 2), () {});
+      await launch(payload);
     } else {
-      log("launchCustomerCarePhone error...");
-
-      throw 'Could not launch $url';
+      throw 'Could not launch $payload';
     }
   }
 
   @override
   void onInit() {
-    log("HomeController Init...");
     super.onInit();
     initBannerCall();
     initProductsCall();

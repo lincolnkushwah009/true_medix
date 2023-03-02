@@ -4,8 +4,6 @@ import 'dart:developer';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-
 import 'package:get/get.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:true_medix/app/modules/loginwithpassword/views/loginwithpassword_view.dart';
@@ -48,15 +46,10 @@ class _RegisterViewState extends State<RegisterView> {
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  height: 30,
-                ),
                 Center(
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 0.0, bottom: 27),
+                    padding: const EdgeInsets.only(top: 50.0, bottom: 27),
                     child: Image.asset(
                       "assets/authImage.png",
                       height: 200,
@@ -68,7 +61,6 @@ class _RegisterViewState extends State<RegisterView> {
                   height: 20,
                 ),
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.632,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: kPrimaryColor,
@@ -266,6 +258,8 @@ class _RegisterViewState extends State<RegisterView> {
                               GetBuilder<RegisterController>(
                                   builder: (controller) {
                                 return InkWell(
+                                  splashColor: Colors.black,
+                                  highlightColor: Colors.green,
                                   onTap: () async {
                                     controller.accountCreatLoading = true.obs;
                                     context.loaderOverlay.show();
@@ -391,6 +385,8 @@ class _RegisterViewState extends State<RegisterView> {
                                     width: 18,
                                   ),
                                   InkWell(
+                                    splashColor: Colors.black,
+                                    highlightColor: Colors.green,
                                     onTap: () {
                                       Get.offNamed(Routes.LOGINWITHPASSWORD);
                                     },
@@ -402,6 +398,10 @@ class _RegisterViewState extends State<RegisterView> {
                                     ),
                                   ),
                                 ],
+                              ),
+                              Container(
+                                height: 115,
+                                color: kPrimaryColor,
                               ),
                             ],
                           ),

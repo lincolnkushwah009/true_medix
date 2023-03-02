@@ -54,7 +54,7 @@ class _ProductdetailViewState extends State<ProductdetailView> {
                       left: 11, right: 11, top: 24, bottom: 12),
                   child: Row(
                     children: [
-                      GestureDetector(
+                      InkWell(
                           onTap: () {
                             Get.back();
                           },
@@ -288,7 +288,9 @@ class _ProductdetailViewState extends State<ProductdetailView> {
                       const SizedBox(
                         width: 10,
                       ),
-                      GestureDetector(
+                      InkWell(
+                        splashColor: Colors.black,
+                        highlightColor: Colors.green,
                         onTap: () async {
                           List<dynamic> cartProductId =
                               cartController!.cartProducts.map((element) {
@@ -315,7 +317,7 @@ class _ProductdetailViewState extends State<ProductdetailView> {
                             ).show(context);
                           });
                         },
-                        child: Container(
+                        child: Ink(
                           width: 85,
                           height: 40,
                           decoration: BoxDecoration(

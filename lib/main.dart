@@ -12,7 +12,9 @@ Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle.dark.copyWith(statusBarColor: kPrimaryColor),
   );
+
   WidgetsFlutterBinding.ensureInitialized();
+  heavyTaskBeforeSpalsh();
   SessionManager sessionManager = SessionManager();
   CustomerModel customerModel;
   customerModel = await sessionManager.getAuthToken();
@@ -26,4 +28,8 @@ Future<void> main() async {
       getPages: AppPages.routes,
     ),
   );
+}
+
+Future<void> heavyTaskBeforeSpalsh() async {
+  Future.delayed(const Duration(seconds: 2), () async {});
 }

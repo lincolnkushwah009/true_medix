@@ -1,13 +1,17 @@
 import 'dart:developer';
 
+import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:true_medix/app/modules/cart/controllers/cart_controller.dart';
+import 'package:true_medix/app/modules/home/models/homeproductmodel.dart';
+import 'package:true_medix/app/modules/productdetail/models/productmodel.dart';
 import 'package:true_medix/app/services/apiServives/apiservices.dart';
-import '../../../global/productsearchwidget.dart';
-import '../../../routes/app_pages.dart';
+import '../../../global/productwidget.dart';
+import '../../productdetail/views/productdetail_view.dart';
 import '../controllers/search_controller.dart';
 
 class SearchView extends StatefulWidget {
@@ -19,10 +23,12 @@ class SearchView extends StatefulWidget {
 
 class _SearchViewState extends State<SearchView> {
   SearchController? controller;
+  CartController? cartController;
 
   @override
   void initState() {
     controller = Get.put<SearchController>(SearchController());
+    cartController = Get.put<CartController>(CartController());
     fetchSearchProducts();
     super.initState();
   }
@@ -30,7 +36,7 @@ class _SearchViewState extends State<SearchView> {
   fetchSearchProducts({String page = "1", String query = "diet"}) async {
     await ApiServices().getProducts(page: page, query: query).then((value) {
       controller!.isLoading.value = true;
-      controller!.searchProducts.value = value;
+      controller!.searchProducts.value = value.records!;
     }).onError((error, stackTrace) {});
     controller!.isLoading.value = false;
     controller!.update();
@@ -61,7 +67,7 @@ class _SearchViewState extends State<SearchView> {
                 ),
                 width: MediaQuery.of(context).size.width * 0.91,
                 child: Center(
-                  child: GestureDetector(
+                  child: InkWell(
                     onTap: () {
                       Get.to(const SearchView());
                     },
@@ -133,34 +139,74 @@ class _SearchViewState extends State<SearchView> {
                         return ListView.builder(
                             itemCount: controller.searchProducts.length,
                             itemBuilder: (context, index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  Get.toNamed(Routes.PRODUCTDETAIL,
-                                      arguments:
-                                          controller.searchProducts[index]);
-                                },
-                                child: Card(
-                                  child: Container(
-                                    height: 230,
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.8,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: ProductSearchWidget(
-                                      price: controller
-                                          .searchProducts[index].saleprice
-                                          .toString(),
-                                      rating: controller
-                                          .searchProducts[index].ratings.total
-                                          .toString(),
-                                      title: controller
-                                          .searchProducts[index].name
-                                          .toString(),
+                              return GetBuilder<SearchController>(
+                                  builder: (controller) {
+                                return InkWell(
+                                  splashColor: Colors.black,
+                                  highlightColor: Colors.green,
+                                  onTap: () {
+                                    Get.to(
+                                      () => ProductdetailView(
+                                        isBannerInput: false,
+                                        productData: ProductModel.fromJson(
+                                          (controller.searchProducts[index]
+                                                  as Records)
+                                              .toJson(),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Ink(
+                                    child: Card(
+                                      child: ProductWidget(
+                                        rating: controller.searchProducts[index]
+                                            .ratings!.total
+                                            .toString(),
+                                        onTap: () {
+                                          List<dynamic> cartProductId =
+                                              cartController!.cartProducts
+                                                  .map((element) {
+                                            return element.id;
+                                          }).toList();
+                                          cartProductId.add(controller
+                                              .searchProducts[index].id);
+                                          log(cartProductId
+                                              .toList()
+                                              .toString());
+                                          Map<String, dynamic> payLoad = {
+                                            "mobile_no": "",
+                                            "products": cartProductId,
+                                          };
+                                          ApiServices()
+                                              .addToCart(payLoad)
+                                              .then((value) {
+                                            cartController!
+                                                .initGetCartProducts();
+                                            ElegantNotification.success(
+                                              title: const Text("Success"),
+                                              description: Text(
+                                                  value['message'].toString()),
+                                            ).show(context);
+                                          }).onError((error, stackTrace) {
+                                            log(stackTrace.toString());
+                                            ElegantNotification.error(
+                                              title: const Text("Error"),
+                                              description: const Text(
+                                                  "Error Occured, Please try again"),
+                                            ).show(context);
+                                          });
+                                        },
+                                        title: controller
+                                            .searchProducts[index].name
+                                            .toString(),
+                                        price: controller
+                                            .searchProducts[index].saleprice
+                                            .toString(),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              );
+                                );
+                              });
                             });
                       }
                     })),

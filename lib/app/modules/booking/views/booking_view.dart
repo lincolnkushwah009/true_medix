@@ -20,9 +20,12 @@ import 'package:true_medix/app/modules/booking/model/placeorderrequestmodel.dart
 import 'package:true_medix/app/modules/bottomnavbar/views/bottomnavbar_view.dart';
 import 'package:true_medix/app/modules/cart/controllers/cart_controller.dart';
 import 'package:true_medix/app/modules/profile/controllers/profile_controller.dart';
+import 'package:true_medix/app/services/secrets.dart';
 import 'package:true_medix/app/services/sessionmanager.dart';
 import 'package:true_medix/app/utilities/appcolors.dart';
 import 'package:true_medix/app/utilities/appstyles.dart';
+
+import '../../../global/customdialog.dart';
 
 class BookingView extends StatefulWidget {
   const BookingView({Key? key}) : super(key: key);
@@ -46,15 +49,15 @@ class _BookingViewState extends State<BookingView> {
   Razorpay razorpay = Razorpay();
   // create order
   void createOrder() async {
-    String username = "rzp_test_y5zXOe8tM4Ber6";
-    String password = "o9eOWuTgfUJJdxdJda5QQZiM";
+    String username = liveKeyRazorpay;
+    String password = livePasswordRazorpay;
     String basicAuth =
         'Basic ${base64Encode(utf8.encode('$username:$password'))}';
 
     Map<String, dynamic> body = {
       "amount": (cartController!.total.value.toInt() * 100).toInt(),
       "currency": "INR",
-      "receipt": "Iok3aHQk7RKlUo"
+      "receipt": liveMerchantIdRazorpay
     };
     var res = await http.post(
       Uri.https("api.razorpay.com", "v1/orders"),
@@ -72,7 +75,7 @@ class _BookingViewState extends State<BookingView> {
 
   openGateway(String orderId) {
     var options = {
-      'key': "rzp_test_y5zXOe8tM4Ber6",
+      'key': liveKeyRazorpay,
       'amount': (cartController!.subTotal.value.toInt() * 100).toInt(),
       'name': 'truemedix.in',
       'order_id': orderId,
@@ -87,43 +90,27 @@ class _BookingViewState extends State<BookingView> {
     razorpay.open(options);
   }
 
-  void showAlertDialog(BuildContext context, String title, String message,
-      VoidCallback onTap, bool isSuccess) {
-    Widget continueButton = ElevatedButton(
-      onPressed: onTap,
-      child: Text(isSuccess == true ? "Place Order" : "Try Again"),
-    );
-    AlertDialog alert = AlertDialog(
-      title: Text(title),
-      content: Text(message),
-      actions: [
-        continueButton,
-      ],
-    );
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
-
   void handlePaymentErrorResponse(PaymentFailureResponse response) {
     log(response.toString());
-    showAlertDialog(context, "Payment Failed", "${response.message}", () {
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-              builder: (context) => BottomnavbarView(
-                    incomingIndex: 1,
-                  )),
-          (Route<dynamic> route) => false);
-    }, false);
+    CustomDialog().customDialog(context,
+        orderTitle: "Error Code : ",
+        btnTitle: "Try Again",
+        subTitle: "Your Payment has been Failed.\n${response.message}",
+        orderId: response.code.toString(), onTap: () {
+      Navigator.of(context).pop();
+      try {
+        createOrder();
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+          ),
+        );
+      }
+    }, image: "assets/errorpay.png", title: "Payment Error", isError: true);
   }
 
   void handlePaymentSuccessResponse(PaymentSuccessResponse response) async {
-    log(response.toString());
-    log("${response.paymentId}   /   ${response.signature}    /    ${response.orderId}");
     payment = {
       "type": "1",
       "mode": "4",
@@ -132,35 +119,76 @@ class _BookingViewState extends State<BookingView> {
       "pg_order_id": response.orderId
     };
     placeOrder!['payment'] = payment;
-    log(placeOrder.toString());
-    showAlertDialog(context, "Payment Successful",
-        "Your Payment has been Completed Successfully\nPayment ID: ${response.paymentId}",
-        () async {
-      await controller!.apiServices
-          .placeOrderService(placeOrder!)
-          .then((value) {
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text("Order Confirmation"),
-                content: const Text("Your Order has been Placed Successfully"),
-                actions: [
-                  TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                                builder: (context) => BottomnavbarView(
-                                      incomingIndex: 2,
-                                    )),
-                            (Route<dynamic> route) => false);
-                      },
-                      child: const Text("Track Order"))
-                ],
-              );
+    await controller!.apiServices.placeOrderService(placeOrder!).then((value) {
+      Navigator.of(context).pop();
+      CustomDialog().customDialog(context,
+          title: "Order Successful",
+          orderTitle: "Order Id : ",
+          subTitle:
+              "Your Order has been Placed Successfully.\nPayment Received",
+          btnTitle: "Track Order",
+          image: "assets/successpay.svg",
+          isError: false,
+          onTap: () {},
+          orderId: response.orderId.toString());
+      Future.delayed(const Duration(seconds: 2), () async {
+        await controller!.apiServices.addToCart({
+          "mobile_no": sessionManager!.getCustomer['mobile_no'].toString(),
+          "products": [],
+        });
+        Get.offAll(() => BottomnavbarView(
+              incomingIndex: 2,
+            ));
+      });
+    }).onError((error, stackTrace) {
+      Navigator.of(context).pop();
+      CustomDialog().customDialog(context,
+          title: "Order Failed",
+          orderTitle: "Order Id : ",
+          subTitle:
+              "Unfortunately Your Order has been Failed.\nSorry for the Inconvenience.\n",
+          btnTitle: "Continue",
+          image: "assets/errorpay.png",
+          isError: true, onTap: () async {
+        //Order Failed then Repeat the Process with Paying Again
+        await controller!.apiServices
+            .placeOrderService(placeOrder!)
+            .then((value) {
+          Navigator.of(context).pop();
+          CustomDialog().customDialog(context,
+              title: "Order Successful",
+              orderTitle: "Order Id : ",
+              subTitle:
+                  "Your Order has been Placed Successfully.\nPayment Received",
+              btnTitle: "Track Order",
+              image: "assets/successpay.svg",
+              isError: false,
+              onTap: () {},
+              orderId: response.orderId.toString());
+          Future.delayed(const Duration(seconds: 2), () async {
+            await controller!.apiServices.addToCart({
+              "mobile_no": sessionManager!.getCustomer['mobile_no'].toString(),
+              "products": [],
             });
-      }).onError((error, stackTrace) {});
-    }, true);
+            Get.offAll(() => BottomnavbarView(
+                  incomingIndex: 2,
+                ));
+          });
+        }).onError((error, stackTrace) {
+          Navigator.of(context).pop();
+          CustomDialog().customDialog(context,
+              title: "Order Failed",
+              orderTitle: "Order Id : ",
+              subTitle:
+                  "Unfortunately Your Order has been Failed.\nSorry for the Inconvenience.\n",
+              btnTitle: "Continue",
+              image: "assets/errorpay.png",
+              isError: true,
+              onTap: () async {},
+              orderId: response.orderId.toString());
+        });
+      }, orderId: response.orderId.toString());
+    });
 
     // verifySignature(
     //   signature: response.signature,
@@ -250,13 +278,15 @@ class _BookingViewState extends State<BookingView> {
               color: const Color(0XFF242424),
               fontWeight: FontWeight.w400),
         ),
-        leading: GestureDetector(
+        leading: InkWell(
+          splashColor: Colors.black,
+          highlightColor: Colors.green,
           onTap: () {
             Get.back();
           },
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: SvgPicture.asset("assets/back.svg"),
+            child: Ink(child: SvgPicture.asset("assets/back.svg")),
           ),
         ),
         shape: const RoundedRectangleBorder(
@@ -277,7 +307,7 @@ class _BookingViewState extends State<BookingView> {
         child: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.only(left: 26.0, right: 26, top: 20),
+              padding: const EdgeInsets.only(left: 16.0, right: 16, top: 20),
               child: Column(
                 children: [
                   Column(
@@ -324,7 +354,7 @@ class _BookingViewState extends State<BookingView> {
                                                       padding:
                                                           const EdgeInsets.only(
                                                               right: 8.0),
-                                                      child: GestureDetector(
+                                                      child: InkWell(
                                                         onTap: () {},
                                                         child: SvgPicture.asset(
                                                             "assets/drop.svg"),
@@ -402,142 +432,170 @@ class _BookingViewState extends State<BookingView> {
                                   );
                                 }
                                 return SizedBox(
-                                  height: 150,
+                                  height: snapshot.data!.isEmpty
+                                      ? 150
+                                      : (snapshot.data!.length * 150),
                                   child: ListView.builder(
                                       itemCount: snapshot.data!.length,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
-                                        return Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
+                                        return Card(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
-                                                FittedBox(
-                                                  child: Text(
-                                                    snapshot.data![index].name
-                                                        .toString(),
-                                                    style: testTextStyle
-                                                        .copyWith(fontSize: 16),
-                                                  ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Flexible(
+                                                      child: SizedBox(
+                                                        child: Text(
+                                                          snapshot
+                                                              .data![index].name
+                                                              .toString(),
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style: testTextStyle
+                                                              .copyWith(
+                                                                  fontSize: 16),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              right: 8.0),
+                                                      child: InkWell(
+                                                        onTap: () {},
+                                                        child: SvgPicture.asset(
+                                                            "assets/drop.svg"),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
-                                                const Spacer(),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          right: 8.0),
-                                                  child: GestureDetector(
-                                                    onTap: () {},
-                                                    child: SvgPicture.asset(
-                                                        "assets/drop.svg"),
-                                                  ),
+                                                const SizedBox(
+                                                  height: 13,
                                                 ),
-                                              ],
-                                            ),
-                                            const SizedBox(
-                                              height: 13,
-                                            ),
-                                            Text(
-                                              "Includes 8 Tests",
-                                              style: GoogleFonts.poppins(
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 14,
-                                                color: const Color(0XFF242424),
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              height: 13,
-                                            ),
-                                            Row(
-                                              children: [
                                                 Text(
-                                                  "Rs. ${snapshot.data![index].saleprice}",
+                                                  "Includes ${snapshot.data![index].relatedProducts == null ? "0" : snapshot.data![index].relatedProducts!.split(',').length.toString()} Tests",
                                                   style: GoogleFonts.poppins(
-                                                    fontWeight: FontWeight.w500,
+                                                    fontWeight: FontWeight.w400,
                                                     fontSize: 14,
                                                     color:
                                                         const Color(0XFF242424),
                                                   ),
                                                 ),
-                                                const Spacer(),
-                                                SizedBox(
-                                                  width: 30,
-                                                  height: 30,
-                                                  child: Center(
-                                                    child: IconButton(
-                                                      onPressed: () async {
-                                                        List<dynamic>
-                                                            cartProductId =
-                                                            cartController
-                                                                .cartProducts
-                                                                .map((element) {
-                                                          return element.id;
-                                                        }).toList();
-                                                        cartProductId.remove(
-                                                            snapshot
-                                                                .data![index]
-                                                                .id);
-                                                        log(cartProductId
-                                                            .toList()
-                                                            .toString());
-                                                        Map<String, dynamic>
-                                                            payLoad = {
-                                                          "mobile_no": "",
-                                                          "products":
-                                                              cartProductId,
-                                                        };
-                                                        cartController
-                                                            .apiServices
-                                                            .addToCart(payLoad)
-                                                            .then((value) {
-                                                          cartController
-                                                              .update();
-                                                          ElegantNotification
-                                                              .success(
-                                                            title: const Text(
-                                                                "Success"),
-                                                            description: Text(
-                                                                value['message']
-                                                                    .toString()),
-                                                          ).show(context);
-                                                          cartController
-                                                              .subTotal
-                                                              .value = 0.0;
-                                                          cartController
-                                                              .taxAndFee
-                                                              .value = 0.0;
-                                                          cartController
-                                                              .delivery
-                                                              .value = "Free";
-                                                          cartController.total
-                                                              .value = 0.0;
-                                                          cartController
-                                                              .onInit();
-                                                        }).onError((error,
-                                                                stackTrace) {
-                                                          log(stackTrace
-                                                              .toString());
-                                                          ElegantNotification
-                                                              .error(
-                                                            title: const Text(
-                                                                "Error"),
-                                                            description: const Text(
-                                                                "Error Occured, Please try again"),
-                                                          ).show(context);
-                                                        });
-                                                      },
-                                                      icon: Image.asset(
-                                                          "assets/trash.png"),
+                                                const SizedBox(
+                                                  height: 13,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      "Rs. ${snapshot.data![index].saleprice}",
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 14,
+                                                        color: const Color(
+                                                            0XFF242424),
+                                                      ),
                                                     ),
-                                                  ),
+                                                    const Spacer(),
+                                                    SizedBox(
+                                                      width: 30,
+                                                      height: 30,
+                                                      child: Center(
+                                                        child: IconButton(
+                                                          onPressed: () async {
+                                                            List<dynamic>
+                                                                cartProductId =
+                                                                cartController
+                                                                    .cartProducts
+                                                                    .map(
+                                                                        (element) {
+                                                              return element.id;
+                                                            }).toList();
+                                                            cartProductId
+                                                                .remove(snapshot
+                                                                    .data![
+                                                                        index]
+                                                                    .id);
+                                                            log(cartProductId
+                                                                .toList()
+                                                                .toString());
+                                                            Map<String, dynamic>
+                                                                payLoad = {
+                                                              "mobile_no": "",
+                                                              "products":
+                                                                  cartProductId,
+                                                            };
+                                                            cartController
+                                                                .apiServices
+                                                                .addToCart(
+                                                                    payLoad)
+                                                                .then((value) {
+                                                              cartController
+                                                                  .update();
+                                                              ElegantNotification
+                                                                  .success(
+                                                                title: const Text(
+                                                                    "Success"),
+                                                                description: Text(
+                                                                    value['message']
+                                                                        .toString()),
+                                                              ).show(context);
+                                                              cartController
+                                                                  .subTotal
+                                                                  .value = 0.0;
+                                                              cartController
+                                                                  .taxAndFee
+                                                                  .value = 0.0;
+                                                              cartController
+                                                                      .delivery
+                                                                      .value =
+                                                                  "Free";
+                                                              cartController
+                                                                  .total
+                                                                  .value = 0.0;
+                                                              cartController
+                                                                  .onInit();
+                                                            }).onError((error,
+                                                                    stackTrace) {
+                                                              log(stackTrace
+                                                                  .toString());
+                                                              ElegantNotification
+                                                                  .error(
+                                                                title:
+                                                                    const Text(
+                                                                        "Error"),
+                                                                description:
+                                                                    const Text(
+                                                                        "Error Occured, Please try again"),
+                                                              ).show(context);
+                                                            });
+                                                          },
+                                                          icon: Image.asset(
+                                                              "assets/trash.png"),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(
+                                                  height: 23,
                                                 ),
                                               ],
                                             ),
-                                            const SizedBox(
-                                              height: 23,
-                                            ),
-                                          ],
+                                          ),
                                         );
                                       }),
                                 );
@@ -547,7 +605,7 @@ class _BookingViewState extends State<BookingView> {
                       const SizedBox(
                         height: 30,
                       ),
-                      GestureDetector(
+                      InkWell(
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
@@ -730,9 +788,13 @@ class _BookingViewState extends State<BookingView> {
                                 );
                               }
                               return SizedBox(
-                                height: 120,
+                                height: snapshot.data!.isEmpty
+                                    ? 120
+                                    : snapshot.data!.length * 120,
                                 child: ListView.builder(
                                     itemCount: snapshot.data!.length,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
                                     itemBuilder: (context, index) {
                                       return Padding(
                                         padding:
@@ -811,7 +873,7 @@ class _BookingViewState extends State<BookingView> {
                                                       ),
                                                     ),
                                                     const Spacer(),
-                                                    GestureDetector(
+                                                    InkWell(
                                                       onTap: () {
                                                         Navigator.of(context)
                                                             .push(
@@ -854,7 +916,8 @@ class _BookingViewState extends State<BookingView> {
                       const SizedBox(
                         height: 20,
                       ),
-                      GestureDetector(
+                      InkWell(
+                        splashColor: Colors.black,
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
@@ -911,6 +974,7 @@ class _BookingViewState extends State<BookingView> {
                       SizedBox(
                           height: 100,
                           child: GridView.count(
+                              physics: const NeverScrollableScrollPhysics(),
                               crossAxisCount: 2,
                               crossAxisSpacing: 4.0,
                               mainAxisSpacing: 8.0,
@@ -920,7 +984,7 @@ class _BookingViewState extends State<BookingView> {
                                       39),
                               children: List.generate(
                                   controller!.slotModelList.length, (index) {
-                                return GestureDetector(
+                                return InkWell(
                                   onTap: () {
                                     log("${controller!.slotModelList[index].weekDay} ------ ${controller!.slotModelList[index].month} ------ (${controller!.slotModelList[index].dayName})");
                                     setState(() {
@@ -976,6 +1040,7 @@ class _BookingViewState extends State<BookingView> {
                       SizedBox(
                         height: 300,
                         child: GridView.count(
+                          physics: const NeverScrollableScrollPhysics(),
                           crossAxisCount: 2,
                           crossAxisSpacing: 4.0,
                           mainAxisSpacing: 8.0,
@@ -983,7 +1048,7 @@ class _BookingViewState extends State<BookingView> {
                               (MediaQuery.of(context).size.width * 0.42 / 39),
                           children: List.generate(controller!.timeSlots.length,
                               (index) {
-                            return GestureDetector(
+                            return InkWell(
                               onTap: () {
                                 setState(() {
                                   selectedTimeSlot = index.toString();
@@ -1030,7 +1095,9 @@ class _BookingViewState extends State<BookingView> {
                       ),
                       Row(
                         children: [
-                          GestureDetector(
+                          InkWell(
+                            splashColor: Colors.black,
+                            highlightColor: Colors.red,
                             onTap: () async {
                               placeOrderItems = [];
                               CustomerModel customerModel =
@@ -1068,18 +1135,8 @@ class _BookingViewState extends State<BookingView> {
                                     .toString()
                                     .split('.')[0]
                                     .toString(),
-                                // ignore: prefer_interpolation_to_compose_strings
-                                "scheduled_on": ((controller!
-                                            .slotModelList[
-                                                int.parse(selectedSlot)]
-                                            .dateTime) as DateTime)
-                                        .toString()
-                                        .split('.')[0]
-                                        .toString()
-                                        .split(" ")[0]
-                                        .toString() +
-                                    " ${controller!.timeSlots[int.parse(selectedTimeSlot)].toString().split(":")[0].toString()}" +
-                                    ":00:00",
+                                "scheduled_on":
+                                    "${((controller!.slotModelList[int.parse(selectedSlot)].dateTime) as DateTime).toString().split('.')[0].toString().split(" ")[0]} ${controller!.timeSlots[int.parse(selectedTimeSlot)].toString().split('-')[0].toString()}",
                                 "tax": "0.0",
                                 "subtotal":
                                     cartController!.subTotal.value.toString(),
@@ -1157,61 +1214,80 @@ class _BookingViewState extends State<BookingView> {
                               await controller!.apiServices
                                   .placeOrderService(placeOrder!)
                                   .then((value) {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        title: const Text("Order Confirmation"),
-                                        content: Text(
-                                            "Your Order has been Placed Successfully \nhaving Order Number ${value.orderId.toString()}"),
-                                        actions: [
-                                          TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context)
-                                                    .pushAndRemoveUntil(
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                BottomnavbarView(
-                                                                  incomingIndex:
-                                                                      2,
-                                                                )),
-                                                        (Route<dynamic>
-                                                                route) =>
-                                                            false);
-                                              },
-                                              child: const Text("Track Order"))
-                                        ],
-                                      );
-                                    });
+                                CustomDialog().customDialog(context,
+                                    title: "Order Successful",
+                                    btnTitle: "Track Order",
+                                    orderTitle: "Order Id : ",
+                                    orderId: value.orderId.toString(),
+                                    image: "assets/successpay.svg",
+                                    isError: false,
+                                    onTap: () {},
+                                    subTitle:
+                                        "Your Order has been Placed Successfully\nYou will receive an Email / Message Shortly.");
+                                Future.delayed(const Duration(seconds: 2),
+                                    () async {
+                                  await controller!.apiServices.addToCart({
+                                    "mobile_no": sessionManager!
+                                        .getCustomer['mobile_no']
+                                        .toString(),
+                                    "products": [],
+                                  });
+                                  Get.offAll(() => BottomnavbarView(
+                                        incomingIndex: 2,
+                                      ));
+                                });
                               }).onError((error, stackTrace) {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        title: const Text("Order Confirmation"),
-                                        content: Text(error.toString()),
-                                        actions: [
-                                          TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context)
-                                                    .pushAndRemoveUntil(
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                BottomnavbarView(
-                                                                  incomingIndex:
-                                                                      2,
-                                                                )),
-                                                        (Route<dynamic>
-                                                                route) =>
-                                                            false);
-                                              },
-                                              child: const Text("Track Order"))
-                                        ],
-                                      );
+                                CustomDialog().customDialog(context,
+                                    title: "Order Failed",
+                                    btnTitle: "Try Again",
+                                    orderTitle: "Error Code : ",
+                                    orderId: "2",
+                                    image: "assets/errorpay.png",
+                                    isError: true, onTap: () async {
+                                  Navigator.of(context).pop();
+                                  await controller!.apiServices
+                                      .placeOrderService(placeOrder!)
+                                      .then((value) {
+                                    CustomDialog().customDialog(context,
+                                        title: "Order Successful",
+                                        btnTitle: "Track Order",
+                                        orderTitle: "Order Id : ",
+                                        orderId: value.orderId.toString(),
+                                        image: "assets/successpay.svg",
+                                        isError: false,
+                                        onTap: () async {},
+                                        subTitle:
+                                            "Your Order has been Placed Successfully\nYou will receive an Email / Message Shortly.");
+                                    Future.delayed(const Duration(seconds: 2),
+                                        () async {
+                                      await controller!.apiServices.addToCart({
+                                        "mobile_no": sessionManager!
+                                            .getCustomer['mobile_no']
+                                            .toString(),
+                                        "products": [],
+                                      });
+                                      Get.offAll(() => BottomnavbarView(
+                                            incomingIndex: 2,
+                                          ));
                                     });
+                                  }).onError((error, stackTrace) {
+                                    CustomDialog().customDialog(context,
+                                        title: "Order Failed",
+                                        btnTitle: "Try Again",
+                                        orderTitle: "Error Code : ",
+                                        orderId: "2",
+                                        image: "assets/errorpay.png",
+                                        isError: true,
+                                        onTap: () {},
+                                        subTitle:
+                                            "Unfortunately Your Order has been failed\nSorry for the Inconvenience.");
+                                  });
+                                },
+                                    subTitle:
+                                        "Unfortunately Your Order has been failed\nSorry for the Inconvenience.");
                               });
                             },
-                            child: Container(
+                            child: Ink(
                               height: 40,
                               width: 155,
                               decoration: BoxDecoration(
@@ -1243,7 +1319,9 @@ class _BookingViewState extends State<BookingView> {
                             width: 10,
                           ),
                           const Spacer(),
-                          GestureDetector(
+                          InkWell(
+                            splashColor: Colors.black,
+                            highlightColor: Colors.green,
                             onTap: () async {
                               placeOrderItems = [];
                               CustomerModel customerModel =
@@ -1281,12 +1359,8 @@ class _BookingViewState extends State<BookingView> {
                                     .toString()
                                     .split('.')[0]
                                     .toString(),
-                                "scheduled_on": ((controller!
-                                        .slotModelList[int.parse(selectedSlot)]
-                                        .dateTime) as DateTime)
-                                    .toString()
-                                    .split('.')[0]
-                                    .toString(),
+                                "scheduled_on":
+                                    "${((controller!.slotModelList[int.parse(selectedSlot)].dateTime) as DateTime).toString().split('.')[0].toString().split(" ")[0]} ${controller!.timeSlots[int.parse(selectedTimeSlot)].toString().split('-')[0].toString()}",
                                 "tax": "0.0",
                                 "subtotal":
                                     cartController!.subTotal.value.toString(),
@@ -1356,7 +1430,6 @@ class _BookingViewState extends State<BookingView> {
                                 "coupon": "_",
                                 "items": items
                               };
-
                               log(placeOrder.toString());
 
                               try {
@@ -1369,7 +1442,7 @@ class _BookingViewState extends State<BookingView> {
                                 );
                               }
                             },
-                            child: Container(
+                            child: Ink(
                               height: 40,
                               width: 155,
                               decoration: BoxDecoration(

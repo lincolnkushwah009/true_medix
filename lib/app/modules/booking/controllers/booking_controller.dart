@@ -94,9 +94,9 @@ class BookingController extends GetxController {
     "10:00AM-11:00AM",
     "11:00AM-12:00PM",
     "12:00PM-01:00PM",
-    "12:00PM-01:00PM",
-    "01:00PM-02:00PM",
-    "02:00PM-03:00PM"
+    "1:00PM-02:00PM",
+    "02:00PM-03:00PM",
+    "03:00PM-04:00PM"
   ].obs;
 
   @override

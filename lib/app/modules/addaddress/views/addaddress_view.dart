@@ -36,6 +36,8 @@ class _AddaddressViewState extends State<AddaddressView> {
   bool isGoogleDropdownClosed = true;
   String? selCountry;
   String? selState;
+  // List<dynamic> countryStateCityPinList = [];
+  // String countryStateCityPin = "";
   String? selAge;
   String? selGender;
   String? selDOB;
@@ -59,19 +61,22 @@ class _AddaddressViewState extends State<AddaddressView> {
   }
 
   void updateAddressForm() {
-    controller!.nameController.text = widget.getAddressModel!.name!;
-
-    selAge = widget.getAddressModel!.age!.toString().split(" ")[0].toString();
-    selGender = widget.getAddressModel!.gender!;
-    selDOB = widget.getAddressModel!.dob!;
-    controller!.emailController.text = widget.getAddressModel!.email!;
-    controller!.phoneController.text = widget.getAddressModel!.mobileNo!;
-    controller!.goolePlacesController.text = "";
-    selCountry = widget.getAddressModel!.country!;
-    selState = widget.getAddressModel!.state;
-    controller!.pincodeController.text = widget.getAddressModel!.pincode!;
-    isWhatsApp =
-        widget.getAddressModel!.whatsapp!.toString() == "1" ? true : false;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      controller!.nameController.text = widget.getAddressModel!.name!;
+      locations = await locationFromAddress(
+          widget.getAddressModel!.address!.toString());
+      selAge = widget.getAddressModel!.age!.toString().split(" ")[0].toString();
+      selGender = widget.getAddressModel!.gender! ?? "male";
+      selDOB = widget.getAddressModel!.dob!;
+      controller!.emailController.text = widget.getAddressModel!.email!;
+      controller!.phoneController.text = widget.getAddressModel!.mobileNo!;
+      controller!.goolePlacesController.text = widget.getAddressModel!.address!;
+      selCountry = widget.getAddressModel!.country!;
+      selState = widget.getAddressModel!.state;
+      controller!.pincodeController.text = widget.getAddressModel!.pincode!;
+      isWhatsApp =
+          widget.getAddressModel!.whatsapp!.toString() == "1" ? true : false;
+    });
   }
 
   @override
@@ -96,7 +101,9 @@ class _AddaddressViewState extends State<AddaddressView> {
                   color: const Color(0XFF242424),
                   fontWeight: FontWeight.w400),
             ),
-            leading: GestureDetector(
+            leading: InkWell(
+              splashColor: Colors.black,
+              highlightColor: Colors.green,
               onTap: () {
                 Get.back();
               },
@@ -189,7 +196,8 @@ class _AddaddressViewState extends State<AddaddressView> {
                                               });
                                             },
                                             validator: ((value) {
-                                              if (value!.isEmpty) {
+                                              value = (value ?? "");
+                                              if (value.isEmpty) {
                                                 controller.validationMessageAge
                                                     .value = "Select Age";
                                                 return "";
@@ -197,6 +205,7 @@ class _AddaddressViewState extends State<AddaddressView> {
                                                 controller.validationMessageAge
                                                     .value = "";
                                                 controller.update();
+                                                return null;
                                               }
                                             }),
                                             decoration:
@@ -257,13 +266,12 @@ class _AddaddressViewState extends State<AddaddressView> {
                                                 selGender = newValue.toString();
                                               });
                                             },
-                                            validator: (value) {
-                                              if (value!.isEmpty) {
+                                            validator: ((value) {
+                                              value = (value ?? "");
+                                              if (value.isEmpty) {
                                                 controller
-                                                        .validationMessageGender
-                                                        .value ==
-                                                    "Select Gender";
-                                                controller.update();
+                                                    .validationMessageGender
+                                                    .value = "Select Gender";
                                                 return "";
                                               } else {
                                                 controller
@@ -272,13 +280,9 @@ class _AddaddressViewState extends State<AddaddressView> {
                                                 controller.update();
                                                 return null;
                                               }
-                                            },
-                                            // underline:
-                                            //     DropdownButtonHideUnderline(
-                                            //   child: Container(),
-                                            // ),
+                                            }),
                                             value: selGender,
-                                            items: ["Male", "Female", "Other"]
+                                            items: ["male", "female", "other"]
                                                 .map((e) {
                                               return DropdownMenuItem(
                                                 value: e,
@@ -299,38 +303,52 @@ class _AddaddressViewState extends State<AddaddressView> {
                           ),
                           GetBuilder<AddaddressController>(
                               builder: (controller) {
-                            return Container(
-                              height: 58,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              width: MediaQuery.of(context).size.width * 0.85,
-                              child: InkWell(
-                                onTap: () {
-                                  showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime(1900),
-                                    lastDate: DateTime(2050),
-                                  ).then((value) {
-                                    setState(() {
-                                      selDOB = value
-                                          .toString()
-                                          .split(" ")[0]
-                                          .toString();
-                                    });
+                            return GestureDetector(
+                              onTap: () {
+                                showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.now(),
+                                  firstDate: DateTime(1900),
+                                  lastDate: DateTime.now(),
+                                ).then((value) {
+                                  setState(() {
+                                    selDOB = value
+                                        .toString()
+                                        .split(" ")[0]
+                                        .toString();
                                   });
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 20),
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      selDOB ?? "Select DOB",
-                                      style: hintStyle,
-                                    ),
-                                  ),
+                                });
+                              },
+                              child: Container(
+                                height: 58,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                width: MediaQuery.of(context).size.width * 0.85,
+                                child: TextFormField(
+                                  enabled: false,
+                                  controller: controller.dobController,
+                                  keyboardType: TextInputType.text,
+                                  decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      contentPadding: const EdgeInsets.only(
+                                          left: 23, top: 5),
+                                      hintText: selDOB ?? "Select DOB",
+                                      hintStyle: hintStyle),
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      controller.validationMessageDob.value =
+                                          "Selct DOB ";
+                                      controller.update();
+                                      return null;
+                                    } else {
+                                      controller.validationMessageDob.value =
+                                          "";
+                                      controller.update();
+                                      return null;
+                                    }
+                                  },
                                 ),
                               ),
                             );
@@ -394,19 +412,19 @@ class _AddaddressViewState extends State<AddaddressView> {
                                     controller!.validationMessagePhone.value =
                                         "Phone can't be Empty";
                                     controller!.update();
-                                    return null;
+                                    return "";
                                   }
                                   if (value.length < 10) {
                                     controller!.validationMessagePhone.value =
                                         "Phone can't be less than 10 digits";
                                     controller!.update();
-                                    return null;
+                                    return "";
                                   }
                                   if (value.length > 10) {
                                     controller!.validationMessagePhone.value =
                                         "Phone can't be greater than 10 digits";
                                     controller!.update();
-                                    return null;
+                                    return "";
                                   } else {
                                     controller!.validationMessagePhone.value =
                                         "";
@@ -585,9 +603,9 @@ class _AddaddressViewState extends State<AddaddressView> {
                                                       controller.update();
 
                                                       //?======================IMPORTANT METHODS=========================
-                                                      // String
-                                                      //     countryStateCityPin =
-                                                      //     await controller.getAddressFromLatLng(
+
+                                                      // countryStateCityPin = await controller
+                                                      //     .getAddressFromLatLng(
                                                       //         double.parse(
                                                       //             locations[0]
                                                       //                 .latitude
@@ -596,8 +614,8 @@ class _AddaddressViewState extends State<AddaddressView> {
                                                       //             locations[0]
                                                       //                 .longitude
                                                       //                 .toString()));
-                                                      // List<dynamic>
-                                                      //     countryStateCityPinList =
+                                                      // setState(() {});
+                                                      // countryStateCityPinList =
                                                       //     countryStateCityPin
                                                       //         .split(',');
                                                       // log(countryStateCityPinList
@@ -622,6 +640,10 @@ class _AddaddressViewState extends State<AddaddressView> {
                           const SizedBox(
                             height: 20,
                           ),
+                          // Text(countryStateCityPin.toString()),
+                          // const SizedBox(
+                          //   height: 20,
+                          // ),
                           GetBuilder<AddaddressController>(
                               builder: (controller) {
                             return Container(
@@ -653,13 +675,12 @@ class _AddaddressViewState extends State<AddaddressView> {
                                                     newValue.toString();
                                               });
                                             },
-                                            validator: (value) {
-                                              if (value!.isEmpty) {
+                                            validator: ((value) {
+                                              value = (value ?? "");
+                                              if (value.isEmpty) {
                                                 controller
-                                                        .validationMessageCountry
-                                                        .value ==
-                                                    "Select Country";
-                                                controller.update();
+                                                    .validationMessageCountry
+                                                    .value = "Select Country";
                                                 return "";
                                               } else {
                                                 controller
@@ -668,7 +689,7 @@ class _AddaddressViewState extends State<AddaddressView> {
                                                 controller.update();
                                                 return null;
                                               }
-                                            },
+                                            }),
                                             value: selCountry,
                                             items: controller.countries.keys
                                                 .toList()
@@ -729,13 +750,12 @@ class _AddaddressViewState extends State<AddaddressView> {
                                                   InputDecoration.collapsed(
                                                       hintText: "Select State",
                                                       hintStyle: hintStyle),
-                                              validator: (value) {
-                                                if (value!.isEmpty) {
+                                              validator: ((value) {
+                                                value = (value ?? "");
+                                                if (value.isEmpty) {
                                                   controller
-                                                          .validationMessageState
-                                                          .value ==
-                                                      "Select State";
-                                                  controller.update();
+                                                      .validationMessageState
+                                                      .value = "Select State";
                                                   return "";
                                                 } else {
                                                   controller
@@ -744,7 +764,7 @@ class _AddaddressViewState extends State<AddaddressView> {
                                                   controller.update();
                                                   return null;
                                                 }
-                                              },
+                                              }),
                                               value: selState,
                                               items: controller.states.keys
                                                   .toList()
@@ -819,6 +839,8 @@ class _AddaddressViewState extends State<AddaddressView> {
                           GetBuilder<AddaddressController>(
                               builder: (controller) {
                             return InkWell(
+                              splashColor: Colors.black,
+                              highlightColor: Colors.green,
                               onTap: () async {
                                 if (formKey.currentState!.validate()) {
                                   log("Name : ${controller.nameController.text}");
@@ -829,8 +851,8 @@ class _AddaddressViewState extends State<AddaddressView> {
                                   log("Phone : ${controller.phoneController.text}");
                                   log("Email : ${controller.emailController.text}");
                                   log("Maps Address : ${controller.goolePlacesController.text}");
-                                  log("Longitude : ${locations[0].longitude}");
-                                  log("Latitude : ${locations[0].latitude}");
+                                  // log("Longitude : ${locations[0].longitude}");
+                                  // log("Latitude : ${locations[0].latitude}");
                                   log("Country : $selCountry");
                                   log("State : $selState");
                                   log("WhatsApp : $isWhatsApp");
@@ -852,11 +874,20 @@ class _AddaddressViewState extends State<AddaddressView> {
                                         .trim(),
                                     googleMap:
                                         controller.goolePlacesController.text,
-                                    googleLat: locations[0].latitude.toString(),
-                                    googleLng:
-                                        locations[0].longitude.toString(),
-                                    address:
-                                        controller.goolePlacesController.text,
+                                    googleLat: locations == null
+                                        ? "12.9716"
+                                        : locations[0].latitude.toString(),
+                                    googleLng: locations == null
+                                        ? "77.5946"
+                                        : locations[0].longitude.toString(),
+                                    address: (controller.goolePlacesController
+                                                    .text ==
+                                                null ||
+                                            controller.goolePlacesController
+                                                    .text ==
+                                                null)
+                                        ? "Truemedix, Kodigehalli - Thindlu Main Rd, Bengaluru, Karnataka 560092"
+                                        : controller.goolePlacesController.text,
                                     country: selCountry,
                                     state: selState,
                                     city: controller.goolePlacesController.text,
@@ -878,7 +909,17 @@ class _AddaddressViewState extends State<AddaddressView> {
                                           Text(value['message'].toString()),
                                     ).show(context);
                                     context.loaderOverlay.hide();
-                                    formKey.currentState!.reset();
+                                    controller.nameController.clear();
+                                    controller.emailController.clear();
+                                    controller.phoneController.clear();
+                                    controller.goolePlacesController.clear();
+                                    controller.pincodeController.clear();
+                                    controller.countryController.clear();
+                                    controller.stateController.clear();
+                                    controller.addressController.clear();
+                                    controller.dobController.clear();
+                                    controller.cityController.clear();
+
                                     Future.delayed(const Duration(seconds: 1),
                                         () {
                                       profileController!.onInit();
@@ -903,6 +944,9 @@ class _AddaddressViewState extends State<AddaddressView> {
                                   });
                                 } else {
                                   ElegantNotification.error(
+                                    height: 180,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.6,
                                     toastDuration: const Duration(seconds: 2),
                                     title: const Text("Validation Error"),
                                     description: Text(
@@ -910,7 +954,7 @@ class _AddaddressViewState extends State<AddaddressView> {
                                   ).show(context);
                                 }
                               },
-                              child: Container(
+                              child: Ink(
                                 height: 40,
                                 decoration: BoxDecoration(
                                   color: kBtnColor,

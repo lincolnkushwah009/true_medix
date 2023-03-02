@@ -1,8 +1,6 @@
 import 'dart:developer';
 import 'package:elegant_notification/elegant_notification.dart';
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:true_medix/app/modules/bottomnavbar/views/bottomnavbar_view.dart';
@@ -14,14 +12,31 @@ import '../../../routes/app_pages.dart';
 import '../controllers/loginwithpassword_controller.dart';
 
 // ignore: must_be_immutable
-class LoginwithpasswordView extends GetView<LoginwithpasswordController> {
-  LoginwithpasswordView({Key? key}) : super(key: key);
+class LoginwithpasswordView extends StatefulWidget {
+  const LoginwithpasswordView({Key? key}) : super(key: key);
+
+  @override
+  State<LoginwithpasswordView> createState() => _LoginwithpasswordViewState();
+}
+
+class _LoginwithpasswordViewState extends State<LoginwithpasswordView> {
+  LoginwithpasswordController? controller;
+  @override
+  void initState() {
+    controller =
+        Get.put<LoginwithpasswordController>(LoginwithpasswordController());
+    super.initState();
+  }
+
   var formKey = GlobalKey<FormState>();
+
   SessionManager sessionManager = SessionManager();
+
   @override
   Widget build(BuildContext context) {
     LoginwithpasswordController controller =
         Get.put<LoginwithpasswordController>(LoginwithpasswordController());
+
     return LoaderOverlay(
       useDefaultLoading: true,
       overlayColor: kPrimaryColor,
@@ -34,12 +49,7 @@ class LoginwithpasswordView extends GetView<LoginwithpasswordController> {
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  height: 30,
-                ),
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 30.0, bottom: 27),
@@ -51,7 +61,6 @@ class LoginwithpasswordView extends GetView<LoginwithpasswordController> {
                   ),
                 ),
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.632,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: kPrimaryColor,
@@ -95,33 +104,7 @@ class LoginwithpasswordView extends GetView<LoginwithpasswordController> {
                                             "Email / Phone can't be Empty";
                                         controller.update();
                                         return "";
-                                      }
-                                      // if (!EmailValidator.validate(value)) {
-                                      //   return value.contains("@") &&
-                                      //           value.contains(".")
-                                      //       ? controller
-                                      //               .validationMessageEmailPhone
-                                      //               .value =
-                                      //           "Please Enter Valid Email"
-                                      //       : "";
-                                      // }
-                                      // if (value.length < 10) {
-                                      //   controller.validationMessageEmailPhone
-                                      //           .value =
-                                      //       "Phone can't be less than 10 Digits Valid Email";
-                                      //   controller.update();
-
-                                      //   return "";
-                                      // }
-                                      // if (value.length > 10) {
-                                      //   return value.contains("@")
-                                      //       ? null
-                                      //       : controller
-                                      //               .validationMessageEmailPhone
-                                      //               .value =
-                                      //           "Phone can't be greater than 10 Digits Valid Email";
-                                      // }
-                                      else {
+                                      } else {
                                         controller.validationMessageEmailPhone
                                             .value = "";
                                         controller.update();
@@ -184,6 +167,8 @@ class LoginwithpasswordView extends GetView<LoginwithpasswordController> {
                               GetBuilder<LoginwithpasswordController>(
                                   builder: (controller) {
                                 return InkWell(
+                                  splashColor: Colors.black,
+                                  highlightColor: Colors.green,
                                   onTap: () async {
                                     log(controller.emailPhoneController.text
                                         .toString());
@@ -273,6 +258,8 @@ class LoginwithpasswordView extends GetView<LoginwithpasswordController> {
                                 height: 10,
                               ),
                               InkWell(
+                                splashColor: Colors.black,
+                                highlightColor: Colors.green,
                                 onTap: () async {
                                   Get.offNamed(Routes.LOGIN);
                                 },
@@ -309,13 +296,17 @@ class LoginwithpasswordView extends GetView<LoginwithpasswordController> {
                                     width: 18,
                                   ),
                                   InkWell(
+                                    splashColor: Colors.black,
+                                    highlightColor: Colors.green,
                                     onTap: () {
                                       Get.offNamed(Routes.REGISTER);
                                     },
-                                    child: Text(
-                                      "Create New",
-                                      style: TextStyle(
-                                        color: kBtnColor,
+                                    child: Ink(
+                                      child: Text(
+                                        "Create New",
+                                        style: TextStyle(
+                                          color: kBtnColor,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -330,6 +321,10 @@ class LoginwithpasswordView extends GetView<LoginwithpasswordController> {
                       ),
                     ],
                   ),
+                ),
+                Container(
+                  height: 100,
+                  color: kPrimaryColor,
                 ),
               ],
             ),

@@ -1,4 +1,6 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, deprecated_member_use
+
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -8,14 +10,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:true_medix/app/modules/activeorders/controllers/activeorders_controller.dart';
+import 'package:true_medix/app/modules/pamentsummary/models/pheleboratingmodel.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../utilities/appcolors.dart';
 import '../../../utilities/appstyles.dart';
 import '../controllers/pamentsummary_controller.dart';
 
 class PamentsummaryView extends StatefulWidget {
-  PamentsummaryView({required this.orderId, Key? key}) : super(key: key);
+  PamentsummaryView({required this.orderId, required this.pheleboId, Key? key})
+      : super(key: key);
   String orderId;
+  String pheleboId;
 
   @override
   State<PamentsummaryView> createState() => _PamentsummaryViewState();
@@ -24,15 +30,33 @@ class PamentsummaryView extends StatefulWidget {
 class _PamentsummaryViewState extends State<PamentsummaryView> {
   PamentsummaryController? controller;
   ActiveordersController? activeordersController;
+  PheleboRatingModel? pheleboRatingModel;
   Map<dynamic, dynamic> statusData = {};
 
   @override
   void initState() {
+    log(widget.pheleboId.toString());
     controller = Get.put<PamentsummaryController>(PamentsummaryController());
     activeordersController =
         Get.put<ActiveordersController>(ActiveordersController());
+    getPheleboDetails(widget.pheleboId.toString());
     getStatusList();
     super.initState();
+  }
+
+  Future<void> launchCustomerCarePhone(String phone) async {
+    String url = "tel:+91 $phone";
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  void getPheleboDetails(String phleboId) async {
+    pheleboRatingModel = await controller!.apiServices.pheleboService(phleboId);
+    log(pheleboRatingModel!.toJson().toString());
+    setState(() {});
   }
 
   void getStatusList() async {
@@ -53,7 +77,7 @@ class _PamentsummaryViewState extends State<PamentsummaryView> {
               color: const Color(0XFF242424),
               fontWeight: FontWeight.w400),
         ),
-        leading: GestureDetector(
+        leading: InkWell(
           onTap: () {
             Get.back();
           },
@@ -158,7 +182,7 @@ class _PamentsummaryViewState extends State<PamentsummaryView> {
                                       width: 15,
                                     ),
                                     Text(
-                                      "4.5 Rating",
+                                      "3450 Rating",
                                       style: GoogleFonts.poppins(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 16,
@@ -177,13 +201,13 @@ class _PamentsummaryViewState extends State<PamentsummaryView> {
                                       width: 15,
                                     ),
                                     Text(
-                                      "1,245 Jobs Completed",
+                                      "1230 Total Samples Collected",
                                       style: GoogleFonts.poppins(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 16,
                                         color: const Color(0XFF242424),
                                       ),
-                                    )
+                                    ),
                                   ],
                                 ),
                               ],
@@ -459,7 +483,7 @@ class _PamentsummaryViewState extends State<PamentsummaryView> {
                                         )
                                       : (controller!.paymentStatus.value ==
                                               'ERROR')
-                                          ? GestureDetector(
+                                          ? InkWell(
                                               onTap: () {
                                                 // Get.to(
                                                 //   () => const PamentmethodView(),
@@ -486,7 +510,7 @@ class _PamentsummaryViewState extends State<PamentsummaryView> {
                                                 ),
                                               ),
                                             )
-                                          : GestureDetector(
+                                          : InkWell(
                                               onTap: () {},
                                               child: Container(
                                                 height: 40,
@@ -760,7 +784,8 @@ class _PamentsummaryViewState extends State<PamentsummaryView> {
                       ),
                       child: Center(
                         child: Text(
-                          statusData[snapshot.data!.order.status].toString(),
+                          activeordersController!.statusListData[
+                              snapshot.data!.order.status.toString()],
                           style: GoogleFonts.poppins(
                             fontWeight: FontWeight.w500,
                             fontSize: 20,
@@ -789,114 +814,159 @@ class _PamentsummaryViewState extends State<PamentsummaryView> {
                         color: const Color(0XFFBBEFFD),
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 37.0, top: 18, bottom: 18, right: 37),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                SvgPicture.asset("assets/expertperson.svg"),
-                                const SizedBox(
-                                  width: 15,
+                      child: snapshot.data!.order.phleboId == "0"
+                          ? Center(
+                              child: Text(
+                                "Phelebo Not Assigned Yet",
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 20,
+                                  color: const Color(0XFF464646),
                                 ),
-                                Text(
-                                  "Ramesh Kumar",
-                                  style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 16,
-                                    color: const Color(0XFF242424),
+                              ),
+                            )
+                          : Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 37.0, top: 18, bottom: 18, right: 37),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      SvgPicture.asset(
+                                          "assets/expertperson.svg"),
+                                      const SizedBox(
+                                        width: 15,
+                                      ),
+                                      Text(
+                                        (pheleboRatingModel!.phleboName
+                                            .toString()),
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 16,
+                                          color: const Color(0XFF242424),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 13,
-                            ),
-                            const Divider(
-                              height: 2,
-                              thickness: 1,
-                              color: Colors.grey,
-                            ),
-                            const SizedBox(
-                              height: 13,
-                            ),
-                            Row(
-                              children: [
-                                SvgPicture.asset("assets/star.svg"),
-                                const SizedBox(
-                                  width: 15,
-                                ),
-                                Text(
-                                  "4.5 Rating",
-                                  style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 16,
-                                    color: const Color(0XFF242424),
+                                  const SizedBox(
+                                    height: 13,
                                   ),
-                                )
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 13,
-                            ),
-                            Row(
-                              children: [
-                                SvgPicture.asset("assets/jobdone.svg"),
-                                const SizedBox(
-                                  width: 15,
-                                ),
-                                Text(
-                                  "1,245 Jobs Completed",
-                                  style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 16,
-                                    color: const Color(0XFF242424),
+                                  const Divider(
+                                    height: 2,
+                                    thickness: 1,
+                                    color: Colors.grey,
                                   ),
-                                )
-                              ],
+                                  const SizedBox(
+                                    height: 13,
+                                  ),
+                                  Row(
+                                    children: [
+                                      SvgPicture.asset("assets/star.svg"),
+                                      const SizedBox(
+                                        width: 15,
+                                      ),
+                                      Text(
+                                        pheleboRatingModel!
+                                                    .ratings!.roundRating ==
+                                                null
+                                            ? "0 Rating"
+                                            : "${pheleboRatingModel!.ratings!.roundRating.toString()} Rating",
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 16,
+                                          color: const Color(0XFF242424),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 13,
+                                  ),
+                                  Row(
+                                    children: [
+                                      SvgPicture.asset("assets/jobdone.svg"),
+                                      const SizedBox(
+                                        width: 15,
+                                      ),
+                                      Text(
+                                        pheleboRatingModel!.ratings!
+                                                    .totalOrdersServed ==
+                                                null
+                                            ? "0 Total Samples Collected"
+                                            : "${pheleboRatingModel!.ratings!.totalOrdersServed.toString()} Total Samples Collected",
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 16,
+                                          color: const Color(0XFF242424),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                          ],
-                        ),
-                      ),
                     ),
                     const SizedBox(
                       height: 26,
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 80.0, right: 80),
-                      child: Container(
-                        height: 46,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: const Color(0XFF457B9D),
-                          ),
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Row(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.only(left: 20.0),
-                              child: Icon(
-                                Icons.phone,
-                                size: 30,
-                                color: Color(0XFF457B9D),
+                      child: snapshot.data!.order.phleboId == "0"
+                          ? const SizedBox()
+                          : Container(
+                              height: 46,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: const Color(0XFF457B9D),
+                                ),
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 20.0),
+                                    child: Icon(
+                                      Icons.phone,
+                                      size: 30,
+                                      color: Color(0XFF457B9D),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 18,
+                                  ),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      final Uri phoneLaunchUri = Uri(
+                                          scheme: 'tel',
+                                          path:
+                                              "${pheleboRatingModel!.phleboContact}");
+                                      await launchCustomerCarePhone(
+                                              phoneLaunchUri.toString())
+                                          .then((value) {})
+                                          .onError((error, stackTrace) {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return const AlertDialog(
+                                                title: Text("Phlebo Contact"),
+                                                content: Text(
+                                                    "Sorry Phlebo Phone Number is not Availiable"),
+                                              );
+                                            });
+                                      });
+                                    },
+                                    child: Text(
+                                      "Call Phlebo",
+                                      style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 16,
+                                        color: const Color(0XFF464646),
+                                      ),
+                                    ),
+                                  )
+                                ],
                               ),
                             ),
-                            const SizedBox(
-                              width: 18,
-                            ),
-                            Text(
-                              "Call Phlebo",
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                                color: const Color(0XFF464646),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
                     ),
                     const SizedBox(
                       height: 34,
@@ -1152,7 +1222,7 @@ class _PamentsummaryViewState extends State<PamentsummaryView> {
                                             : (snapshot.data!.payments[0]
                                                         .payStatus ==
                                                     '2')
-                                                ? GestureDetector(
+                                                ? InkWell(
                                                     onTap: () {
                                                       // Get.to(
                                                       //   () => const PamentmethodView(),
@@ -1181,9 +1251,12 @@ class _PamentsummaryViewState extends State<PamentsummaryView> {
                                                       ),
                                                     ),
                                                   )
-                                                : GestureDetector(
+                                                : InkWell(
+                                                    splashColor: Colors.black,
+                                                    highlightColor:
+                                                        Colors.green,
                                                     onTap: () {},
-                                                    child: Container(
+                                                    child: Ink(
                                                       height: 40,
                                                       width: 155,
                                                       decoration: BoxDecoration(
@@ -1235,7 +1308,7 @@ class _PamentsummaryViewState extends State<PamentsummaryView> {
                         padding: const EdgeInsets.only(
                             top: 17.0, left: 15, right: 15),
                         child: Container(
-                          height: 350,
+                          height: 300,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -1316,48 +1389,44 @@ class _PamentsummaryViewState extends State<PamentsummaryView> {
                                     ),
                                   ),
                                   const SizedBox(
-                                    height: 20,
+                                    height: 13,
                                   ),
                                   SizedBox(
-                                    height: 200,
+                                    height: 150,
                                     width: double.infinity,
                                     child: ListView.builder(
                                         itemCount: snapshot
                                             .data!.order.contents.length,
                                         itemBuilder: (context, index) {
-                                          return Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 8.0),
-                                            child: Container(
-                                              height: 70,
-                                              width: double.infinity,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                color: kPrimaryColor,
-                                              ),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(4.0),
-                                                child: Center(
-                                                  child: Align(
-                                                    alignment:
-                                                        Alignment.centerLeft,
-                                                    child: Text(
-                                                      snapshot
-                                                          .data!
-                                                          .order
-                                                          .contents[index]
-                                                          .productName
-                                                          .toString(),
-                                                      textAlign: TextAlign.left,
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        fontSize: 16,
-                                                        color: const Color(
-                                                            0XFF464646),
+                                          return Card(
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 8.0),
+                                              child: SizedBox(
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(4.0),
+                                                  child: Center(
+                                                    child: Align(
+                                                      alignment:
+                                                          Alignment.centerLeft,
+                                                      child: Text(
+                                                        snapshot
+                                                            .data!
+                                                            .order
+                                                            .contents[index]
+                                                            .productName
+                                                            .toString(),
+                                                        textAlign:
+                                                            TextAlign.left,
+                                                        style:
+                                                            GoogleFonts.poppins(
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontSize: 16,
+                                                          color: const Color(
+                                                              0XFF464646),
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
@@ -1474,25 +1543,26 @@ class _PamentsummaryViewState extends State<PamentsummaryView> {
                                       ),
                                     ),
                                     const SizedBox(
-                                      height: 20,
+                                      height: 5,
                                     ),
                                     Container(
                                       height: 130,
                                       width: double.infinity,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(8),
-                                        color: kPrimaryColor,
                                       ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Center(
-                                          child: Text(
-                                            snapshot.data!.order.googleMap
-                                                .toString(),
-                                            style: GoogleFonts.poppins(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 16,
-                                              color: const Color(0XFF464646),
+                                      child: Card(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(4.0),
+                                          child: Center(
+                                            child: Text(
+                                              snapshot.data!.order.googleMap
+                                                  .toString(),
+                                              style: GoogleFonts.poppins(
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 16,
+                                                color: const Color(0XFF464646),
+                                              ),
                                             ),
                                           ),
                                         ),

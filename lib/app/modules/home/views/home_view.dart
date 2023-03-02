@@ -1,8 +1,7 @@
 // ignore_for_file: avoid_print, unrelated_type_equality_checks
 
 import 'dart:developer';
-
-import 'package:banner_carousel/banner_carousel.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:elegant_notification/elegant_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -10,7 +9,11 @@ import 'package:get/get.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:true_medix/app/modules/home/models/homeproductmodel.dart';
+import 'package:true_medix/app/modules/productdetail/models/productmodel.dart';
+import 'package:true_medix/app/modules/productdetail/views/productdetail_view.dart';
 import 'package:true_medix/app/modules/search/views/search_view.dart';
+import 'package:true_medix/app/modules/uploadprescription/views/uploadprescription_view.dart';
 import 'package:true_medix/app/routes/app_pages.dart';
 import 'package:true_medix/app/services/sessionmanager.dart';
 import 'package:true_medix/app/utilities/appcolors.dart';
@@ -30,17 +33,44 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   HomeController? controller;
   CartController? cartController;
+  List<Records>? records;
+  String querySearch = "arunodaya";
+  int page = 1;
   SessionManager sessionManager = SessionManager();
+  ScrollController scrollController = ScrollController();
   bool isLoggedOut = false;
   @override
   void initState() {
     controller = Get.put<HomeController>(HomeController());
-
     controller!.initBannerCall();
-    controller!.initProductsCall(page: "1", query: "arunodaya");
+    callProducts(page, querySearch);
     cartController = Get.put<CartController>(CartController());
     cartController!.initGetCartProducts();
+    scrollController.addListener(onScroolPagination);
     super.initState();
+  }
+
+  void callProducts(int page, String searchQuery) async {
+    List<Records>? data = (await controller!
+            .initProductsCall(page: page.toString(), query: searchQuery))
+        .records;
+
+    setState(() {
+      records = data;
+    });
+    // Future.delayed(const Duration(seconds: 1), () {});
+  }
+
+  void onScroolPagination() {
+    if (scrollController.position.pixels ==
+        scrollController.position.maxScrollExtent) {
+      page = page + 1;
+      page = (page > int.parse(controller!.productsList.totalPages!))
+          ? (page - 1)
+          : page;
+      setState(() {});
+      callProducts(page, querySearch);
+    }
   }
 
   Future<bool> showExitPopup() async {
@@ -118,31 +148,66 @@ class _HomeViewState extends State<HomeView> {
                               ),
                             ),
                             const Spacer(),
-                            Tooltip(
-                              message: "Logout",
-                              child: IconButton(
-                                onPressed: () async {
-                                  SharedPreferences sharedPreferences =
-                                      await SharedPreferences.getInstance();
-                                  sharedPreferences
-                                      .setString("AUTHID", "null")
-                                      .then((value) {
-                                    isLoggedOut == false
-                                        ? const LinearProgressIndicator(
-                                            color: Colors.red,
-                                          )
-                                        : const SizedBox();
-                                    Future.delayed(const Duration(seconds: 2),
-                                        () {
-                                      Navigator.of(context)
-                                          .pushNamedAndRemoveUntil(
-                                              Routes.LOGINWITHPASSWORD,
-                                              (Route<dynamic> route) => false);
-                                    });
-                                  }).onError((error, stackTrace) {});
-                                },
-                                icon: const Icon(Icons.logout),
-                              ),
+                            Row(
+                              children: [
+                                Tooltip(
+                                  message: "Upload Prescription",
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Get.to(
+                                          () => const UploadprescriptionView());
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 8.0),
+                                      child: Container(
+                                        width: 30,
+                                        height: 30,
+                                        decoration: const BoxDecoration(
+                                          image: DecorationImage(
+                                            image: AssetImage(
+                                                "assets/prescription.png"),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Tooltip(
+                                  message: "Logout",
+                                  child: IconButton(
+                                    onPressed: () async {
+                                      SharedPreferences sharedPreferences =
+                                          await SharedPreferences.getInstance();
+                                      sharedPreferences
+                                          .setString("AUTHID", "null")
+                                          .then((value) {
+                                        isLoggedOut == false
+                                            ? const LinearProgressIndicator(
+                                                color: Colors.red,
+                                              )
+                                            : const SizedBox();
+                                        Future.delayed(
+                                            const Duration(seconds: 2), () {
+                                          Navigator.of(context)
+                                              .pushNamedAndRemoveUntil(
+                                                  Routes.LOGINWITHPASSWORD,
+                                                  (Route<dynamic> route) =>
+                                                      false);
+                                        });
+                                      }).onError((error, stackTrace) {});
+                                    },
+                                    icon: Image.asset(
+                                      "assets/logout.png",
+                                      color: kBtnColor,
+                                      width: 30,
+                                      height: 30,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -164,7 +229,7 @@ class _HomeViewState extends State<HomeView> {
                           ),
                           width: MediaQuery.of(context).size.width,
                           child: Center(
-                            child: GestureDetector(
+                            child: InkWell(
                               onTap: () {
                                 Get.to(const SearchView());
                               },
@@ -198,15 +263,35 @@ class _HomeViewState extends State<HomeView> {
                               itemCount: controller!.homeTestList.length,
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (context, index) {
-                                return GestureDetector(
+                                return InkWell(
+                                  splashColor: Colors.black,
+                                  highlightColor: Colors.green,
                                   onTap: () {
-                                    controller!.initProductsCall(
-                                        page: "1",
-                                        query: controller!
-                                            .homeTestList[index].title
-                                            .toString());
+                                    for (var element
+                                        in controller!.homeTestList) {
+                                      element.isActive = false;
+                                    }
+                                    querySearch = index == 0
+                                        ? controller!.homeTestList[index].title
+                                            .toString()
+                                            .split(' ')[1]
+                                            .toString()
+                                        : (index == 4)
+                                            ? controller!
+                                                .homeTestList[index].title
+                                                .toString()
+                                                .split(" ")[0]
+                                                .toString()
+                                            : controller!
+                                                .homeTestList[index].title
+                                                .toString();
+                                    controller!.homeTestList[index].isActive =
+                                        true;
+                                    page = 1;
+                                    setState(() {});
+                                    callProducts(page, querySearch);
                                   },
-                                  child: Container(
+                                  child: Ink(
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(5),
                                       ),
@@ -233,45 +318,117 @@ class _HomeViewState extends State<HomeView> {
                     top: 18,
                   ),
                   child: SizedBox(
-                      height: 135,
                       width: MediaQuery.of(context).size.width,
                       child: GetBuilder<HomeController>(builder: (controller) {
-                        if (controller.bannerLoading.value) {
-                          return Shimmer.fromColors(
-                            baseColor: Colors.grey.withOpacity(0.25),
-                            highlightColor: Colors.white.withOpacity(0.6),
-                            period: const Duration(seconds: 1),
-                            loop: 10,
-                            child: Container(
-                              height: 260,
-                              width: MediaQuery.of(context).size.width * 0.9,
-                              decoration: BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                          );
-                        } else {
-                          return BannerCarousel(
-                            showIndicator: true,
-                            banners: controller.bannerList.map((e) {
-                              return BannerModel(imagePath: e.image, id: e.id);
-                            }).toList(),
-                            customizedIndicators:
-                                const IndicatorModel.animation(
-                                    width: 7,
-                                    height: 7,
-                                    spaceBetween: 5,
-                                    widthAnimation: 38),
-                            height: 260,
-                            activeColor: const Color(0XFF43D2DE),
-                            disableColor: Colors.white,
-                            animation: true,
-                            borderRadius: 10,
-                            width: 250,
-                            indicatorBottom: false,
-                          );
-                        }
+                        return FutureBuilder(
+                            future: controller.apiServices.getRunningBanners(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Shimmer.fromColors(
+                                  baseColor: Colors.grey.withOpacity(0.25),
+                                  highlightColor: Colors.white.withOpacity(0.6),
+                                  child: CarouselSlider(
+                                    options: CarouselOptions(
+                                      height: 400.0,
+                                      autoPlay: true,
+                                      enlargeCenterPage: true,
+                                      autoPlayInterval:
+                                          const Duration(seconds: 2),
+                                    ),
+                                    items: [1, 2, 3, 4, 5, 6].map((i) {
+                                      return Builder(
+                                        builder: (BuildContext context) {
+                                          return Container(
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            height: 400,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(40),
+                                              image: const DecorationImage(
+                                                image: AssetImage(
+                                                    "assets/brand.png"),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    }).toList(),
+                                  ),
+                                );
+                              } else {
+                                return CarouselSlider(
+                                  options: CarouselOptions(
+                                    height: 135.0,
+                                    autoPlay: true,
+                                    enlargeCenterPage: true,
+                                    autoPlayInterval:
+                                        const Duration(seconds: 2),
+                                  ),
+                                  items: snapshot.data == null
+                                      ? ["assets/brand.png"].map((i) {
+                                          return Builder(
+                                            builder: (BuildContext context) {
+                                              return GestureDetector(
+                                                onTap: () {},
+                                                child: Container(
+                                                  width: MediaQuery.of(context)
+                                                      .size
+                                                      .width,
+                                                  height: 400,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                    image: DecorationImage(
+                                                      image: AssetImage(
+                                                          i.toString()),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        }).toList()
+                                      : snapshot.data!.map((i) {
+                                          return Builder(
+                                            builder: (BuildContext context) {
+                                              return GestureDetector(
+                                                onTap: () {
+                                                  Get.to(
+                                                    () => ProductdetailView(
+                                                      isBannerInput: true,
+                                                      productData:
+                                                          ProductModel.fromJson(
+                                                              i.product![0]
+                                                                  .toJson()),
+                                                    ),
+                                                  );
+                                                },
+                                                child: Container(
+                                                  width: MediaQuery.of(context)
+                                                      .size
+                                                      .width,
+                                                  height: 400,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                    image: DecorationImage(
+                                                      image: NetworkImage(
+                                                          i.image.toString()),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        }).toList(),
+                                );
+                              }
+                            });
                       })),
                 ),
                 const SizedBox(
@@ -337,7 +494,7 @@ class _HomeViewState extends State<HomeView> {
                         ),
                       );
                     }
-                    if (controller.productsList.isEmpty) {
+                    if (controller.productsList.records!.isEmpty) {
                       return Align(
                         alignment: Alignment.center,
                         child: Padding(
@@ -346,72 +503,92 @@ class _HomeViewState extends State<HomeView> {
                         ),
                       );
                     }
-                    if (controller.productsList == null) {
+                    if (controller.productsList.records == null) {
                       return Center(
                         child: Image.asset("assets/oops.png"),
                       );
                     }
-                    return SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.438,
-                      child: ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          itemCount: controller.productsList.length,
-                          itemBuilder: (context, index) {
-                            return GetBuilder<HomeController>(
-                                builder: (controller) {
-                              return InkWell(
-                                onTap: () {
-                                  Get.toNamed(Routes.PRODUCTDETAIL,
-                                      arguments:
-                                          controller.productsList[index]);
-                                },
-                                child: Card(
-                                  child: ProductWidget(
-                                    rating: controller
-                                        .productsList[index].ratings!.total
-                                        .toString(),
+                    return Column(
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.438,
+                          child: ListView.builder(
+                              controller: scrollController,
+                              scrollDirection: Axis.vertical,
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              itemCount: records!.length,
+                              itemBuilder: (context, index) {
+                                return GetBuilder<HomeController>(
+                                    builder: (controller) {
+                                  return InkWell(
+                                    splashColor: Colors.black,
+                                    highlightColor: Colors.green,
                                     onTap: () {
-                                      List<dynamic> cartProductId =
-                                          cartController!.cartProducts
-                                              .map((element) {
-                                        return element.id;
-                                      }).toList();
-                                      cartProductId.add(
-                                          controller.productsList[index].id);
-                                      log(cartProductId.toList().toString());
-                                      Map<String, dynamic> payLoad = {
-                                        "mobile_no": "",
-                                        "products": cartProductId,
-                                      };
-                                      ApiServices()
-                                          .addToCart(payLoad)
-                                          .then((value) {
-                                        cartController!.initGetCartProducts();
-                                        ElegantNotification.success(
-                                          title: const Text("Success"),
-                                          description:
-                                              Text(value['message'].toString()),
-                                        ).show(context);
-                                      }).onError((error, stackTrace) {
-                                        log(stackTrace.toString());
-                                        ElegantNotification.error(
-                                          title: const Text("Error"),
-                                          description: const Text(
-                                              "Error Occured, Please try again"),
-                                        ).show(context);
-                                      });
+                                      Get.to(
+                                        () => ProductdetailView(
+                                          isBannerInput: false,
+                                          productData: ProductModel.fromJson(
+                                              records![index].toJson()),
+                                        ),
+                                      );
                                     },
-                                    title: controller.productsList[index].name
-                                        .toString(),
-                                    price: controller
-                                        .productsList[index].saleprice
-                                        .toString(),
-                                  ),
-                                ),
-                              );
-                            });
-                          }),
+                                    child: Ink(
+                                      child: Card(
+                                        child: ProductWidget(
+                                          rating: records![index]
+                                              .ratings!
+                                              .total
+                                              .toString(),
+                                          onTap: () {
+                                            List<dynamic> cartProductId =
+                                                cartController!.cartProducts
+                                                    .map((element) {
+                                              return element.id;
+                                            }).toList();
+                                            cartProductId.add(controller
+                                                .productsList
+                                                .records![index]
+                                                .id);
+                                            log(cartProductId
+                                                .toList()
+                                                .toString());
+                                            Map<String, dynamic> payLoad = {
+                                              "mobile_no": "",
+                                              "products": cartProductId,
+                                            };
+                                            ApiServices()
+                                                .addToCart(payLoad)
+                                                .then((value) {
+                                              cartController!
+                                                  .initGetCartProducts();
+                                              ElegantNotification.success(
+                                                title: const Text("Success"),
+                                                description: Text(
+                                                    value['message']
+                                                        .toString()),
+                                              ).show(context);
+                                            }).onError((error, stackTrace) {
+                                              log(stackTrace.toString());
+                                              ElegantNotification.error(
+                                                title: const Text("Error"),
+                                                description: const Text(
+                                                    "Error Occured, Please try again"),
+                                              ).show(context);
+                                            });
+                                          },
+                                          title:
+                                              records![index].name.toString(),
+                                          price: records![index]
+                                              .saleprice
+                                              .toString(),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                });
+                              }),
+                        ),
+                      ],
                     );
                   }),
                 ),
@@ -423,7 +600,23 @@ class _HomeViewState extends State<HomeView> {
             tooltip: "Call Customer",
             backgroundColor: kPrimaryColor,
             onPressed: () async {
-              await controller!.launchCustomerCarePhone();
+              //FOR PHONE NUMBER:
+              final Uri phoneLaunchUri =
+                  Uri(scheme: 'tel', path: "+91 8055554468");
+              await controller!
+                  .launchCustomerCarePhone(phoneLaunchUri.toString())
+                  .then((value) {})
+                  .onError((error, stackTrace) {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return const AlertDialog(
+                        title: Text("Call Customer Care "),
+                        content: Text(
+                            "Failed to Call Cutomer, We will resolve this Issue Soon"),
+                      );
+                    });
+              });
             },
             child: const Icon(
               Icons.phone,

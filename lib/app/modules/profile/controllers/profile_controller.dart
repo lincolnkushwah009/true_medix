@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:true_medix/app/modules/profile/model/getaddressmodel.dart';
@@ -13,13 +14,18 @@ class ProfileController extends GetxController {
   RxBool _profileLoading = false.obs;
   RxBool _getAddressLoading = false.obs;
 
+  TextEditingController nameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  RxString nameValidationMessage = "".obs;
+  RxString passwordValidationMessage = "".obs;
+
   ProfileModel _profileDetails = ProfileModel();
   List<GetAddressModel> _getAddressDetails = [];
   final ImagePicker picker = ImagePicker();
 
   set profileLoading(RxBool loadingVal) {
     _profileLoading = loadingVal;
-    update();
   }
 
   set getAddressLoading(RxBool loadingVal) {

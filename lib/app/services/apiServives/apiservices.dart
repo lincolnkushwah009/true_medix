@@ -5,14 +5,18 @@ import 'package:http/http.dart' as http;
 import 'package:true_medix/app/global/customermodel.dart';
 import 'package:true_medix/app/modules/activeorders/model/ordermodel.dart';
 import 'package:true_medix/app/modules/booking/model/placeorderresponsemodel.dart';
+import 'package:true_medix/app/modules/cart/models/cartmodel.dart';
 import 'package:true_medix/app/modules/home/models/bannermodel.dart';
+import 'package:true_medix/app/modules/home/models/homeproductmodel.dart';
 import 'package:true_medix/app/modules/pamentsummary/models/orderresponsemodel.dart';
+import 'package:true_medix/app/modules/pamentsummary/models/pheleboratingmodel.dart';
 import 'package:true_medix/app/modules/productdetail/models/productmodel.dart';
 import 'package:true_medix/app/modules/profile/model/addressmodel.dart';
 import 'package:true_medix/app/modules/profile/model/getaddressmodel.dart';
 import 'package:true_medix/app/modules/profile/model/profilemodel.dart';
 import 'package:true_medix/app/modules/profile/model/updateprofilemodel.dart';
 import 'package:true_medix/app/modules/register/model/registermodel.dart';
+import 'package:true_medix/app/modules/uploadprescription/models/uploadprescriptionmodel.dart';
 import 'package:true_medix/app/services/apiResponse/apiresponse.dart';
 import 'package:true_medix/app/services/apis/apis.dart';
 import 'package:true_medix/app/services/sessionmanager.dart';
@@ -81,7 +85,7 @@ class ApiServices {
   }
 
   //GetProducts API
-  Future<List<ProductModel>> getProducts(
+  Future<HomeProductModel> getProducts(
       {String page = "1", String? query = "arunodaya"}) async {
     log("Api Products Inprogress");
     log("$products?page=$page&q=$query");
@@ -92,9 +96,10 @@ class ApiServices {
       log(response.body.toString());
       Map<String, dynamic> parsedData =
           jsonDecode(response.body) as Map<String, dynamic>;
-      return (parsedData['records'] as List<dynamic>).map((e) {
-        return ProductModel.fromJson(e);
-      }).toList();
+      // return (parsedData['records'] as List<dynamic>).map((e) {
+      //   return ProductModel.fromJson(e);
+      // }).toList();
+      return HomeProductModel.fromJson(parsedData);
     } catch (e) {
       log(e.toString());
       throw Error();
@@ -102,7 +107,7 @@ class ApiServices {
   }
 
   //GetProducts API
-  Future<List<ProductModel>> getCartProducts() async {
+  Future<List<CartModel>> getCartProducts() async {
     log("GetCart Products Inprogress");
     CustomerModel customerDetails = (await sessionManager.getAuthToken());
     log("===========GETCARTPRODUCTS===============");
@@ -119,9 +124,9 @@ class ApiServices {
       log(response.body.toString());
       Map<String, dynamic> parsedData =
           jsonDecode(response.body) as Map<String, dynamic>;
-      List<ProductModel> tryList = [];
+      List<CartModel> tryList = [];
       tryList = (parsedData['data'] as List<dynamic>).map((e) {
-        return ProductModel.fromJson(e);
+        return CartModel.fromJson(e);
       }).toList();
       log("====================$tryList");
       return tryList;
@@ -535,6 +540,62 @@ class ApiServices {
     } catch (e) {
       log(e.toString());
       throw Exception("Order Details Failed...");
+    }
+  }
+
+  //Phelebo Details API
+
+  Future<PheleboRatingModel?> pheleboService(String pheleboId) async {
+    log("Phelebo Details List API In Progress");
+    log(pheloboApi + pheleboId);
+    try {
+      var response = await http.get(
+        Uri.parse(pheloboApi + pheleboId),
+      );
+
+      log("=====================================");
+      log(response.body.toString());
+      log("=====================================");
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> parsedData =
+            jsonDecode(response.body) as Map<String, dynamic>;
+        PheleboRatingModel pheleboRatingModel =
+            PheleboRatingModel.fromJson(parsedData);
+        return pheleboRatingModel;
+      } else {
+        log("Phelebo Details API");
+        return null;
+      }
+    } catch (e) {
+      log(e.toString());
+      throw Exception("Phelebo Details Failed...");
+    }
+  }
+
+  // Upload Prtescription API
+
+  Future<Map<String, dynamic>?> uploadPrescription(
+      UploadPrescriptionModel payload) async {
+    log("Upload Prtescription API In Progress");
+    log(payload.toString());
+    try {
+      var response = await http.post(
+        Uri.parse(uploadPrescriptionApi),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(payload),
+      );
+      if (response.statusCode == 200) {
+        log(response.body);
+        return jsonDecode(response.body);
+      } else {
+        return jsonDecode(response.body);
+      }
+    } catch (e) {
+      log(e.toString());
+      return null;
     }
   }
 }

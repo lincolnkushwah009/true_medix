@@ -24,93 +24,96 @@ class OrderHistoryWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Padding(
-          padding:
-              const EdgeInsets.only(top: 14, bottom: 14, left: 14, right: 14),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Order ID",
-                style: orderHistoryTextStyle,
-              ),
-              const SizedBox(
-                height: 14,
-              ),
-              Text(
-                "Scheduled On	",
-                style: orderHistoryTextStyle,
-              ),
-              const SizedBox(
-                height: 14,
-              ),
-              Text(
-                "Payment Status",
-                style: orderHistoryTextStyle,
-              ),
-              const SizedBox(
-                height: 14,
-              ),
-              Text(
-                "Booking Status",
-                style: orderHistoryTextStyle,
-              ),
-            ],
+    return Align(
+      alignment: Alignment.center,
+      child: Row(
+        children: [
+          Padding(
+            padding:
+                const EdgeInsets.only(top: 14, bottom: 14, left: 14, right: 14),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Order ID",
+                  style: orderHistoryTextStyle,
+                ),
+                const SizedBox(
+                  height: 14,
+                ),
+                Text(
+                  "Scheduled On	",
+                  style: orderHistoryTextStyle,
+                ),
+                const SizedBox(
+                  height: 14,
+                ),
+                Text(
+                  "Payment Status",
+                  style: orderHistoryTextStyle,
+                ),
+                const SizedBox(
+                  height: 14,
+                ),
+                Text(
+                  "Booking Status",
+                  style: orderHistoryTextStyle,
+                ),
+              ],
+            ),
           ),
-        ),
-        const Spacer(),
-        Padding(
-          padding: const EdgeInsets.only(top: 14, bottom: 14, right: 35),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "#$orderId",
-                style:
-                    orderHistoryTextStyle.copyWith(fontWeight: FontWeight.w400),
-              ),
-              const SizedBox(
-                height: 14,
-              ),
-              Text(
-                scheduledOn,
-                style:
-                    orderHistoryTextStyle.copyWith(fontWeight: FontWeight.w400),
-              ),
-              const SizedBox(
-                height: 14,
-              ),
-              Row(
-                children: [
-                  pending == true
-                      ? SvgPicture.asset("assets/Pending.svg")
-                      : SvgPicture.asset("assets/Paid.svg"),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    paymentStatus,
-                    style: orderHistoryTextStyle.copyWith(
-                        fontWeight: FontWeight.w400),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 14,
-              ),
-              Text(
-                bookingStatus,
-                style:
-                    orderHistoryTextStyle.copyWith(fontWeight: FontWeight.w400),
-              ),
-            ],
+          const Spacer(),
+          Padding(
+            padding: const EdgeInsets.only(top: 14, bottom: 14, right: 35),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "#$orderId",
+                  style: orderHistoryTextStyle.copyWith(
+                      fontWeight: FontWeight.w400),
+                ),
+                const SizedBox(
+                  height: 14,
+                ),
+                Text(
+                  scheduledOn,
+                  style: orderHistoryTextStyle.copyWith(
+                      fontWeight: FontWeight.w400),
+                ),
+                const SizedBox(
+                  height: 14,
+                ),
+                Row(
+                  children: [
+                    pending == true
+                        ? SvgPicture.asset("assets/Pending.svg")
+                        : SvgPicture.asset("assets/Paid.svg"),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      paymentStatus,
+                      style: orderHistoryTextStyle.copyWith(
+                          fontWeight: FontWeight.w400),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 14,
+                ),
+                Text(
+                  bookingStatus,
+                  style: orderHistoryTextStyle.copyWith(
+                      fontWeight: FontWeight.w400),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

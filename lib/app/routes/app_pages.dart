@@ -12,11 +12,11 @@ import '../modules/loginwithpassword/views/loginwithpassword_view.dart';
 import '../modules/orderhistory/views/orderhistory_view.dart';
 import '../modules/otpscreen/views/otpscreen_view.dart';
 import '../modules/pastorders/views/pastorders_view.dart';
-import '../modules/productdetail/views/productdetail_view.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/register/views/register_view.dart';
 import '../modules/search/views/search_view.dart';
 import '../modules/trackstatus/views/trackstatus_view.dart';
+import '../modules/uploadprescription/views/uploadprescription_view.dart';
 
 // ignore_for_file: constant_identifier_names, prefer_typing_uninitialized_variables
 
@@ -57,10 +57,6 @@ class AppPages {
       page: () => const BookingView(),
     ),
     GetPage(
-      name: _Paths.PRODUCTDETAIL,
-      page: () => const ProductdetailView(),
-    ),
-    GetPage(
       name: _Paths.SEARCH,
       page: () => const SearchView(),
     ),
@@ -88,12 +84,16 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.LOGINWITHPASSWORD,
-      page: () => LoginwithpasswordView(),
+      page: () => const LoginwithpasswordView(),
     ),
     GetPage(
       name: _Paths.ADDADDRESS,
       page: () => AddaddressView(),
       binding: AddaddressBinding(),
+    ),
+    GetPage(
+      name: _Paths.UPLOADPRESCRIPTION,
+      page: () => const UploadprescriptionView(),
     ),
   ];
 }
